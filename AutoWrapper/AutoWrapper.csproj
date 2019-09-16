@@ -3,20 +3,18 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <Authors>Vincent Maverick Durano</Authors>
-    <Description>A REST API global exception handler and response wrapper for ASP.NET Core APIs.</Description>
+    <Description>A REST API global exception handler and response wrapper for ASP.NET Core APIs.
+</Description>
     <PackageLicenseUrl></PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/proudmonkey/RESTApiResponseWrapper.Core</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/proudmonkey/RESTApiResponseWrapper.Core</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/proudmonkey/AutoWrapper</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/proudmonkey/AutoWrapper</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <Version>2.0.0-rc</Version>
-    <PackageTags>REST,API, WebAPI, ASP.NETCore,Middleware, Wrapper, ApiResponseAndExceptionWrapper</PackageTags>
-    <PackageReleaseNotes>[RFT] Refactor code to fix previous version issues.
-[FET] Add Support for ASP.NET / .NET Core 3.x
-[FET] Enable Logging using ILogger for Request, Response and Exceptions
-[FET] Add options in the middleware to set API version
-[FIX]  Enable Camel case for JSON output format</PackageReleaseNotes>
+    <Version>1.0.0-rc</Version>
+    <PackageTags>REST,API, WebAPI, ASP.NETCore, Middleware, AutoWrapper, ApiResponseAndExceptionWrapper, APIWrapper, ResponseWrapper, ExceptionWrapper</PackageTags>
+    <PackageReleaseNotes>pre-release for .NET Core 3.x</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageId>AutoWrapper.Core</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
