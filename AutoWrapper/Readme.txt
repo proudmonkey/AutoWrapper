@@ -2,11 +2,7 @@
 
 The AutoWrapper is a global exception handler and response wrapper for ASP.NET Core APIs. It uses a middleware to capture exceptions and to capture HTTP response to build a consistent response object for both successful and error requests.
 
-## Prerequisite
-
-Install Newtonsoft.Json package
-
-## Installing
+## Installation
 
 Below are the steps to use the AutoWrapper middleware into your ASP.NET Core app:
 
