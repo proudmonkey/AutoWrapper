@@ -1,20 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <Authors>Vincent Maverick Durano</Authors>
-    <Description>A REST API global exception handler and response wrapper for ASP.NET Core APIs.
-</Description>
+    <Description>A simple HTTP response wrapper and exception handler for ASP.NET Core APIs.
+    </Description>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/proudmonkey/AutoWrapper</PackageProjectUrl>
     <RepositoryUrl>https://github.com/proudmonkey/AutoWrapper</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <Version>1.0.0-rc</Version>
+    <Version>1.0.1-rc</Version>
     <PackageTags>REST,API, WebAPI, ASP.NETCore, Middleware, AutoWrapper, ApiResponseAndExceptionWrapper, APIWrapper, ResponseWrapper, ExceptionWrapper</PackageTags>
     <PackageReleaseNotes>pre-release for .NET Core 3.x</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageId>AutoWrapper.Core</PackageId>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +23,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.0-preview9.19423.4" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3-beta1" />
+    <None Include="icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

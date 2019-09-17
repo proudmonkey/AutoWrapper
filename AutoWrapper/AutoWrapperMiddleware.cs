@@ -79,7 +79,6 @@ namespace AutoWrapper
         #region Private Members
         private async Task<string> FormatRequest(HttpRequest request)
         {
-
             request.EnableBuffering();
 
             var buffer = new byte[Convert.ToInt32(request.ContentLength)];
@@ -140,16 +139,20 @@ namespace AutoWrapper
             else
             {
 
-                var exceptionMessage = ResponseMessageEnum.Unhandled.GetDescription();
-#if !DEBUG
-                var message = exceptionMessage;
+                string exceptionMessage = string.Empty;
                 string stackTrace = null;
-#else
-                var message = $"{ exceptionMessage } { exception.GetBaseException().Message }";
-                string stackTrace = exception.StackTrace;
-#endif
 
-                apiError = new ApiError(message) { Details = stackTrace };
+                if (_options.IsDebug)
+                {
+                    exceptionMessage = $"{ exceptionMessage } { exception.GetBaseException().Message }";
+                    stackTrace = exception.StackTrace;
+                }
+                else
+                {
+                    exceptionMessage = ResponseMessageEnum.Unhandled.GetDescription();
+                }
+
+                apiError = new ApiError(exceptionMessage) { Details = stackTrace };
                 code = (int)HttpStatusCode.InternalServerError;
                 context.Response.StatusCode = code;
 
@@ -193,7 +196,9 @@ namespace AutoWrapper
             if (type.Equals(typeof(Newtonsoft.Json.Linq.JObject)))
             {
                 ApiResponse apiResponse = JsonConvert.DeserializeObject<ApiResponse>(bodyText);
-                if ((apiResponse.StatusCode != code || apiResponse.Result != null) ||
+                if (apiResponse.StatusCode == 0 && apiResponse.Result == null && apiResponse.ResponseException == null)
+                    jsonString = ConvertToJSONString(code, bodyContent);
+                else if ((apiResponse.StatusCode != code || apiResponse.Result != null) ||
                     (apiResponse.StatusCode == code && apiResponse.Result == null))
                     jsonString = ConvertToJSONString(GetSucessResponse(apiResponse));
                 else
