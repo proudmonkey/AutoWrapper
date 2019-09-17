@@ -151,7 +151,7 @@ ApiException(string message, int statusCode = 500, string errorCode = "", string
 ApiException(IEnumerable<ValidationError> errors, int statusCode = 400)
 ApiException(System.Exception ex, int statusCode = 500)
 ```
-#Support for Logging
+# Support for Logging
 
 Another good thing about AutoWrapper is that logging is already pre-configured. .NET Core apps has built-in logging mechanism by default, and any requests and responses that has been intercepted by the wrapper will be automatically logged (thanks to Dependency Injecton!). .NET Core supports a logging API that works with a variety of built-in and third-party logging providers. Depending on what supported .NET Core logging provider you use and how you configure the location to log the data (e.g text file, Cloud , etc. ), AutoWrapper will automatically write the logs there for you.
 
