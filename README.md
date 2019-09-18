@@ -1,21 +1,12 @@
 # AutoWrapper 
 
-<div id="container">
-    ![GitHub Logo](/AutoWrapper/icon.png)
-    This is an image
-</div>
-
-Hi !
-
-#container {
-    height:100px;
-    line-height:100px;
-}
-
-#container img {
-    vertical-align:middle;
-    max-height:100%;
-}
+<table>
+    <tr>
+        <td align="center">![GitHub Logo](/AutoWrapper/icon.png)</td>
+        <td align="center">[![Nuget](https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue)](https://www.nuget.org/packages/AutoWrapper.Core)</td>
+    </tr>
+    
+</table>
 ![GitHub Logo](/AutoWrapper/icon.png)
 [![Nuget](https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue)](https://www.nuget.org/packages/AutoWrapper.Core)
 [![Nuget pre](https://img.shields.io/nuget/vpre/AutoWrapper.Core)](https://www.nuget.org/packages/AutoWrapper.Core)
