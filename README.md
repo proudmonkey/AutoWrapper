@@ -17,6 +17,12 @@
     
 </table>
 
+<p align="center">
+     <img src="/AutoWrapper/logo.png" />
+     <a href="https://www.nuget.org/packages/AutoWrapper.Core" alt="Nuget">
+            <img src="https://img.shields.io/nuget/vpre/AutoWrapper.Core" /></a>
+    </p>
+
 ![GitHub Logo](/AutoWrapper/icon.png)
 [![Nuget](https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue)](https://www.nuget.org/packages/AutoWrapper.Core)
 [![Nuget pre](https://img.shields.io/nuget/vpre/AutoWrapper.Core)](https://www.nuget.org/packages/AutoWrapper.Core)
