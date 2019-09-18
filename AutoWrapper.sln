@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.4
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29230.61
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VMD.RESTApiResponseWrapper.Core", "VMD.RESTApiResponseWrapper.Core\VMD.RESTApiResponseWrapper.Core.csproj", "{A6A2E82E-1F44-4062-B928-1F7974689055}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoWrapper", "AutoWrapper\AutoWrapper.csproj", "{065FE85E-A29E-40EB-B586-2582F8C676E2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,12 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A6A2E82E-1F44-4062-B928-1F7974689055}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A6A2E82E-1F44-4062-B928-1F7974689055}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A6A2E82E-1F44-4062-B928-1F7974689055}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A6A2E82E-1F44-4062-B928-1F7974689055}.Release|Any CPU.Build.0 = Release|Any CPU
+		{065FE85E-A29E-40EB-B586-2582F8C676E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{065FE85E-A29E-40EB-B586-2582F8C676E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{065FE85E-A29E-40EB-B586-2582F8C676E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{065FE85E-A29E-40EB-B586-2582F8C676E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E16079F5-1298-45EC-B804-FAB979382C8D}
 	EndGlobalSection
 EndGlobal
