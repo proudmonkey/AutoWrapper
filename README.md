@@ -1,4 +1,4 @@
-<img align="center" src="/AutoWrapper/logo.png" />
+<img align="right" src="/AutoWrapper/logo.png" />
 
 # AutoWrapper  [![Nuget](https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue)](https://www.nuget.org/packages/AutoWrapper.Core) [![Nuget pre](https://img.shields.io/nuget/vpre/AutoWrapper.Core)](https://www.nuget.org/packages/AutoWrapper.Core)
 
