@@ -17,7 +17,8 @@
     
 </table>
 
-<p  style="line-height: 110px;height: 220px; margin: 0px;">
+<p  style="line-height:110px;height:220px; margin:0px;">
+     AutoWrapper
      <img src="/AutoWrapper/logo.png" />
      <a href="https://www.nuget.org/packages/AutoWrapper.Core" alt="Nuget">
             <img src="https://img.shields.io/nuget/vpre/AutoWrapper.Core" /></a>
