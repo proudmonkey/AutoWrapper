@@ -2,11 +2,17 @@
 
 <table>
     <tr>
-        <td align="center">![GitHub Logo](/AutoWrapper/icon.png)</td>
-        <td align="center">[![Nuget](https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue)](https://www.nuget.org/packages/AutoWrapper.Core)</td>
+        <td align="center">    
+                        <img src="/AutoWrapper/icon.png" />
+        </td>
+        <td align="center">
+            <a href="https://www.nuget.org/packages/AutoWrapper.Core" alt="Nuget">
+            <img src="https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue" /></a>
+        </td>
     </tr>
     
 </table>
+
 ![GitHub Logo](/AutoWrapper/icon.png)
 [![Nuget](https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue)](https://www.nuget.org/packages/AutoWrapper.Core)
 [![Nuget pre](https://img.shields.io/nuget/vpre/AutoWrapper.Core)](https://www.nuget.org/packages/AutoWrapper.Core)
