@@ -27,22 +27,22 @@ PM> Install-Package AutoWrapper.Core -Version 1.1.0-rc
 
 2. Declare the following namespace within `Startup.cs`
 
-```language-csharp
+```csharp
 using AutoWrapper;
 ```
 3. Register the `middleware` below within the `Configure()` method of `Startup.cs` "before" the `UseRouting()` `middleware`:
 
-```language-csharp
+```csharp
 app.UseApiResponseAndExceptionWrapper();
 ```
 The default `API` version format is set to "`1.0.0.0`". If you wish to specify a different version format for your `API`, then you can do:
 
-```language-csharp
+```csharp
 app.UseApiResponseAndExceptionWrapper(new ApiResponseOptions { ApiVersion = "2.0" });
 ```
 That's simple! Here’s how the response is going to look like for the default ASP.NET Core API template “`WeatherForecastController`” API:
 
-```
+```json
 {
     "version": "1.0.0.0",
     "statusCode": 200,
@@ -81,6 +81,43 @@ That's simple! Here’s how the response is going to look like for the default A
         }
     ]
 }
+```
+
+# Defining Your Own Custom Message
+To display a custom message in your response, use the `ApiResponse` object from `AutoWrapper.Wrappers` namespace. For example, if you want to display a message when a successful POST has been made, then you can do something like this:
+
+```
+[HttpPost]
+public async Task<ApiResponse> Post([FromBody]CreateBandDTO band)  
+{
+    //Call a method to add a new record to the database
+    try
+    {
+        var result = await SampleData.AddNew(band);
+        return new ApiResponse("New record has been created to the database", result, 201);
+    }
+    catch (Exception ex)
+    {
+        //TO DO: Log ex
+        throw;
+    }
+}
+```
+Running the code will give you the following result when successful:
+
+```
+{
+    "version": "1.0.0.0",
+    "statusCode": 201,
+    "message": "New record has been created to the database",
+    "isError": false,
+    "result": 100
+}
+```
+The `ApiResponse` object has the following parameters that you can set:
+
+```
+ApiResponse(string message, object result = null, int statusCode = 200, string apiVersion = "1.0.0.0")  
 ```
 
 # Defining Your Own Api Exception
