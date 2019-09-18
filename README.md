@@ -3,11 +3,15 @@
 <table>
     <tr>
         <td align="center">    
-                        <img src="/AutoWrapper/icon.png" />
+                        <img src="/AutoWrapper/logo.png" />
         </td>
         <td align="center">
             <a href="https://www.nuget.org/packages/AutoWrapper.Core" alt="Nuget">
             <img src="https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue" /></a>
+        </td>
+        <td align="center">
+            <a href="https://www.nuget.org/packages/AutoWrapper.Core" alt="Nuget">
+            <img src="https://img.shields.io/nuget/vpre/AutoWrapper.Core" /></a>
         </td>
     </tr>
     
