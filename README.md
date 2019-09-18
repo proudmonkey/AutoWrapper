@@ -1,6 +1,8 @@
-# AutoWrapper 
-<p align="center">
-    ![Nuget](https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue)
+
+<p align="left">
+    # AutoWrapper 
+     <a href="https://www.nuget.org/packages/AutoWrapper.Core" alt="nuget">
+        <img src="https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue" /></a>
     <a href="https://www.nuget.org/packages/AutoWrapper.Core" alt="nuget pre">
         <img src="https://img.shields.io/nuget/vpre/AutoWrapper.Core" /></a>
 </p>
