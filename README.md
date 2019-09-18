@@ -86,7 +86,7 @@ That's simple! Here’s how the response is going to look like for the default A
 # Defining Your Own Custom Message
 To display a custom message in your response, use the `ApiResponse` object from `AutoWrapper.Wrappers` namespace. For example, if you want to display a message when a successful POST has been made, then you can do something like this:
 
-```
+```csharp
 [HttpPost]
 public async Task<ApiResponse> Post([FromBody]CreateBandDTO band)  
 {
@@ -105,7 +105,7 @@ public async Task<ApiResponse> Post([FromBody]CreateBandDTO band)
 ```
 Running the code will give you the following result when successful:
 
-```
+```json
 {
     "version": "1.0.0.0",
     "statusCode": 201,
@@ -116,26 +116,26 @@ Running the code will give you the following result when successful:
 ```
 The `ApiResponse` object has the following parameters that you can set:
 
-```
+```csharp
 ApiResponse(string message, object result = null, int statusCode = 200, string apiVersion = "1.0.0.0")  
 ```
 
 # Defining Your Own Api Exception
 `AutoWrapper` also provides an `ApiException` object that you can use to define your own exception. For example, if you want to throw your own exception message, you could simply do:
 
-For capturing ModelState validation errors
+#### For capturing ModelState validation errors
 
-```language-csharp
+```csharp
 throw new ApiException(ModelState.AllErrors());
 ```
 
-For throwing your own exception message
-```language-csharp
+#### For throwing your own exception message
+```csharp
 throw new ApiException($"Record with id: {id} does not exist.", 400);
 ```
 For example, let’s modify the `POST` method with `ModelState` validation:
 
-```language-csharp
+```csharp
 [HttpPost]
 public async Task<ApiResponse> Post([FromBody]CreateBandDTO band)
 {
@@ -159,7 +159,7 @@ public async Task<ApiResponse> Post([FromBody]CreateBandDTO band)
 ```
 Running the code will result to something like this when validation fails:
 
-```
+```json
 {
     "version": "1.0.0.0",
     "statusCode": 400,
@@ -183,7 +183,7 @@ See how the `validationErrors` property is automatically populated with the viol
 
 The `ApiException` object contains the following three overload constructors that you can use to define an exception:
 
-```language-csharp
+```csharp
 ApiException(string message, int statusCode = 500, string errorCode = "", string refLink = "")
 ApiException(IEnumerable<ValidationError> errors, int statusCode = 400)
 ApiException(System.Exception ex, int statusCode = 500)
