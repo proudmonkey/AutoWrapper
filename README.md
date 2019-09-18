@@ -197,7 +197,7 @@ Another good thing about `AutoWrapper` is that logging is already pre-configured
 
 `AutoWrapper` omit any request with “`/swagger`” in the `URL` so you can still be able to navigate to the Swagger UI for your API documentation.
 
-# Example
+# Samples
 [AutoWrapper: Prettify Your ASP.NET Core APIs with Meaningful Responses](http://vmsdurano.com/autowrapper-prettify-your-asp-net-core-apis-with-meaningful-responses/)
 
 # Feedback
