@@ -18,7 +18,7 @@
 </table>
 
 
-# AutoWrapper ![GitHub Logo](/AutoWrapper/icon.png) [![Nuget](https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue)](https://www.nuget.org/packages/AutoWrapper.Core) [![Nuget pre](https://img.shields.io/nuget/vpre/AutoWrapper.Core)](https://www.nuget.org/packages/AutoWrapper.Core)
+# ![GitHub Logo](/AutoWrapper/icon.png) AutoWrapper  [![Nuget](https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue)](https://www.nuget.org/packages/AutoWrapper.Core) [![Nuget pre](https://img.shields.io/nuget/vpre/AutoWrapper.Core)](https://www.nuget.org/packages/AutoWrapper.Core)
 
 The `AutoWrapper` is a global exception handler and response wrapper for ASP.NET Core APIs. It uses a `middleware` to intercept incoming HTTP requests and automatically wraps the responses for you by providing a consistent response format for both successful and error results. The goal is to let you focus on your business specific requirements and let the wrapper handles the HTTP response. This saves you time from developing your APIs while enforcing standards for your  HTTP response.
 
