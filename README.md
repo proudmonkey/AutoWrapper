@@ -1,5 +1,6 @@
-# AutoWrapper
-![GitHub Logo](/AutoWrapper/icon.png) 
+<img align="right" src="/AutoWrapper/logo.png" />
+
+# AutoWrapper  [![Nuget](https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue)](https://www.nuget.org/packages/AutoWrapper.Core) [![Nuget downloads](https://img.shields.io/nuget/dt/AutoWrapper.Core?color=green)](https://www.nuget.org/packages/AutoWrapper.Core)
 
 The `AutoWrapper` is a global exception handler and response wrapper for ASP.NET Core APIs. It uses a `middleware` to intercept incoming HTTP requests and automatically wraps the responses for you by providing a consistent response format for both successful and error results. The goal is to let you focus on your business specific requirements and let the wrapper handles the HTTP response. This saves you time from developing your APIs while enforcing standards for your  HTTP response.
 
@@ -35,11 +36,6 @@ using AutoWrapper;
 
 ```csharp
 app.UseApiResponseAndExceptionWrapper();
-```
-The default `API` version format is set to "`1.0.0.0`". If you wish to specify a different version format for your `API`, then you can do:
-
-```csharp
-app.UseApiResponseAndExceptionWrapper(new ApiResponseOptions { ApiVersion = "2.0" });
 ```
 That's simple! Here’s how the response is going to look like for the default ASP.NET Core API template “`WeatherForecastController`” API:
 
@@ -189,6 +185,26 @@ ApiException(string message, int statusCode = 500, string errorCode = "", string
 ApiException(IEnumerable<ValidationError> errors, int statusCode = 400)
 ApiException(System.Exception ex, int statusCode = 500)
 ```
+# Options
+The following properties are the options that you can set:
+
+* ApiVersion
+* IsDebug
+
+#### ApiVersion
+The default `API` version format is set to "`1.0.0.0`". If you wish to specify a different version format for your `API`, then you can do:
+
+```csharp
+app.UseApiResponseAndExceptionWrapper(new ApiResponseOptions { ApiVersion = "2.0" });
+```
+
+#### IsDebug
+By default, `AutoWrapper` suppresses stack trace information. If you want to see the actual details of the error from the response during the development stage, then simply set the `AutoWrapperOptions` `IsDebug` to `true`:
+
+```csharp
+app.UseApiResponseAndExceptionWrapper( new AutoWrapperOptions { IsDebug = true }); 
+```
+
 # Support for Logging
 
 Another good thing about `AutoWrapper` is that logging is already pre-configured. .NET Core apps has built-in logging mechanism by default, and any requests and responses that has been intercepted by the wrapper will be automatically logged (thanks to Dependency Injecton!). .NET Core supports a logging `API` that works with a variety of built-in and third-party logging providers. Depending on what supported .NET Core logging provider you use and how you configure the location to log the data (e.g text file, Cloud , etc. ), AutoWrapper will automatically write the logs there for you.
