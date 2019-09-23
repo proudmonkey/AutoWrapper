@@ -41,8 +41,6 @@ That's simple! Here’s how the response is going to look like for the default A
 
 ```json
 {
-    "version": "1.0.0.0",
-    "statusCode": 200,
     "message": "Request successful.",
     "isError": false,
     "result": [
@@ -104,8 +102,6 @@ Running the code will give you the following result when successful:
 
 ```json
 {
-    "version": "1.0.0.0",
-    "statusCode": 201,
     "message": "New record has been created to the database",
     "isError": false,
     "result": 100
@@ -158,8 +154,6 @@ Running the code will result to something like this when validation fails:
 
 ```json
 {
-    "version": "1.0.0.0",
-    "statusCode": 400,
     "isError": true,
     "responseException": {
         "exceptionMessage": "Request responded with validation error(s). Please correct the specified validation errors and try again.",
@@ -189,13 +183,30 @@ ApiException(System.Exception ex, int statusCode = 500)
 The following properties are the options that you can set:
 
 * ApiVersion
+* ShowApiVersion
+* ShowStatusCode
 * IsDebug
 
-#### ApiVersion
-The default `API` version format is set to "`1.0.0.0`". If you wish to specify a different version format for your `API`, then you can do:
+#### ShowApiVersion
+if you want to show the `API` version in the response, then you can do:
 
 ```csharp
-app.UseApiResponseAndExceptionWrapper(new ApiResponseOptions { ApiVersion = "2.0" });
+app.UseApiResponseAndExceptionWrapper(new ApiResponseOptions { ShowApiVersion = true });
+```
+The default `API` version format is set to "`1.0.0.0`" 
+
+#### ApiVersion
+If you wish to specify a different version format, then you can do:
+
+```csharp
+app.UseApiResponseAndExceptionWrapper(new ApiResponseOptions { ShowApiVersion = true, ApiVersion = "2.0" });
+```
+
+#### ShowStatusCode
+if you want to show the `StatusCode` in the response, then you can do:
+
+```csharp
+app.UseApiResponseAndExceptionWrapper(new ApiResponseOptions { ShowStatusCode = true });
 ```
 
 #### IsDebug
