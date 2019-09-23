@@ -199,8 +199,11 @@ namespace AutoWrapper
                 if (apiResponse.StatusCode == 0 && apiResponse.Result == null && apiResponse.ResponseException == null)
                     jsonString = ConvertToJSONString(code, bodyContent);
                 else if ((apiResponse.StatusCode != code || apiResponse.Result != null) ||
-                    (apiResponse.StatusCode == code && apiResponse.Result == null))
+                        (apiResponse.StatusCode == code && apiResponse.Result == null))
+                {
+                    code = apiResponse.StatusCode; // in case response is not 200 (e.g 201, etc)
                     jsonString = ConvertToJSONString(GetSucessResponse(apiResponse));
+                }
                 else
                     jsonString = ConvertToJSONString(code, bodyContent);
             }
@@ -209,15 +212,18 @@ namespace AutoWrapper
                 jsonString = ConvertToJSONString(code, bodyContent);
             }
 
+            context.Response.StatusCode = code;
             context.Response.ContentType = "application/json";
             return context.Response.WriteAsync(jsonString);
         }
         private string ConvertToJSONString(int code, object content)
         {
+            code = !_options.ShowStatusCode ? 0 : code;
             return JsonConvert.SerializeObject(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), content, code, GetApiVersion()), JSONSettings());
         }
         private string ConvertToJSONString(ApiResponse apiResponse)
         {
+            apiResponse.StatusCode = !_options.ShowStatusCode ? 0 : apiResponse.StatusCode;
             return JsonConvert.SerializeObject(apiResponse, JSONSettings());
         }
         private string ConvertToJSONString(object rawJSON)
@@ -239,18 +245,27 @@ namespace AutoWrapper
         }
         private ApiResponse GetErrorResponse(int code, ApiError apiError)
         {
-            return new ApiResponse(code, apiError) { Version = GetApiVersion() };
+            code = !_options.ShowStatusCode ? 0 : code;
+            return new ApiResponse(code, apiError) { Version = !_options.ShowApiVersion ? null : GetApiVersion() };
         }
         private ApiResponse GetSucessResponse(ApiResponse apiResponse)
         {
-            if (apiResponse.Version.Equals("1.0.0.0"))
-                apiResponse.Version = GetApiVersion();
+            if (_options.ShowApiVersion)
+            {
+                if (apiResponse.Version.Equals("1.0.0.0"))
+                    apiResponse.Version = GetApiVersion();
+            }
+            else
+                apiResponse.Version = null;
 
             return apiResponse;
         }
         private string GetApiVersion()
         {
-            return string.IsNullOrEmpty(_options.ApiVersion) ? "1.0.0.0" : _options.ApiVersion;
+            if (_options.ShowApiVersion)
+                return string.IsNullOrEmpty(_options.ApiVersion) ? "1.0.0.0" : _options.ApiVersion;
+
+            return null;
         }
 
         #endregion

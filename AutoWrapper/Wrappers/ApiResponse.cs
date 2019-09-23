@@ -6,10 +6,10 @@ namespace AutoWrapper.Wrappers
     [DataContract]
     public class ApiResponse
     {
-        [DataMember]
+        [DataMember(EmitDefaultValue = false)]
         public string Version { get; set; }
 
-        [DataMember]
+        [DataMember(EmitDefaultValue = false)]
         public int StatusCode { get; set; }
 
         [DataMember(EmitDefaultValue = false)]
