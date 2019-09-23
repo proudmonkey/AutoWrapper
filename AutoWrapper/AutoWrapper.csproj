@@ -9,9 +9,9 @@
     <PackageProjectUrl>https://github.com/proudmonkey/AutoWrapper</PackageProjectUrl>
     <RepositoryUrl>https://github.com/proudmonkey/AutoWrapper</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <Version>1.1.1-rc</Version>
+    <Version>1.0.0</Version>
     <PackageTags>REST,API, WebAPI, ASP.NETCore, Middleware, AutoWrapper, ApiResponseAndExceptionWrapper, APIWrapper, ResponseWrapper, ExceptionWrapper</PackageTags>
-    <PackageReleaseNotes>pre-release for .NET Core 3.x</PackageReleaseNotes>
+    <PackageReleaseNotes>Official release</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageId>AutoWrapper.Core</PackageId>
