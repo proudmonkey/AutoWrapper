@@ -23,9 +23,8 @@ The `AutoWrapper` is a global exception handler and response wrapper for ASP.NET
 1. Download and Install the latest `AutoWrapper.Core` from NuGet or via CLI:
 
 ```
-PM> Install-Package AutoWrapper.Core -Version 1.1.0-rc
+PM> Install-Package AutoWrapper.Core -Version 1.0.0
 ```
-> Note: This is a `prerelease` version as of this time of writing and will be released officially once `.NET Core 3` is out.
 
 2. Declare the following namespace within `Startup.cs`
 
@@ -79,7 +78,7 @@ That's simple! Here’s how the response is going to look like for the default A
 ```
 
 # Defining Your Own Custom Message
-To display a custom message in your response, use the `ApiResponse` object from `AutoWrapper.Wrappers` namespace. For example, if you want to display a message when a successful POST has been made, then you can do something like this:
+To display a custom message in your response, use the `ApiResponse` object from `AutoWrapper.Wrappers` namespace. For example, if you want to display a message when a successful `POST` has been made, then you can do something like this:
 
 ```csharp
 [HttpPost]
@@ -182,16 +181,16 @@ ApiException(System.Exception ex, int statusCode = 500)
 # Options
 The following properties are the options that you can set:
 
-* ApiVersion
-* ShowApiVersion
-* ShowStatusCode
-* IsDebug
+* `ApiVersion`
+* `ShowApiVersion`
+* `ShowStatusCode`
+* `IsDebug`
 
 #### ShowApiVersion
 if you want to show the `API` version in the response, then you can do:
 
 ```csharp
-app.UseApiResponseAndExceptionWrapper(new ApiResponseOptions { ShowApiVersion = true });
+app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { ShowApiVersion = true });
 ```
 The default `API` version format is set to "`1.0.0.0`" 
 
@@ -199,14 +198,14 @@ The default `API` version format is set to "`1.0.0.0`"
 If you wish to specify a different version format, then you can do:
 
 ```csharp
-app.UseApiResponseAndExceptionWrapper(new ApiResponseOptions { ShowApiVersion = true, ApiVersion = "2.0" });
+app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { ShowApiVersion = true, ApiVersion = "2.0" });
 ```
 
 #### ShowStatusCode
 if you want to show the `StatusCode` in the response, then you can do:
 
 ```csharp
-app.UseApiResponseAndExceptionWrapper(new ApiResponseOptions { ShowStatusCode = true });
+app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { ShowStatusCode = true });
 ```
 
 #### IsDebug
