@@ -237,4 +237,4 @@ I’m pretty sure there are still lots of things to improve in this project, so 
 
 # License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details
