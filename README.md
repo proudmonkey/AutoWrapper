@@ -2,7 +2,7 @@
 
 # AutoWrapper  [![Nuget](https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue)](https://www.nuget.org/packages/AutoWrapper.Core) [![Nuget downloads](https://img.shields.io/nuget/dt/AutoWrapper.Core?color=green)](https://www.nuget.org/packages/AutoWrapper.Core)
 
-The `AutoWrapper` is a global exception handler and response wrapper for ASP.NET Core APIs. It uses a `middleware` to intercept incoming HTTP requests and automatically wraps the responses for you by providing a consistent response format for both successful and error results. The goal is to let you focus on your business specific requirements and let the wrapper handles the `HTTP` response. This saves you time from developing your APIs while enforcing standards for your `HTTP` responses.
+The `AutoWrapper` is a global exception handler and response wrapper for ASP.NET Core APIs. It uses a `middleware` to intercept incoming HTTP requests and automatically wraps the responses for you by providing a consistent response format for both successful and error results. The goal is to let you focus on your business specific requirements and let the wrapper handles the `HTTP` response. This saves you time from developing your APIs while enforcing own standards for your `HTTP` responses.
 
 `AutoWrapper` is a project fork based from [VMD.RESTApiResponseWrapper.Core](https://github.com/proudmonkey/RESTApiResponseWrapper.Core) which is designed to support .NET Core 3.x and above. The implementation of this package was refactored to provide a more convenient way to use the middleware with added flexibility.
 
