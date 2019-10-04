@@ -188,8 +188,10 @@ The following properties are the options that you can set:
 * `IsDebug`
 
 ### Version 1.1.0 Additions
-* `IsApiOnly'
+* `IsApiOnly`
 * `WrapWhenApiPathStartsWith`
+
+These new options are added based on the feedback from [sondreb](https://github.com/sondreb). Thank you!
 
 #### ShowApiVersion
 if you want to show the `API` version in the response, then you can do:
