@@ -223,19 +223,21 @@ app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { IsDebug = true })
 ```
 
 #### IsApiOnly
-`AutoWrapper` is meant to be used for ASP.NET Core API project templates only. If you want to use the wrapper within your front-end projects like Angular, MVC, React, Blazor and other SPA frameworks that supports .NET Core, then use this property to enable it.
+`AutoWrapper` is meant to be used for ASP.NET Core API project templates only. If you are combinining `API Controllers` within your front-end projects like Angular, MVC, React, Blazor and other SPA frameworks that supports .NET Core, then use this property to enable it.
 
 ```csharp
 app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { IsApiOnly = false} );
 ```
 
 #### WrapWhenApiPathStartsWith
-If you set the `IsApiOnly` option to `false`, you can also specify segment of your `API` path for validation. By default it was set to `"/api"`. If you want to set it to something else, then you can do:
+If you set the `IsApiOnly` option to `false`, you can also specify the segment of your `API` path for validation. By default it was set to `"/api"`. If you want to set it to something else, then you can do:
 
 ```csharp
 app.UseApiResponseAndExceptionWrapper( new AutoWrapperOptions { IsApiOnly = false, WrapWhenApiPathStartsWith = "/myapi" });
 ```
-This will activate the `AutoWrapper` to intercept responses when a request contains with the `WrapWhenApiPathStartsWith` value.
+This will activate the `AutoWrapper` to intercept HTTP responses when a request contains the `WrapWhenApiPathStartsWith` value.
+
+> Note that I would still recommend you to implement your `API Controllers` in a seperate project to value the separation of concerns and to avoid mixing route configurations for your `SPAs` and `APIs`.
 
 # Support for Logging
 
@@ -256,6 +258,10 @@ I’m pretty sure there are still lots of things to improve in this project, so 
 
 * **Vincent Maverick Durano** - [Blog](http://vmsdurano.com/)
 
+# Release History 
+10/04/2019: AutoWrapper version `1.1.0` with newly added options.
+09/23/2019: AutoWrapper version `1.0.0` offcial release. 
+09/14/2019: AutoWrapper version `1.0.0-rc` prerelease. 
 
 # License
 
