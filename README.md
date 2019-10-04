@@ -259,9 +259,10 @@ I’m pretty sure there are still lots of things to improve in this project, so 
 * **Vincent Maverick Durano** - [Blog](http://vmsdurano.com/)
 
 # Release History 
-10/04/2019: AutoWrapper version `1.1.0` with newly added options.
-09/23/2019: AutoWrapper version `1.0.0` offcial release. 
-09/14/2019: AutoWrapper version `1.0.0-rc` prerelease. 
+
+* 10/04/2019: AutoWrapper version `1.1.0` with newly added options.
+* 09/23/2019: AutoWrapper version `1.0.0` offcial release. 
+* 09/14/2019: AutoWrapper version `1.0.0-rc` prerelease. 
 
 # License
 
