@@ -2,7 +2,7 @@
 
 # AutoWrapper  [![Nuget](https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue)](https://www.nuget.org/packages/AutoWrapper.Core) [![Nuget downloads](https://img.shields.io/nuget/dt/AutoWrapper.Core?color=green)](https://www.nuget.org/packages/AutoWrapper.Core)
 
-The `AutoWrapper` is a global exception handler and response wrapper for ASP.NET Core APIs. It uses a `middleware` to intercept incoming HTTP requests and automatically wraps the responses for you by providing a consistent response format for both successful and error results. The goal is to let you focus on your business specific requirements and let the wrapper handles the HTTP response. This saves you time from developing your APIs while enforcing standards for your  HTTP response.
+The `AutoWrapper` is a global exception handler and response wrapper for ASP.NET Core APIs. It uses a `middleware` to intercept incoming HTTP requests and automatically wraps the responses for you by providing a consistent response format for both successful and error results. The goal is to let you focus on your business specific requirements and let the wrapper handles the `HTTP` response. This saves you time from developing your APIs while enforcing own standards for your `HTTP` responses.
 
 `AutoWrapper` is a project fork based from [VMD.RESTApiResponseWrapper.Core](https://github.com/proudmonkey/RESTApiResponseWrapper.Core) which is designed to support .NET Core 3.x and above. The implementation of this package was refactored to provide a more convenient way to use the middleware with added flexibility.
 
@@ -23,9 +23,8 @@ The `AutoWrapper` is a global exception handler and response wrapper for ASP.NET
 1. Download and Install the latest `AutoWrapper.Core` from NuGet or via CLI:
 
 ```
-PM> Install-Package AutoWrapper.Core -Version 1.1.0-rc
+PM> Install-Package AutoWrapper.Core -Version 1.0.0
 ```
-> Note: This is a `prerelease` version as of this time of writing and will be released officially once `.NET Core 3` is out.
 
 2. Declare the following namespace within `Startup.cs`
 
@@ -41,8 +40,6 @@ That's simple! Here’s how the response is going to look like for the default A
 
 ```json
 {
-    "version": "1.0.0.0",
-    "statusCode": 200,
     "message": "Request successful.",
     "isError": false,
     "result": [
@@ -81,7 +78,7 @@ That's simple! Here’s how the response is going to look like for the default A
 ```
 
 # Defining Your Own Custom Message
-To display a custom message in your response, use the `ApiResponse` object from `AutoWrapper.Wrappers` namespace. For example, if you want to display a message when a successful POST has been made, then you can do something like this:
+To display a custom message in your response, use the `ApiResponse` object from `AutoWrapper.Wrappers` namespace. For example, if you want to display a message when a successful `POST` has been made, then you can do something like this:
 
 ```csharp
 [HttpPost]
@@ -104,8 +101,6 @@ Running the code will give you the following result when successful:
 
 ```json
 {
-    "version": "1.0.0.0",
-    "statusCode": 201,
     "message": "New record has been created to the database",
     "isError": false,
     "result": 100
@@ -158,8 +153,6 @@ Running the code will result to something like this when validation fails:
 
 ```json
 {
-    "version": "1.0.0.0",
-    "statusCode": 400,
     "isError": true,
     "responseException": {
         "exceptionMessage": "Request responded with validation error(s). Please correct the specified validation errors and try again.",
@@ -188,14 +181,31 @@ ApiException(System.Exception ex, int statusCode = 500)
 # Options
 The following properties are the options that you can set:
 
-* ApiVersion
-* IsDebug
+* `ApiVersion`
+* `ShowApiVersion`
+* `ShowStatusCode`
+* `IsDebug`
 
-#### ApiVersion
-The default `API` version format is set to "`1.0.0.0`". If you wish to specify a different version format for your `API`, then you can do:
+#### ShowApiVersion
+if you want to show the `API` version in the response, then you can do:
 
 ```csharp
-app.UseApiResponseAndExceptionWrapper(new ApiResponseOptions { ApiVersion = "2.0" });
+app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { ShowApiVersion = true });
+```
+The default `API` version format is set to "`1.0.0.0`" 
+
+#### ApiVersion
+If you wish to specify a different version format, then you can do:
+
+```csharp
+app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { ShowApiVersion = true, ApiVersion = "2.0" });
+```
+
+#### ShowStatusCode
+if you want to show the `StatusCode` in the response, then you can do:
+
+```csharp
+app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { ShowStatusCode = true });
 ```
 
 #### IsDebug
@@ -227,4 +237,4 @@ I’m pretty sure there are still lots of things to improve in this project, so 
 
 # License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details
