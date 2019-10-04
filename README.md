@@ -181,10 +181,15 @@ ApiException(System.Exception ex, int statusCode = 500)
 # Options
 The following properties are the options that you can set:
 
+### Version 1.0.0
 * `ApiVersion`
 * `ShowApiVersion`
 * `ShowStatusCode`
 * `IsDebug`
+
+### Version 1.1.0 Additions
+* `IsApiOnly'
+* `WrapWhenApiPathStartsWith`
 
 #### ShowApiVersion
 if you want to show the `API` version in the response, then you can do:
@@ -212,8 +217,23 @@ app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { ShowStatusCode = 
 By default, `AutoWrapper` suppresses stack trace information. If you want to see the actual details of the error from the response during the development stage, then simply set the `AutoWrapperOptions` `IsDebug` to `true`:
 
 ```csharp
-app.UseApiResponseAndExceptionWrapper( new AutoWrapperOptions { IsDebug = true }); 
+app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { IsDebug = true }); 
 ```
+
+#### IsApiOnly
+`AutoWrapper` is meant to be used for ASP.NET Core API project templates only. If you want to use the wrapper within your front-end projects like Angular, MVC, React, Blazor and other SPA frameworks that supports .NET Core, then use this property to enable it.
+
+```csharp
+app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { IsApiOnly = false} );
+```
+
+#### WrapWhenApiPathStartsWith
+If you set the IsApiOnly option to false, you can also specify segment of your API path for validation. By default it was set to `/api`. If you want to set it to something else, then you can do:
+
+```csharp
+app.UseApiResponseAndExceptionWrapper( new AutoWrapperOptions { IsApiOnly = false, WrapWhenApiPathStartsWith = "/myapi" });
+```
+This will activate the `AutoWrapper` to intercept responses when a request contains with the `WrapWhenApiPathStartsWith` value.
 
 # Support for Logging
 
