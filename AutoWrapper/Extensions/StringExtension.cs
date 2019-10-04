@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Text.RegularExpressions;
 
 namespace AutoWrapper.Extensions
 {
@@ -30,6 +31,13 @@ namespace AutoWrapper.Extensions
             {
                 return false;
             }
+        }
+
+        public static bool IsHtml(this string text)
+        {
+            Regex tagRegex = new Regex(@"<\s*([^ >]+)[^>]*>.*?<\s*/\s*\1\s*>");
+
+            return tagRegex.IsMatch(text);
         }
     }
 }

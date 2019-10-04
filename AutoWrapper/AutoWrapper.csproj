@@ -9,9 +9,9 @@
     <PackageProjectUrl>https://github.com/proudmonkey/AutoWrapper</PackageProjectUrl>
     <RepositoryUrl>https://github.com/proudmonkey/AutoWrapper</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <PackageTags>REST,API, WebAPI, ASP.NETCore, Middleware, AutoWrapper, ApiResponseAndExceptionWrapper, APIWrapper, ResponseWrapper, ExceptionWrapper</PackageTags>
-    <PackageReleaseNotes>Official release</PackageReleaseNotes>
+    <PackageReleaseNotes>Added IsApiOnly and WrapWhenApiPathStartsWith options to enable using the wrapper within Angular, MVC, React and other SPA projects that supports .NET Core.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageId>AutoWrapper.Core</PackageId>

@@ -30,10 +30,12 @@ namespace AutoWrapper
         public async Task InvokeAsync(HttpContext context)
          {
 
-            if (IsSwagger(context))
+            if (IsSwagger(context) || !IsApi(context))
                 await this._next(context);
             else
             {
+                bool preserveOriginalBody = true;
+
                 var stopWatch = Stopwatch.StartNew();
 
                 var request = await FormatRequest(context.Request);
@@ -52,7 +54,13 @@ namespace AutoWrapper
                         if (context.Response.StatusCode == (int)HttpStatusCode.OK)
                         {
                             var bodyAsText = await FormatResponse(bodyStream);
+                            if (bodyAsText.IsHtml())
+                            {
+                                preserveOriginalBody = false;
+                                throw new ApiException("HTML was detected in the response body. Please check your URL routing and ensure that Api endpoints are properly configured.");
+                            }
                             await HandleSuccessRequestAsync(context, bodyAsText, context.Response.StatusCode);
+
                         }
                         else
                         {
@@ -63,7 +71,11 @@ namespace AutoWrapper
                     {
                         await HandleExceptionAsync(context, ex);
                         bodyStream.Seek(0, SeekOrigin.Begin);
-                        await bodyStream.CopyToAsync(originalBodyStream);
+
+                        if (preserveOriginalBody)
+                            await bodyStream.CopyToAsync(originalBodyStream);
+
+                        await bodyStream.CopyToAsync(bodyStream);
                     }
                     finally
                     {
@@ -232,8 +244,16 @@ namespace AutoWrapper
         }
         private bool IsSwagger(HttpContext context)
         {
-            return context.Request.Path.StartsWithSegments("/swagger");
+            return context.Request.Path.StartsWithSegments(new PathString("/swagger"));
 
+        }
+        private bool IsApi(HttpContext context)
+        {
+           
+            if (_options.IsApiOnly)
+                return true;
+
+            return context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith));
         }
         private JsonSerializerSettings JSONSettings()
         {
