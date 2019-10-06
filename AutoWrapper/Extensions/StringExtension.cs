@@ -1,11 +1,10 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Text.RegularExpressions;
 
 namespace AutoWrapper.Extensions
 {
-    public static class StringExtension
+    internal static class StringExtension
     {
         public static bool IsValidJson(this string text)
         {
@@ -18,12 +17,7 @@ namespace AutoWrapper.Extensions
                     var obj = JToken.Parse(text);
                     return true;
                 }
-                catch (JsonReaderException jex)
-                {
-                    return false;
-                }
-                catch (Exception ex)
-                {
+                catch(Exception) {
                     return false;
                 }
             }

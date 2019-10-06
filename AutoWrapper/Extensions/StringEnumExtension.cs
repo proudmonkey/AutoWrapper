@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Text;
 
 namespace AutoWrapper.Extensions
 {
-    public static class StringEnumExtension
+    internal static class StringEnumExtension
     {
         public static string GetDescription<T>(this T e) where T : IConvertible
         {

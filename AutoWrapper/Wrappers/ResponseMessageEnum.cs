@@ -2,7 +2,7 @@
 
 namespace AutoWrapper.Wrappers
 {
-    public enum ResponseMessageEnum
+    internal enum ResponseMessageEnum
     {
         [Description("Request successful.")]
         Success,
@@ -21,6 +21,10 @@ namespace AutoWrapper.Wrappers
         [Description("Request cannot be processed. Please contact a support.")]
         Unknown,
         [Description("Unhandled Exception occured. Unable to process the request.")]
-        Unhandled
+        Unhandled,
+        [Description(@"AutoWrapper is meant to be used for ASP.NET Core API project templates only. 
+                      If you are combinining API Controllers within your front-end projects like Angular, MVC, React, Blazor and other SPA frameworks that supports .NET Core
+                      then set the AutoWrapperOptions IsApiOnly property to false.")]
+        NotApiOnly
     }
 }
