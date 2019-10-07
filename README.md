@@ -23,7 +23,7 @@ The `AutoWrapper` is a global exception handler and response wrapper for ASP.NET
 1. Download and Install the latest `AutoWrapper.Core` from NuGet or via CLI:
 
 ```
-PM> Install-Package AutoWrapper.Core -Version 1.0.0
+PM> Install-Package AutoWrapper.Core -Version 1.2.0
 ```
 
 2. Declare the following namespace within `Startup.cs`
