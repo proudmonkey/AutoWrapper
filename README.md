@@ -187,7 +187,7 @@ The following properties are the options that you can set:
 * `ShowStatusCode`
 * `IsDebug`
 
-### Version 1.1.0 Additions
+### Version 1.x.0 Additions
 * `IsApiOnly`
 * `WrapWhenApiPathStartsWith`
 
@@ -260,9 +260,10 @@ I’m pretty sure there are still lots of things to improve in this project, so 
 
 # Release History 
 
-* 10/04/2019: AutoWrapper version `1.1.0` with newly added options.
-* 09/23/2019: AutoWrapper version `1.0.0` offcial release. 
-* 09/14/2019: AutoWrapper version `1.0.0-rc` prerelease. 
+* 10/06/2019: AutoWrapper version `1.2.0` - refactor, cleanup and bugfixes for SPA support.
+* 10/04/2019: AutoWrapper version `1.1.0` - with newly added options.
+* 09/23/2019: AutoWrapper version `1.0.0` - offcial release. 
+* 09/14/2019: AutoWrapper version `1.0.0-rc` - prerelease. 
 
 # License
 
