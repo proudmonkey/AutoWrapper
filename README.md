@@ -191,8 +191,6 @@ The following properties are the options that you can set:
 * `IsApiOnly`
 * `WrapWhenApiPathStartsWith`
 
-These new options are added based on the feedback from [sondreb](https://github.com/sondreb). Thank you!
-
 #### ShowApiVersion
 if you want to show the `API` version in the response, then you can do:
 
@@ -253,6 +251,8 @@ Another good thing about `AutoWrapper` is that logging is already pre-configured
 
 # Feedback
 I’m pretty sure there are still lots of things to improve in this project, so feel free to try it out and let me know your thoughts. Comments and suggestions are welcome, please drop a message and I’d be happy to answer any queries as I can.
+
+* Version 1.x.0 option additions are added based on the feedback from [sondreb](https://github.com/sondreb). Thank you!
 
 # Contributor
 
