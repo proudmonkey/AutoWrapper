@@ -223,7 +223,7 @@ app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { IsDebug = true })
 ```
 
 #### IsApiOnly
-`AutoWrapper` is meant to be used for ASP.NET Core API project templates only. If you are combinining `API Controllers` within your front-end projects like Angular, MVC, React, Blazor and other SPA frameworks that supports .NET Core, then use this property to enable it.
+`AutoWrapper` is meant to be used for ASP.NET Core API project templates only. If you are combining `API Controllers` within your front-end projects like Angular, MVC, React, Blazor and other SPA frameworks that supports .NET Core, then use this property to enable it.
 
 ```csharp
 app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { IsApiOnly = false} );
