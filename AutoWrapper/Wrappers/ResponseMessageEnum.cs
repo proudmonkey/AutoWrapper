@@ -23,7 +23,7 @@ namespace AutoWrapper.Wrappers
         [Description("Unhandled Exception occured. Unable to process the request.")]
         Unhandled,
         [Description(@"AutoWrapper is meant to be used for ASP.NET Core API project templates only. 
-                      If you are combinining API Controllers within your front-end projects like Angular, MVC, React, Blazor and other SPA frameworks that supports .NET Core
+                      If you are combining API Controllers within your front-end projects like Angular, MVC, React, Blazor and other SPA frameworks that supports .NET Core,
                       then set the AutoWrapperOptions IsApiOnly property to false.")]
         NotApiOnly
     }

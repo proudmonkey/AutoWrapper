@@ -25,7 +25,6 @@ namespace AutoWrapper
             _logger = logger;
         }
 
-
         public async Task<string> FormatRequest(HttpRequest request)
         {
             request.EnableBuffering();
@@ -37,6 +36,7 @@ namespace AutoWrapper
 
             return $"{request.Method} {request.Scheme} {request.Host}{request.Path} {request.QueryString} {bodyAsText}";
         }
+
         public async Task<string> FormatResponse(Stream bodyStream)
         {
             bodyStream.Seek(0, SeekOrigin.Begin);
@@ -45,6 +45,7 @@ namespace AutoWrapper
 
             return plainBodyText;
         }
+
         public Task HandleExceptionAsync(HttpContext context, System.Exception exception)
         {
             ApiError apiError = null;
@@ -111,12 +112,14 @@ namespace AutoWrapper
 
             return WriteFormattedResponseToHttpContext(context, code, jsonString);
         }
+
         public Task HandleNotSuccessRequestAsync(HttpContext context, int code)
         {
             ApiError apiError = WrapError(code);
             var jsonString = ConvertToJSONString(GetErrorResponse(code, apiError));
             return WriteFormattedResponseToHttpContext(context, code, jsonString);
         }
+
         public Task HandleSuccessRequestAsync(HttpContext context, object body, int code)
         {
             string jsonString = string.Empty;
@@ -154,17 +157,21 @@ namespace AutoWrapper
             context.Response.ContentLength = configErrorText != null ? System.Text.Encoding.UTF8.GetByteCount(configErrorText) : 0;
             return context.Response.WriteAsync(configErrorText);
         }
+
         public bool IsSwagger(HttpContext context)
         {
             return context.Request.Path.StartsWithSegments(new PathString("/swagger"));
         }
+
         public bool IsApi(HttpContext context)
         {
-            if (_options.IsApiOnly)
+            if (_options.IsApiOnly && !context.Request.Path.Value.Contains(".js") && !context.Request.Path.Value.Contains(".css"))
                 return true;
-
+            
             return context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith));
         }
+
+        #region Private Members
 
         private Task WriteFormattedResponseToHttpContext(HttpContext context, int code, string jsonString)
         {
@@ -173,20 +180,24 @@ namespace AutoWrapper
             context.Response.ContentLength = jsonString != null ? System.Text.Encoding.UTF8.GetByteCount(jsonString) : 0;
             return context.Response.WriteAsync(jsonString);
         }
+
         private string ConvertToJSONString(int code, object content)
         {
             code = !_options.ShowStatusCode ? 0 : code;
             return JsonConvert.SerializeObject(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), content, code, GetApiVersion()), JSONSettings());
         }
+
         private string ConvertToJSONString(ApiResponse apiResponse)
         {
             apiResponse.StatusCode = !_options.ShowStatusCode ? 0 : apiResponse.StatusCode;
             return JsonConvert.SerializeObject(apiResponse, JSONSettings());
         }
+
         private string ConvertToJSONString(object rawJSON)
         {
             return JsonConvert.SerializeObject(rawJSON, JSONSettings());
         }
+
         private JsonSerializerSettings JSONSettings()
         {
             return new JsonSerializerSettings
@@ -195,6 +206,7 @@ namespace AutoWrapper
                 Converters = new List<JsonConverter> { new StringEnumConverter() }
             };
         }
+
         private ApiError WrapError(int statusCode)
         {
             switch (statusCode)
@@ -209,11 +221,13 @@ namespace AutoWrapper
                     return new ApiError(ResponseMessageEnum.Unknown.GetDescription());
             }
         }
+
         private ApiResponse GetErrorResponse(int code, ApiError apiError)
         {
             code = !_options.ShowStatusCode ? 0 : code;
             return new ApiResponse(code, apiError) { Version = !_options.ShowApiVersion ? null : GetApiVersion() };
         }
+
         private ApiResponse GetSucessResponse(ApiResponse apiResponse)
         {
             if (_options.ShowApiVersion)
@@ -226,6 +240,7 @@ namespace AutoWrapper
 
             return apiResponse;
         }
+
         private string GetApiVersion()
         {
             if (_options.ShowApiVersion)
@@ -234,5 +249,6 @@ namespace AutoWrapper
             return null;
         }
 
+        #endregion
     }
 }

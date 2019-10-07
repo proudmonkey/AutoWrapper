@@ -45,21 +45,28 @@ namespace AutoWrapper
      
                         var bodyAsText = await awm.FormatResponse(newBodyStream);
 
-                        if (!_options.IsApiOnly && bodyAsText.IsHtml() && context.Response.StatusCode == 200)
-                            context.Response.StatusCode = 404;
+                        if (context.Response.StatusCode != 304)
+                        {
 
+                            if (!_options.IsApiOnly && bodyAsText.IsHtml() && context.Response.StatusCode == 200)
+                                context.Response.StatusCode = 404;
 
-                        if (_options.IsApiOnly && !context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith)))
-                        {
-                            await awm.HandleSpaSupportAsync(context);
-                        }
-                        else if (context.Response.StatusCode == 200)
-                        {
-                            await awm.HandleSuccessRequestAsync(context, bodyAsText, context.Response.StatusCode);
-                        }
-                        else
-                        {
-                            await awm.HandleNotSuccessRequestAsync(context, context.Response.StatusCode);
+                            if (!context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith))
+                                && bodyAsText.IsHtml() && context.Response.StatusCode == 200)
+                            {
+                                if (newBodyStream.Length > 0)
+                                {
+                                    await awm.HandleSpaSupportAsync(context); return;
+                                }
+                            }
+                            else if (context.Response.StatusCode == 200)
+                            {
+                                await awm.HandleSuccessRequestAsync(context, bodyAsText, context.Response.StatusCode);
+                            }
+                            else
+                            {
+                                await awm.HandleNotSuccessRequestAsync(context, context.Response.StatusCode);
+                            }
                         }
 
                     }
