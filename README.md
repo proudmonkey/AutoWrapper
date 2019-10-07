@@ -17,7 +17,7 @@ The `AutoWrapper` is a global exception handler and response wrapper for ASP.NET
 * A configurable `HTTP` `StatusCodes` and messages
 * Add support for `Swagger`
 * Add Logging support for `Request`, `Response` and `Exceptions`
-* Add options in the `middleware` to set a few properties. See `Options` section below.
+* A configurable middleware `options` to configure the wrapper.
 
 # Installation
 1. Download and Install the latest `AutoWrapper.Core` from NuGet or via CLI:
