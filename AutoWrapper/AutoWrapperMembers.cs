@@ -3,11 +3,8 @@ using AutoWrapper.Wrappers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -19,10 +16,12 @@ namespace AutoWrapper
 
         private readonly AutoWrapperOptions _options;
         private readonly ILogger<AutoWrapperMiddleware> _logger;
-        public AutoWrapperMembers(AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger)
+        private readonly JsonSerializerSettings _jsonSettings;
+        public AutoWrapperMembers(AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger, JsonSerializerSettings jsonSettings)
         {
             _options = options;
             _logger = logger;
+            _jsonSettings = jsonSettings;
         }
 
         public async Task<string> FormatRequest(HttpRequest request)
@@ -76,7 +75,6 @@ namespace AutoWrapper
                 }
 
                 code = ex.StatusCode;
-                //context.Response.StatusCode = code;
 
             }
             else if (exception is UnauthorizedAccessException)
@@ -110,14 +108,14 @@ namespace AutoWrapper
 
             var jsonString = ConvertToJSONString(GetErrorResponse(code, apiError));
 
-            return WriteFormattedResponseToHttpContext(context, code, jsonString);
+            return WriteFormattedResponseToHttpContext(context, code, jsonString, true);
         }
 
         public Task HandleNotSuccessRequestAsync(HttpContext context, int code)
         {
             ApiError apiError = WrapError(code);
             var jsonString = ConvertToJSONString(GetErrorResponse(code, apiError));
-            return WriteFormattedResponseToHttpContext(context, code, jsonString);
+            return WriteFormattedResponseToHttpContext(context, code, jsonString, true);
         }
 
         public Task HandleSuccessRequestAsync(HttpContext context, object body, int code)
@@ -173,7 +171,7 @@ namespace AutoWrapper
 
         #region Private Members
 
-        private Task WriteFormattedResponseToHttpContext(HttpContext context, int code, string jsonString)
+        private Task WriteFormattedResponseToHttpContext(HttpContext context, int code, string jsonString, bool isError = false)
         {
             context.Response.StatusCode = code;
             context.Response.ContentType = "application/json";
@@ -181,30 +179,27 @@ namespace AutoWrapper
             return context.Response.WriteAsync(jsonString);
         }
 
+
         private string ConvertToJSONString(int code, object content)
         {
             code = !_options.ShowStatusCode ? 0 : code;
-            return JsonConvert.SerializeObject(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), content, code, GetApiVersion()), JSONSettings());
+            return JsonConvert.SerializeObject(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), content, code, GetApiVersion()), _jsonSettings);
         }
 
         private string ConvertToJSONString(ApiResponse apiResponse)
         {
             apiResponse.StatusCode = !_options.ShowStatusCode ? 0 : apiResponse.StatusCode;
-            return JsonConvert.SerializeObject(apiResponse, JSONSettings());
+            return JsonConvert.SerializeObject(apiResponse, _jsonSettings);
+        }
+
+        private string ConvertToJSONString(ApiError apiError)
+        {
+            return JsonConvert.SerializeObject(apiError, _jsonSettings);
         }
 
         private string ConvertToJSONString(object rawJSON)
         {
-            return JsonConvert.SerializeObject(rawJSON, JSONSettings());
-        }
-
-        private JsonSerializerSettings JSONSettings()
-        {
-            return new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                Converters = new List<JsonConverter> { new StringEnumConverter() }
-            };
+            return JsonConvert.SerializeObject(rawJSON, _jsonSettings);
         }
 
         private ApiError WrapError(int statusCode)
@@ -225,28 +220,18 @@ namespace AutoWrapper
         private ApiResponse GetErrorResponse(int code, ApiError apiError)
         {
             code = !_options.ShowStatusCode ? 0 : code;
-            return new ApiResponse(code, apiError) { Version = !_options.ShowApiVersion ? null : GetApiVersion() };
+            return new ApiResponse(code, apiError) { Version = GetApiVersion() };
         }
 
         private ApiResponse GetSucessResponse(ApiResponse apiResponse)
         {
-            if (_options.ShowApiVersion)
-            {
-                if (apiResponse.Version.Equals("1.0.0.0"))
-                    apiResponse.Version = GetApiVersion();
-            }
-            else
-                apiResponse.Version = null;
-
+            apiResponse.Version = GetApiVersion();
             return apiResponse;
         }
 
         private string GetApiVersion()
         {
-            if (_options.ShowApiVersion)
-                return string.IsNullOrEmpty(_options.ApiVersion) ? "1.0.0.0" : _options.ApiVersion;
-
-            return null;
+            return !_options.ShowApiVersion ? null : _options.ApiVersion;
         }
 
         #endregion

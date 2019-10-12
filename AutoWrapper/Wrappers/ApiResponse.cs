@@ -3,25 +3,31 @@ using System.Runtime.Serialization;
 
 namespace AutoWrapper.Wrappers
 {
-    [DataContract]
+    //[DataContract]
     public class ApiResponse
     {
-        [DataMember(EmitDefaultValue = false)]
+        ////[DataMember(EmitDefaultValue = false)]
+        //[JsonProperty("version")]
         public string Version { get; set; }
 
-        [DataMember(EmitDefaultValue = false)]
+       ////[DataMember(EmitDefaultValue = false)]
+       // [JsonProperty("statusCode")]
         public int StatusCode { get; set; }
 
-        [DataMember(EmitDefaultValue = false)]
+        ////[DataMember(EmitDefaultValue = false)]
+        //[JsonProperty("message")]
         public string Message { get; set; }
 
-        [DataMember]
+        ////[DataMember]
+        //[JsonProperty("isError")]
         public bool IsError { get; set; }
 
-        [DataMember(EmitDefaultValue = false)]
+        ////[DataMember(EmitDefaultValue = false)]
+        //[JsonProperty("responseException")]
         public ApiError ResponseException { get; set; }
 
-        [DataMember(EmitDefaultValue = false)]
+        ////[DataMember(EmitDefaultValue = false)]
+        //[JsonProperty("result")]
         public object Result { get; set; }
 
         [JsonConstructor]

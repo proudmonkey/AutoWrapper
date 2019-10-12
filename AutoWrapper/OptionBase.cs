@@ -1,7 +1,6 @@
-﻿
-namespace AutoWrapper
+﻿namespace AutoWrapper
 {
-    public class AutoWrapperOptions
+    public abstract class OptionBase
     {
         /// <summary>
         /// Sets the Api version to be shown in the response. You must set the ShowApiVersion to true to see this value in the response.
@@ -32,12 +31,5 @@ namespace AutoWrapper
         public string WrapWhenApiPathStartsWith { get; set; } = "/api";
 
         public bool IgnoreNullValue { get; set; } = true;
-
-       
-    }
-
-    public class AutoWrapperOptions<T> :OptionBase
-    {
-        
     }
 }
