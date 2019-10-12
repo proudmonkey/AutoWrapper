@@ -5,8 +5,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using AutoWrapper.Contracts;
-using Newtonsoft.Json;
 
 namespace AutoWrapper
 {

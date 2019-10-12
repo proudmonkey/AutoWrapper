@@ -3,16 +3,19 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using AutoWrapper.Extensions;
 
 namespace AutoWrapper.Helpers
 {
     internal class CustomContractResolver<T> : DefaultContractResolver
     {
         private Dictionary<string, string> _propertyMappings { get; set; }
+        private readonly bool _useCamelCaseNaming;
 
-        public CustomContractResolver()
+        public CustomContractResolver(bool useCamelCaseNaming)
         {
             this._propertyMappings = new Dictionary<string, string>();
+            _useCamelCaseNaming = useCamelCaseNaming;
             SetObjectMappings();
         }
 
@@ -20,6 +23,10 @@ namespace AutoWrapper.Helpers
         {
             string resolvedName = null;
             var resolved = this._propertyMappings.TryGetValue(propertyName, out resolvedName);
+
+            if (_useCamelCaseNaming)
+                return (resolved) ? resolvedName.ToCamelCase() : base.ResolvePropertyName(propertyName.ToCamelCase());
+
             return (resolved) ? resolvedName : base.ResolvePropertyName(propertyName);
         }
 

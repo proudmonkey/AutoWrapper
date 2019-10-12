@@ -8,11 +8,12 @@ namespace AutoWrapper.Helpers
 {
     internal class CamelCaseContractResolverJsonSettings : IJsonSettings
     {
-        public JsonSerializerSettings GetJSONSettings(bool ignoreNull)
+        public JsonSerializerSettings GetJSONSettings(bool ignoreNull, bool useCamelCaseNaming = true)
         {
             return new JsonSerializerSettings
             {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+           
+                ContractResolver = useCamelCaseNaming ? new CamelCasePropertyNamesContractResolver() :  new DefaultContractResolver(),
                 Converters = new List<JsonConverter> { new StringEnumConverter() },
                 NullValueHandling = ignoreNull ? NullValueHandling.Ignore : NullValueHandling.Include
             };
@@ -21,11 +22,11 @@ namespace AutoWrapper.Helpers
 
     internal class CustomContractResolverJsonSettings<T> : IJsonSettings
     {
-        public JsonSerializerSettings GetJSONSettings(bool ignoreNull)
+        public JsonSerializerSettings GetJSONSettings(bool ignoreNull, bool useCamelCaseNaming = true)
         {
             return new JsonSerializerSettings
             {
-                ContractResolver = new CustomContractResolver<T>(),//{ NamingStrategy = new CamelCaseNamingStrategy() { OverrideSpecifiedNames = false }  },
+                ContractResolver = new CustomContractResolver<T>(useCamelCaseNaming),
                 NullValueHandling = ignoreNull ? NullValueHandling.Ignore : NullValueHandling.Include
             };
         }
@@ -34,14 +35,14 @@ namespace AutoWrapper.Helpers
 
     internal static class JSONHelper
     {
-        public static JsonSerializerSettings GetJSONSettings(bool ignoreNull = true)
+        public static JsonSerializerSettings GetJSONSettings(bool ignoreNull = true, bool useCamelCaseNaming = true)
         {
-            return new CamelCaseContractResolverJsonSettings().GetJSONSettings(ignoreNull);
+            return new CamelCaseContractResolverJsonSettings().GetJSONSettings(ignoreNull, useCamelCaseNaming);
         }
 
-        public static JsonSerializerSettings GetJSONSettings<T>(bool ignoreNull = true)
+        public static JsonSerializerSettings GetJSONSettings<T>(bool ignoreNull = true, bool useCamelCaseNaming = true)
         {
-            return new CustomContractResolverJsonSettings<T>().GetJSONSettings(ignoreNull);
+            return new CustomContractResolverJsonSettings<T>().GetJSONSettings(ignoreNull, useCamelCaseNaming);
         }
     }
 }

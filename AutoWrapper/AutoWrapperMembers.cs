@@ -17,11 +17,13 @@ namespace AutoWrapper
         private readonly AutoWrapperOptions _options;
         private readonly ILogger<AutoWrapperMiddleware> _logger;
         private readonly JsonSerializerSettings _jsonSettings;
-        public AutoWrapperMembers(AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger, JsonSerializerSettings jsonSettings)
+        private readonly bool _isCustomObjectUsed;
+        public AutoWrapperMembers(AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger, JsonSerializerSettings jsonSettings, bool isCustomObjectUsed = false)
         {
             _options = options;
             _logger = logger;
             _jsonSettings = jsonSettings;
+            _isCustomObjectUsed = isCustomObjectUsed;
         }
 
         public async Task<string> FormatRequest(HttpRequest request)
@@ -47,7 +49,7 @@ namespace AutoWrapper
 
         public Task HandleExceptionAsync(HttpContext context, System.Exception exception)
         {
-            ApiError apiError = null;
+            object apiError = null;
             int code = 0;
 
             if (exception is ApiException)
@@ -62,6 +64,11 @@ namespace AutoWrapper
                     };
 
                     _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessageEnum.ValidationError.GetDescription()}");
+                }
+                else if (ex.IsCustomErrorObject) //new addition
+                {
+                    apiError = ex.CustomError;
+                    _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessageEnum.Exception.GetDescription()}");
                 }
                 else
                 {
@@ -217,7 +224,7 @@ namespace AutoWrapper
             }
         }
 
-        private ApiResponse GetErrorResponse(int code, ApiError apiError)
+        private ApiResponse GetErrorResponse(int code, object apiError)
         {
             code = !_options.ShowStatusCode ? 0 : code;
             return new ApiResponse(code, apiError) { Version = GetApiVersion() };

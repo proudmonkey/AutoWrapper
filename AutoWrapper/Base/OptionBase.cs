@@ -31,5 +31,7 @@
         public string WrapWhenApiPathStartsWith { get; set; } = "/api";
 
         public bool IgnoreNullValue { get; set; } = true;
+
+        public bool UseCamelCaseNamingStrategy { get; set; } = true;
     }
 }

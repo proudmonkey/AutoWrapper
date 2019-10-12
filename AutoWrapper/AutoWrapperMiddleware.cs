@@ -1,11 +1,6 @@
-﻿using AutoWrapper.Extensions;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Diagnostics;
-using System.IO;
 using System.Threading.Tasks;
-using AutoWrapper.Contracts;
 
 namespace AutoWrapper
 {
@@ -14,7 +9,7 @@ namespace AutoWrapper
         private AutoWrapperMembers _awm;
         public AutoWrapperMiddleware(RequestDelegate next, AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger) : base(next, options, logger)
         {
-            var jsonSettings = Helpers.JSONHelper.GetJSONSettings(options.IgnoreNullValue);
+            var jsonSettings = Helpers.JSONHelper.GetJSONSettings(options.IgnoreNullValue, options.UseCamelCaseNamingStrategy);
             _awm = new AutoWrapperMembers(options, logger, jsonSettings);
         }
 
@@ -29,8 +24,8 @@ namespace AutoWrapper
         private AutoWrapperMembers _awm;
         public AutoWrapperMiddleware(RequestDelegate next, AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger) : base(next, options, logger)
         {
-            var jsonSettings = Helpers.JSONHelper.GetJSONSettings<T>();
-            _awm = new AutoWrapperMembers(options, logger, jsonSettings);
+            var jsonSettings = Helpers.JSONHelper.GetJSONSettings<T>(options.IgnoreNullValue, options.UseCamelCaseNamingStrategy);
+            _awm = new AutoWrapperMembers(options, logger, jsonSettings, true);
         }
 
         public async Task InvokeAsync(HttpContext context)
