@@ -2,11 +2,12 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using System;
 using System.Collections.Generic;
 
 namespace AutoWrapper.Helpers
 {
-    internal class CamelCaseContractResolverJsonSettings : IJsonSettings
+    internal class CamelCaseContractResolverJsonSettings
     {
         public JsonSerializerSettings GetJSONSettings(bool ignoreNull, bool useCamelCaseNaming = true)
         {
@@ -20,29 +21,24 @@ namespace AutoWrapper.Helpers
         }
     }
 
-    internal class CustomContractResolverJsonSettings<T> : IJsonSettings
+    internal class CustomContractResolverJsonSettings<T>
     {
-        public JsonSerializerSettings GetJSONSettings(bool ignoreNull, bool useCamelCaseNaming = true)
+        public (JsonSerializerSettings Settings, Dictionary<string, string> Mappings) GetJSONSettings(bool ignoreNull, bool useCamelCaseNaming = true)
         {
-            return new JsonSerializerSettings
+            var resolver = new CustomContractResolver<T>(useCamelCaseNaming);
+            var propMappings = resolver._propertyMappings;
+
+            var settings = new JsonSerializerSettings
             {
-                ContractResolver = new CustomContractResolver<T>(useCamelCaseNaming),
+                ContractResolver = resolver,
                 NullValueHandling = ignoreNull ? NullValueHandling.Ignore : NullValueHandling.Include
             };
+
+            return (settings, propMappings);
+
         }
     }
 
 
-    internal static class JSONHelper
-    {
-        public static JsonSerializerSettings GetJSONSettings(bool ignoreNull = true, bool useCamelCaseNaming = true)
-        {
-            return new CamelCaseContractResolverJsonSettings().GetJSONSettings(ignoreNull, useCamelCaseNaming);
-        }
-
-        public static JsonSerializerSettings GetJSONSettings<T>(bool ignoreNull = true, bool useCamelCaseNaming = true)
-        {
-            return new CustomContractResolverJsonSettings<T>().GetJSONSettings(ignoreNull, useCamelCaseNaming);
-        }
-    }
+  
 }

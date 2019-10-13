@@ -9,7 +9,7 @@ namespace AutoWrapper.Helpers
 {
     internal class CustomContractResolver<T> : DefaultContractResolver
     {
-        private Dictionary<string, string> _propertyMappings { get; set; }
+        public Dictionary<string, string> _propertyMappings { get; set; }
         private readonly bool _useCamelCaseNaming;
 
         public CustomContractResolver(bool useCamelCaseNaming)
@@ -33,6 +33,31 @@ namespace AutoWrapper.Helpers
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
             var prop = base.CreateProperty(member, memberSerialization);
+
+            //prop.PropertyName = member.Name;
+            //if (prop.PropertyType == typeof(string))
+            //{
+            //    prop.ShouldSerialize =
+            //        instance => {
+            //            try
+            //            {
+            //                var rawValue = prop.ValueProvider.GetValue(instance);
+            //                if (rawValue == null)
+            //                {
+            //                    return false;
+            //                }
+
+            //                string stringValue = prop.ValueProvider.GetValue(instance).ToString();
+            //                return !string.IsNullOrWhiteSpace(stringValue);
+            //            }
+            //            catch
+            //            {
+            //                return true;
+            //            }
+            //        };
+            //}
+
+
             return prop;
         }
 
@@ -43,15 +68,18 @@ namespace AutoWrapper.Helpers
 
         private void SetObjectMappings(Type classType)
         {
-            foreach (PropertyInfo propertyInfo in classType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            foreach (PropertyInfo propertyInfo in classType.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance))
             {
+
                 var wrapperProperty = propertyInfo.GetCustomAttribute<AutoWrapperPropertyMapAttribute>();
                 if (wrapperProperty != null)
                 {
                     _propertyMappings.Add(wrapperProperty.PropertyName, propertyInfo.Name);
                 }
 
-                SetObjectMappings(propertyInfo.PropertyType);
+                var type = propertyInfo.PropertyType;
+                if (type.IsClass)
+                    SetObjectMappings(propertyInfo.PropertyType);
             }
         }
 

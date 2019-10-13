@@ -1,4 +1,4 @@
-﻿namespace AutoWrapper
+﻿namespace AutoWrapper.Base
 {
     public abstract class OptionBase
     {

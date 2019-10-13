@@ -9,17 +9,15 @@ namespace AutoWrapper.Wrappers
         public IEnumerable<ValidationError> Errors { get; set; }
         public string ReferenceErrorCode { get; set; }
         public string ReferenceDocumentLink { get; set; }
-
         public object CustomError { get; set; }
         public bool IsCustomErrorObject { get; set; } = false;
 
         public ApiException(string message,
-                            int statusCode = 500,
-                            string errorCode = "",
-                            string refLink = "") :
+                            int statusCode = 400,
+                            string errorCode = default,
+                            string refLink = default) :
             base(message)
         {
-            //this.IsModelValidatonError = false;
             this.StatusCode = statusCode;
             this.ReferenceErrorCode = errorCode;
             this.ReferenceDocumentLink = refLink;
@@ -41,7 +39,6 @@ namespace AutoWrapper.Wrappers
 
         public ApiException(System.Exception ex, int statusCode = 500) : base(ex.Message)
         {
-            this.IsModelValidatonError = false;
             StatusCode = statusCode;
         }
     }

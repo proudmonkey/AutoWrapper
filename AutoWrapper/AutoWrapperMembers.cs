@@ -1,5 +1,6 @@
 ﻿using AutoWrapper.Extensions;
 using AutoWrapper.Wrappers;
+using AutoWrapper.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -9,6 +10,8 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+
 namespace AutoWrapper
 {
     internal class AutoWrapperMembers
@@ -17,12 +20,14 @@ namespace AutoWrapper
         private readonly AutoWrapperOptions _options;
         private readonly ILogger<AutoWrapperMiddleware> _logger;
         private readonly JsonSerializerSettings _jsonSettings;
+        public readonly Dictionary<string, string> _propertyMappings;
         private readonly bool _isCustomObjectUsed;
-        public AutoWrapperMembers(AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger, JsonSerializerSettings jsonSettings, bool isCustomObjectUsed = false)
+        public AutoWrapperMembers(AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger, JsonSerializerSettings jsonSettings, Dictionary<string, string> propertyMappings = null, bool isCustomObjectUsed = false)
         {
             _options = options;
             _logger = logger;
             _jsonSettings = jsonSettings;
+            _propertyMappings = propertyMappings;
             _isCustomObjectUsed = isCustomObjectUsed;
         }
 
@@ -62,13 +67,13 @@ namespace AutoWrapper
                         ReferenceErrorCode = ex.ReferenceErrorCode,
                         ReferenceDocumentLink = ex.ReferenceDocumentLink,
                     };
-
-                    _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessageEnum.ValidationError.GetDescription()}");
+                    
+                    _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessage.ValidationError}");
                 }
                 else if (ex.IsCustomErrorObject) //new addition
                 {
                     apiError = ex.CustomError;
-                    _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessageEnum.Exception.GetDescription()}");
+                    _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessage.Exception}");
                 }
                 else
                 {
@@ -78,7 +83,7 @@ namespace AutoWrapper
                         ReferenceDocumentLink = ex.ReferenceDocumentLink,
                     };
 
-                    _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessageEnum.Exception.GetDescription()}");
+                    _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessage.Exception}");
                 }
 
                 code = ex.StatusCode;
@@ -89,7 +94,7 @@ namespace AutoWrapper
                 apiError = new ApiError(ResponseMessageEnum.UnAuthorized.GetDescription());
                 code = (int)HttpStatusCode.Unauthorized;
 
-                _logger.Log(LogLevel.Warning, exception, $"[{code}]: {ResponseMessageEnum.UnAuthorized.GetDescription()}");
+                _logger.Log(LogLevel.Warning, exception, $"[{code}]: {ResponseMessage.UnAuthorized}");
             }
             else
             {
@@ -104,7 +109,7 @@ namespace AutoWrapper
                 }
                 else
                 {
-                    exceptionMessage = ResponseMessageEnum.Unhandled.GetDescription();
+                    exceptionMessage = ResponseMessage.Unhandled;
                 }
 
                 apiError = new ApiError(exceptionMessage) { Details = stackTrace };
@@ -131,12 +136,37 @@ namespace AutoWrapper
 
             var bodyText = !body.ToString().IsValidJson() ? ConvertToJSONString(body) : body.ToString();
 
-            dynamic bodyContent = JsonConvert.DeserializeObject<dynamic>(bodyText);
-            Type type = bodyContent?.GetType();
+            //dynamic bodyContent = JsonConvert.DeserializeObject<dynamic>(bodyText);
+            JObject bodyContent = JObject.Parse(bodyText);
+            //Type type = bodyContent?.GetType();
+            var type = ((JToken)bodyContent).Type;
 
-            if (type.Equals(typeof(JObject)))
+            //if (type.Equals(typeof(JObject)))
+            if(type.Equals(JTokenType.Object))
             {
-                ApiResponse apiResponse = JsonConvert.DeserializeObject<ApiResponse>(bodyText);
+                ApiResponse apiResponse = new ApiResponse();
+                if (_isCustomObjectUsed)
+                {
+                  
+                    var obj = _propertyMappings;
+
+                    if (bodyContent.ContainsKey(obj[Prop.StatusCode].ToLower()))
+                    {
+                        var statusCode = (int)bodyContent[obj[Prop.StatusCode].ToLower()];
+                        apiResponse.StatusCode = statusCode == 0 ? code : statusCode;
+                    }
+
+                    if (bodyContent.ContainsKey(obj[Prop.Result].ToLower()))
+                        apiResponse.Result = (object)bodyContent[obj[Prop.Result].ToLower()];
+
+                    //return WriteFormattedResponseToHttpContext(context, code, ConvertToJSONString(bodyContent));
+                }
+                else
+                {
+                    apiResponse = JsonConvert.DeserializeObject<ApiResponse>(bodyText);
+                }
+
+                //ApiResponse apiResponse = JsonConvert.DeserializeObject<ApiResponse>(bodyText);
                 if (apiResponse.StatusCode == 0 && apiResponse.Result == null && apiResponse.ResponseException == null)
                     jsonString = ConvertToJSONString(code, bodyContent);
                 else if ((apiResponse.StatusCode != code || apiResponse.Result != null) ||
@@ -144,6 +174,7 @@ namespace AutoWrapper
                 {
                     code = apiResponse.StatusCode; // in case response is not 200 (e.g 201, etc)
                     jsonString = ConvertToJSONString(GetSucessResponse(apiResponse));
+                    
                 }
                 else
                     jsonString = ConvertToJSONString(code, bodyContent);
@@ -158,7 +189,7 @@ namespace AutoWrapper
 
         public Task HandleSpaSupportAsync(HttpContext context)
         {
-            string configErrorText = ResponseMessageEnum.NotApiOnly.GetDescription();
+            string configErrorText = ResponseMessage.NotApiOnly;
             context.Response.ContentLength = configErrorText != null ? System.Text.Encoding.UTF8.GetByteCount(configErrorText) : 0;
             return context.Response.WriteAsync(configErrorText);
         }
@@ -190,7 +221,7 @@ namespace AutoWrapper
         private string ConvertToJSONString(int code, object content)
         {
             code = !_options.ShowStatusCode ? 0 : code;
-            return JsonConvert.SerializeObject(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), content, code, GetApiVersion()), _jsonSettings);
+            return JsonConvert.SerializeObject(new ApiResponse(ResponseMessage.Success, content, code, GetApiVersion()), _jsonSettings);
         }
 
         private string ConvertToJSONString(ApiResponse apiResponse)
@@ -214,13 +245,13 @@ namespace AutoWrapper
             switch (statusCode)
             {
                 case (int)HttpStatusCode.NotFound:
-                    return new ApiError(ResponseMessageEnum.NotFound.GetDescription());
+                    return new ApiError(ResponseMessage.NotFound);
                 case (int)HttpStatusCode.NoContent:
-                    return new ApiError(ResponseMessageEnum.NotContent.GetDescription());
+                    return new ApiError(ResponseMessage.NotContent);
                 case (int)HttpStatusCode.MethodNotAllowed:
-                    return new ApiError(ResponseMessageEnum.MethodNotAllowed.GetDescription());
+                    return new ApiError(ResponseMessage.MethodNotAllowed);
                 default:
-                    return new ApiError(ResponseMessageEnum.Unknown.GetDescription());
+                    return new ApiError(ResponseMessage.Unknown);
             }
         }
 
@@ -243,4 +274,5 @@ namespace AutoWrapper
 
         #endregion
     }
+
 }
