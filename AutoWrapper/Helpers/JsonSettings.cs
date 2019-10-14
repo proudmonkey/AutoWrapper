@@ -13,7 +13,6 @@ namespace AutoWrapper.Helpers
         {
             return new JsonSerializerSettings
             {
-           
                 ContractResolver = useCamelCaseNaming ? new CamelCasePropertyNamesContractResolver() :  new DefaultContractResolver(),
                 Converters = new List<JsonConverter> { new StringEnumConverter() },
                 NullValueHandling = ignoreNull ? NullValueHandling.Ignore : NullValueHandling.Include

@@ -136,16 +136,14 @@ namespace AutoWrapper
 
             var bodyText = !body.ToString().IsValidJson() ? ConvertToJSONString(body) : body.ToString();
 
-            //dynamic bodyContent = JsonConvert.DeserializeObject<dynamic>(bodyText);
-            JObject bodyContent = JObject.Parse(bodyText);
-            //Type type = bodyContent?.GetType();
-            var type = ((JToken)bodyContent).Type;
+            dynamic bodyContent = JsonConvert.DeserializeObject<dynamic>(bodyText);
 
-            //if (type.Equals(typeof(JObject)))
-            if(type.Equals(JTokenType.Object))
+            Type type = bodyContent?.GetType();
+
+            if (type.Equals(typeof(JObject)))
             {
                 ApiResponse apiResponse = new ApiResponse();
-                if (_isCustomObjectUsed)
+                if (_isCustomObjectUsed && _propertyMappings != null)
                 {
                   
                     var obj = _propertyMappings;
@@ -159,7 +157,6 @@ namespace AutoWrapper
                     if (bodyContent.ContainsKey(obj[Prop.Result].ToLower()))
                         apiResponse.Result = (object)bodyContent[obj[Prop.Result].ToLower()];
 
-                    //return WriteFormattedResponseToHttpContext(context, code, ConvertToJSONString(bodyContent));
                 }
                 else
                 {
@@ -263,6 +260,7 @@ namespace AutoWrapper
 
         private ApiResponse GetSucessResponse(ApiResponse apiResponse)
         {
+            apiResponse.Message = apiResponse.Message == null ? ResponseMessage.Success : apiResponse.Message;
             apiResponse.Version = GetApiVersion();
             return apiResponse;
         }

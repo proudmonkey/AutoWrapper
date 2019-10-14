@@ -1,16 +1,15 @@
 ﻿using Newtonsoft.Json;
 
-
 namespace AutoWrapper.Wrappers
 {
     public class ApiResponse
     {
         public string Version { get; set; }
 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int StatusCode { get; set; }
 
         public string Message { get; set; }
-
         public bool IsError { get; set; }
 
         public object ResponseException { get; set; }
@@ -24,6 +23,12 @@ namespace AutoWrapper.Wrappers
             Message = message;
             Result = result;
             Version = apiVersion;
+            IsError = false;
+        }
+        public ApiResponse(object result, int statusCode = 200)
+        {
+            StatusCode = statusCode;
+            Result = result;
             IsError = false;
         }
 
