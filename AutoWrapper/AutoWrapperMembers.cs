@@ -19,7 +19,7 @@ namespace AutoWrapper
 
         private readonly AutoWrapperOptions _options;
         private readonly ILogger<AutoWrapperMiddleware> _logger;
-        private readonly JsonSerializerSettings _jsonSettings;
+        private JsonSerializerSettings _jsonSettings;
         public readonly Dictionary<string, string> _propertyMappings;
         private readonly bool _isCustomObjectUsed;
         public AutoWrapperMembers(AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger, JsonSerializerSettings jsonSettings, Dictionary<string, string> propertyMappings = null, bool isCustomObjectUsed = false)
@@ -142,21 +142,29 @@ namespace AutoWrapper
 
             if (type.Equals(typeof(JObject)))
             {
-                ApiResponse apiResponse = new ApiResponse();
-                if (_isCustomObjectUsed && _propertyMappings != null)
+                if(_propertyMappings == null || _propertyMappings.Count == 0)
                 {
-                  
+             
+                    var jsonSettings = JSONHelper.GetJSONSettings(_options.IgnoreNullValue, _options.UseCamelCaseNamingStrategy);
+                    return WriteFormattedResponseToHttpContext(context, code, JsonConvert.SerializeObject(bodyContent, jsonSettings));
+                }
+
+                ApiResponse apiResponse = new ApiResponse();
+                if (_isCustomObjectUsed && _propertyMappings.Count > 0)
+                {
                     var obj = _propertyMappings;
-
-                    if (bodyContent.ContainsKey(obj[Prop.StatusCode].ToLower()))
+                    JToken jtStatusCode = _options.UseCamelCaseNamingStrategy ? bodyContent[obj[Prop.StatusCode].ToCamelCase()] : bodyContent[obj[Prop.StatusCode]];
+                    JToken jtResult = _options.UseCamelCaseNamingStrategy ? bodyContent[obj[Prop.Result].ToCamelCase()] : bodyContent[obj[Prop.Result]];
+                    if (!jtStatusCode.IsNullOrEmpty() && !jtResult.IsNullOrEmpty())
                     {
-                        var statusCode = (int)bodyContent[obj[Prop.StatusCode].ToLower()];
+                        var statusCode = (int)jtStatusCode;
                         apiResponse.StatusCode = statusCode == 0 ? code : statusCode;
+                        apiResponse.Result = jtResult;
                     }
-
-                    if (bodyContent.ContainsKey(obj[Prop.Result].ToLower()))
-                        apiResponse.Result = (object)bodyContent[obj[Prop.Result].ToLower()];
-
+                    else
+                    {
+                        throw new ApiException(ResponseMessage.NoMappingFound);
+                    }
                 }
                 else
                 {

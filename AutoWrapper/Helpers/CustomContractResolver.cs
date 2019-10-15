@@ -34,30 +34,6 @@ namespace AutoWrapper.Helpers
         {
             var prop = base.CreateProperty(member, memberSerialization);
 
-            //prop.PropertyName = member.Name;
-            //if (prop.PropertyType == typeof(string))
-            //{
-            //    prop.ShouldSerialize =
-            //        instance => {
-            //            try
-            //            {
-            //                var rawValue = prop.ValueProvider.GetValue(instance);
-            //                if (rawValue == null)
-            //                {
-            //                    return false;
-            //                }
-
-            //                string stringValue = prop.ValueProvider.GetValue(instance).ToString();
-            //                return !string.IsNullOrWhiteSpace(stringValue);
-            //            }
-            //            catch
-            //            {
-            //                return true;
-            //            }
-            //        };
-            //}
-
-
             return prop;
         }
 

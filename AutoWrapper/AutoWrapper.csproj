@@ -1,17 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <!--<TargetFramework>netcoreapp3.0</TargetFramework>-->
+    <TargetFrameworks>netcoreapp2.1;netcoreapp2.2;netcoreapp3.0</TargetFrameworks>
     <Authors>Vincent Maverick Durano</Authors>
-    <Description>A simple HTTP response wrapper and exception handler for ASP.NET Core APIs.
-    </Description>
+    <Description>A simple yet customizable HTTP response wrapper and exception handler for ASP.NET Core APIs.
+</Description>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/proudmonkey/AutoWrapper</PackageProjectUrl>
     <RepositoryUrl>https://github.com/proudmonkey/AutoWrapper</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <Version>1.2.0</Version>
+    <Version>2.0.0-rc2</Version>
     <PackageTags>REST,API, WebAPI, ASP.NETCore, Middleware, AutoWrapper, ApiResponseAndExceptionWrapper, APIWrapper, ResponseWrapper, ExceptionWrapper</PackageTags>
-    <PackageReleaseNotes>[RFT] Refactor code, cleanup and bugfixes to support wrapper within SPA  projects</PackageReleaseNotes>
+    <PackageReleaseNotes>Enable property name mappings for default ApiResponse properties
+Add support to use own Response and Error objects
+Add IgnoreNullValue and UseCamelCaseNamingStrategy options.
+Add support for netcoreapp2.1 and netcoreapp.2.2 .net frameworks
+</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageId>AutoWrapper.Core</PackageId>
@@ -19,11 +24,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <None Include="icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.2' ">
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
 
 </Project>
