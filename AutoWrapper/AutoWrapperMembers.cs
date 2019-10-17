@@ -21,14 +21,14 @@ namespace AutoWrapper
         private readonly ILogger<AutoWrapperMiddleware> _logger;
         private JsonSerializerSettings _jsonSettings;
         public readonly Dictionary<string, string> _propertyMappings;
-        private readonly bool _isCustomObjectUsed;
-        public AutoWrapperMembers(AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger, JsonSerializerSettings jsonSettings, Dictionary<string, string> propertyMappings = null, bool isCustomObjectUsed = false)
+        private readonly bool _hasSchemaForMappping;
+        public AutoWrapperMembers(AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger, JsonSerializerSettings jsonSettings, Dictionary<string, string> propertyMappings = null, bool hasSchemaForMappping = false)
         {
             _options = options;
             _logger = logger;
             _jsonSettings = jsonSettings;
             _propertyMappings = propertyMappings;
-            _isCustomObjectUsed = isCustomObjectUsed;
+            _hasSchemaForMappping = hasSchemaForMappping;
         }
 
         public async Task<string> FormatRequest(HttpRequest request)
@@ -143,42 +143,55 @@ namespace AutoWrapper
            
             if (type.Equals(typeof(JObject)))
             {
-                if(_propertyMappings == null || _propertyMappings.Count == 0)
+                ApiResponse apiResponse = new ApiResponse();
+
+                if (_options.UseCustomSchema)
                 {
                     var formatJson = _options.IgnoreNullValue ? JSONHelper.RemoveEmptyChildren(bodyContent) : bodyContent;
                     return WriteFormattedResponseToHttpContext(context, code, JsonConvert.SerializeObject(formatJson));
                 }
-
-                ApiResponse apiResponse = new ApiResponse();
-                if (_isCustomObjectUsed && _propertyMappings.Count > 0)
-                {
-                    var obj = _propertyMappings;
-                    if(JSONHelper.HasProperty(bodyContent, Prop.StatusCode))
-                    {
-                        JToken jtStatusCode = _options.UseCamelCaseNamingStrategy ? bodyContent[obj[Prop.StatusCode].ToCamelCase()] : bodyContent[obj[Prop.StatusCode]];
-                        if (!jtStatusCode.IsNullOrEmpty())
-                        {
-                            var statusCode = (int)jtStatusCode;
-                            apiResponse.StatusCode = statusCode == 0 ? code : statusCode;
-
-                        }
-                    }
-
-                    if (JSONHelper.HasProperty(bodyContent, Prop.StatusCode))
-                    {
-                        JToken jtResult = _options.UseCamelCaseNamingStrategy ? bodyContent[obj[Prop.Result].ToCamelCase()] : bodyContent[obj[Prop.Result]];
-                        if (!jtResult.IsNullOrEmpty())
-                        {
-                            apiResponse.Result = jtResult;
-                        }
-                    }
-
-                    apiResponse = JsonConvert.DeserializeObject<ApiResponse>(bodyText);
-                }
                 else
                 {
-                    throw new ApiException(ResponseMessage.NoMappingFound); 
+                    if (_hasSchemaForMappping && (_propertyMappings.Count == 0 || _propertyMappings == null))
+                          throw new ApiException(ResponseMessage.NoMappingFound);
+                    else
+                        apiResponse = JsonConvert.DeserializeObject<ApiResponse>(bodyText);
                 }
+
+
+                //if (!_options.UseCustomSchema)
+                //{
+                //    apiResponse = JsonConvert.DeserializeObject<ApiResponse>(bodyText);
+                //}
+                //else if (_hasSchemaForMappping && _propertyMappings.Count > 0)
+                //{
+                //    var obj = _propertyMappings;
+                //    if (JSONHelper.HasProperty(bodyContent, Prop.StatusCode))
+                //    {
+                //        JToken jtStatusCode = _options.UseCamelCaseNamingStrategy ? bodyContent[obj[Prop.StatusCode].ToCamelCase()] : bodyContent[obj[Prop.StatusCode]];
+                //        if (!jtStatusCode.IsNullOrEmpty())
+                //        {
+                //            var statusCode = (int)jtStatusCode;
+                //            apiResponse.StatusCode = statusCode == 0 ? code : statusCode;
+
+                //        }
+                //    }
+
+                //    if (JSONHelper.HasProperty(bodyContent, Prop.Result))
+                //    {
+                //        JToken jtResult = _options.UseCamelCaseNamingStrategy ? bodyContent[obj[Prop.Result].ToCamelCase()] : bodyContent[obj[Prop.Result]];
+                //        if (!jtResult.IsNullOrEmpty())
+                //        {
+                //            apiResponse.Result = jtResult;
+                //        }
+                //    }
+
+                //    apiResponse = JsonConvert.DeserializeObject<ApiResponse>(bodyText);
+                //}
+                //else
+                //{
+                //    throw new ApiException(ResponseMessage.NoMappingFound); 
+                //}
 
                 if (apiResponse.StatusCode == 0 && apiResponse.Result == null && apiResponse.ResponseException == null)
                     jsonString = ConvertToJSONString(code, bodyContent);

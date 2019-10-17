@@ -14,6 +14,6 @@
         internal const string NotApiOnly = @"AutoWrapper is meant to be used for ASP.NET Core API project templates only. 
                       If you are combining API Controllers within your front-end projects like Angular, MVC, React, Blazor and other SPA frameworks that supports .NET Core,
                       then set the AutoWrapperOptions IsApiOnly property to false.";
-        internal const string NoMappingFound = "AutoWrapperPropertyMap.Exception: When using custom response object, you must apply the [AutoWrapperPropertyMap] Attribute to the required properties 'StatusCode' and 'Result'.";
+        internal const string NoMappingFound = "You must apply the [AutoWrapperPropertyMap] Attribute to map through the default ApiResponse properties. If you want to to define your own custom response,  set UseCustomSchema = true in the AutoWrapper options.";
     }
 }
