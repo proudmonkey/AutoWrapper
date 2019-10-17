@@ -1,10 +1,7 @@
-﻿using Newtonsoft.Json;
-
-namespace AutoWrapper.Wrappers
+﻿namespace AutoWrapper.Wrappers
 {
     public class ValidationError
     {
-        //[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Field { get; }
         public string Message { get; }
         public ValidationError(string field, string message)

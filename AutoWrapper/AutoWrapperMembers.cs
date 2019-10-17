@@ -140,38 +140,46 @@ namespace AutoWrapper
 
             Type type = bodyContent?.GetType();
 
+           
             if (type.Equals(typeof(JObject)))
             {
                 if(_propertyMappings == null || _propertyMappings.Count == 0)
                 {
-             
-                    var jsonSettings = JSONHelper.GetJSONSettings(_options.IgnoreNullValue, _options.UseCamelCaseNamingStrategy);
-                    return WriteFormattedResponseToHttpContext(context, code, JsonConvert.SerializeObject(bodyContent, jsonSettings));
+                    var formatJson = _options.IgnoreNullValue ? JSONHelper.RemoveEmptyChildren(bodyContent) : bodyContent;
+                    return WriteFormattedResponseToHttpContext(context, code, JsonConvert.SerializeObject(formatJson));
                 }
 
                 ApiResponse apiResponse = new ApiResponse();
                 if (_isCustomObjectUsed && _propertyMappings.Count > 0)
                 {
                     var obj = _propertyMappings;
-                    JToken jtStatusCode = _options.UseCamelCaseNamingStrategy ? bodyContent[obj[Prop.StatusCode].ToCamelCase()] : bodyContent[obj[Prop.StatusCode]];
-                    JToken jtResult = _options.UseCamelCaseNamingStrategy ? bodyContent[obj[Prop.Result].ToCamelCase()] : bodyContent[obj[Prop.Result]];
-                    if (!jtStatusCode.IsNullOrEmpty() && !jtResult.IsNullOrEmpty())
+                    if(JSONHelper.HasProperty(bodyContent, Prop.StatusCode))
                     {
-                        var statusCode = (int)jtStatusCode;
-                        apiResponse.StatusCode = statusCode == 0 ? code : statusCode;
-                        apiResponse.Result = jtResult;
+                        JToken jtStatusCode = _options.UseCamelCaseNamingStrategy ? bodyContent[obj[Prop.StatusCode].ToCamelCase()] : bodyContent[obj[Prop.StatusCode]];
+                        if (!jtStatusCode.IsNullOrEmpty())
+                        {
+                            var statusCode = (int)jtStatusCode;
+                            apiResponse.StatusCode = statusCode == 0 ? code : statusCode;
+
+                        }
                     }
-                    else
+
+                    if (JSONHelper.HasProperty(bodyContent, Prop.StatusCode))
                     {
-                        throw new ApiException(ResponseMessage.NoMappingFound);
+                        JToken jtResult = _options.UseCamelCaseNamingStrategy ? bodyContent[obj[Prop.Result].ToCamelCase()] : bodyContent[obj[Prop.Result]];
+                        if (!jtResult.IsNullOrEmpty())
+                        {
+                            apiResponse.Result = jtResult;
+                        }
                     }
+
+                    apiResponse = JsonConvert.DeserializeObject<ApiResponse>(bodyText);
                 }
                 else
                 {
-                    apiResponse = JsonConvert.DeserializeObject<ApiResponse>(bodyText);
+                    throw new ApiException(ResponseMessage.NoMappingFound); 
                 }
 
-                //ApiResponse apiResponse = JsonConvert.DeserializeObject<ApiResponse>(bodyText);
                 if (apiResponse.StatusCode == 0 && apiResponse.Result == null && apiResponse.ResponseException == null)
                     jsonString = ConvertToJSONString(code, bodyContent);
                 else if ((apiResponse.StatusCode != code || apiResponse.Result != null) ||
