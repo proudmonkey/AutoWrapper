@@ -10,9 +10,10 @@
     <PackageProjectUrl>https://github.com/proudmonkey/AutoWrapper</PackageProjectUrl>
     <RepositoryUrl>https://github.com/proudmonkey/AutoWrapper</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <Version>2.0.0</Version>
+    <Version>2.0.1</Version>
     <PackageTags>REST,API, WebAPI, ASP.NETCore, Middleware, AutoWrapper, ApiResponseAndExceptionWrapper, APIWrapper, ResponseWrapper, ExceptionWrapper</PackageTags>
-    <PackageReleaseNotes>Enable property name mappings for the default ApiResponse properties
+    <PackageReleaseNotes>Fix Bug
+Enable property name mappings for the default ApiResponse properties
 Added support to use your own Response and Error schema / object.
 Added IgnoreNullValue and UseCamelCaseNamingStrategy options.
 Enable backward compatibility support for netcoreapp2.1 and netcoreapp.2.2 .NET Core frameworks.

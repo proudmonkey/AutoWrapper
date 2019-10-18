@@ -158,41 +158,6 @@ namespace AutoWrapper
                         apiResponse = JsonConvert.DeserializeObject<ApiResponse>(bodyText);
                 }
 
-
-                //if (!_options.UseCustomSchema)
-                //{
-                //    apiResponse = JsonConvert.DeserializeObject<ApiResponse>(bodyText);
-                //}
-                //else if (_hasSchemaForMappping && _propertyMappings.Count > 0)
-                //{
-                //    var obj = _propertyMappings;
-                //    if (JSONHelper.HasProperty(bodyContent, Prop.StatusCode))
-                //    {
-                //        JToken jtStatusCode = _options.UseCamelCaseNamingStrategy ? bodyContent[obj[Prop.StatusCode].ToCamelCase()] : bodyContent[obj[Prop.StatusCode]];
-                //        if (!jtStatusCode.IsNullOrEmpty())
-                //        {
-                //            var statusCode = (int)jtStatusCode;
-                //            apiResponse.StatusCode = statusCode == 0 ? code : statusCode;
-
-                //        }
-                //    }
-
-                //    if (JSONHelper.HasProperty(bodyContent, Prop.Result))
-                //    {
-                //        JToken jtResult = _options.UseCamelCaseNamingStrategy ? bodyContent[obj[Prop.Result].ToCamelCase()] : bodyContent[obj[Prop.Result]];
-                //        if (!jtResult.IsNullOrEmpty())
-                //        {
-                //            apiResponse.Result = jtResult;
-                //        }
-                //    }
-
-                //    apiResponse = JsonConvert.DeserializeObject<ApiResponse>(bodyText);
-                //}
-                //else
-                //{
-                //    throw new ApiException(ResponseMessage.NoMappingFound); 
-                //}
-
                 if (apiResponse.StatusCode == 0 && apiResponse.Result == null && apiResponse.ResponseException == null)
                     jsonString = ConvertToJSONString(code, bodyContent);
                 else if ((apiResponse.StatusCode != code || apiResponse.Result != null) ||
