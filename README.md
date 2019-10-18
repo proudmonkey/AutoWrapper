@@ -180,7 +180,7 @@ ApiException(System.Exception ex, int statusCode = 500)
 ApiException(object custom, int statusCode = 400)
 ```
 # Enable Property Mappings
-If you don’t like how the default properties are named, then you can now map whatever names you want for the property using the AutoWrapperPropertyMap attribute. For example, let's say you want to change the name of the result property to something else like data, then you can simply define your own schema for mapping it like in the following:
+If you don’t like how the default properties are named, then you can now map whatever names you want for the property using the `AutoWrapperPropertyMap` attribute. For example, let's say you want to change the name of the default `result` property to something else like `data`, then you can simply define your own schema for mapping it like in the following:
 
 ```csharp
 public class MapResponseObject  
