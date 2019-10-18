@@ -479,7 +479,7 @@ Another good thing about `AutoWrapper` is that logging is already pre-configured
 # Feedback
 I’m pretty sure there are still lots of things to improve in this project, so feel free to try it out and let me know your thoughts. Comments and suggestions are welcome, please drop a message and I’d be happy to answer any queries as I can.
 
-* Version 1.x.0 option additions are and Version 2.x features added based on the feedback from [sondreb](https://github.com/sondreb). Thank you!
+* Version 1.x.0 option additions and Version 2.x features were added based on the feedback from [sondreb](https://github.com/sondreb). Thank you!
 
 # Contributor
 
