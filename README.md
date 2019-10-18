@@ -20,7 +20,7 @@ The `AutoWrapper` is a simple, yet customizable global exception handler and res
 * A configurable middleware `options` to configure the wrapper.
 * Enable property name mappings for the default `ApiResponse` properties.
 * Added support to implement your own user-defined `Response` and `Error` schema / object.
-* Enable backward compatibility support for netcoreapp2.1 and netcoreapp.2.2 .NET Core frameworks.
+* Enable backward compatibility support for `netcoreapp2.1` and `netcoreapp.2.2` .NET Core frameworks.
 
 # Installation
 1. Download and Install the latest `AutoWrapper.Core` from NuGet or via CLI:
