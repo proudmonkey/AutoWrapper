@@ -2,9 +2,9 @@
 
 # AutoWrapper  [![Nuget](https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue)](https://www.nuget.org/packages/AutoWrapper.Core) [![Nuget downloads](https://img.shields.io/nuget/dt/AutoWrapper.Core?color=green)](https://www.nuget.org/packages/AutoWrapper.Core)
 
-The `AutoWrapper` is a global exception handler and response wrapper for ASP.NET Core APIs. It uses a `middleware` to intercept incoming HTTP requests and automatically wraps the responses for you by providing a consistent response format for both successful and error results. The goal is to let you focus on your business specific requirements and let the wrapper handles the `HTTP` response. This saves you time from developing your APIs while enforcing own standards for your `HTTP` responses.
+The `AutoWrapper` is a simple, yet customizable global exception handler and response wrapper for ASP.NET Core APIs. It uses a an ASP.NET Core `middleware` to intercept incoming `HTTP` requests and automatically wraps the responses for you by providing a consistent response format for both successful and error results. The goal is to let you focus on your business specific requirements and let the wrapper automatically handle the `HTTP` response. This can speedup the development time when building your APIs while enforcing own standards for your `HTTP` responses.
 
-`AutoWrapper` is a project fork based from [VMD.RESTApiResponseWrapper.Core](https://github.com/proudmonkey/RESTApiResponseWrapper.Core) which is designed to support .NET Core 3.x and above. The implementation of this package was refactored to provide a more convenient way to use the middleware with added flexibility.
+`AutoWrapper` is a project fork based from [VMD.RESTApiResponseWrapper.Core](https://github.com/proudmonkey/RESTApiResponseWrapper.Core) which is designed to support .NET Core 2.1, 2.2, 3.x and above. The implementation of this package was refactored to provide a more convenient way to use the middleware with added flexibility.
 
 #### Main features:
 
@@ -18,12 +18,15 @@ The `AutoWrapper` is a global exception handler and response wrapper for ASP.NET
 * Add support for `Swagger`
 * Add Logging support for `Request`, `Response` and `Exceptions`
 * A configurable middleware `options` to configure the wrapper.
+* Enable property name mappings for the default `ApiResponse` properties.
+* Added support to implement your own user-defined `Response` and `Error` schema / object.
+* Enable backward compatibility support for `netcoreapp2.1` and `netcoreapp.2.2` .NET Core frameworks.
 
 # Installation
 1. Download and Install the latest `AutoWrapper.Core` from NuGet or via CLI:
 
 ```
-PM> Install-Package AutoWrapper.Core -Version 1.2.0
+PM> Install-Package AutoWrapper.Core -Version 2.0.1
 ```
 
 2. Declare the following namespace within `Startup.cs`
@@ -156,9 +159,6 @@ Running the code will result to something like this when validation fails:
     "isError": true,
     "responseException": {
         "exceptionMessage": "Request responded with validation error(s). Please correct the specified validation errors and try again.",
-        "details": null,
-        "referenceErrorCode": null,
-        "referenceDocumentLink": null,
         "validationErrors": [
             {
                 "field": "Name",
@@ -171,13 +171,234 @@ Running the code will result to something like this when validation fails:
 
 See how the `validationErrors` property is automatically populated with the violated `fields` from your model.
 
-The `ApiException` object contains the following three overload constructors that you can use to define an exception:
+The `ApiException` object contains the following overload constructors that you can use to define an exception:
 
 ```csharp
 ApiException(string message, int statusCode = 500, string errorCode = "", string refLink = "")
 ApiException(IEnumerable<ValidationError> errors, int statusCode = 400)
 ApiException(System.Exception ex, int statusCode = 500)
+ApiException(object custom, int statusCode = 400)
 ```
+# Enable Property Mappings
+If you don’t like how the default properties are named, then you can now map whatever names you want for the property using the AutoWrapperPropertyMap attribute. For example, let's say you want to change the name of the result property to something else like data, then you can simply define your own schema for mapping it like in the following:
+
+```csharp
+public class MapResponseObject  
+{
+    [AutoWrapperPropertyMap(Prop.Result)]
+    public object Data { get; set; }
+}
+```
+You can then pass the `MapResponseObject` class to the `AutoWrapper` middleware like this:
+
+```csharp
+app.UseApiResponseAndExceptionWrapper<MapResponseObject>();  
+```
+
+On successful requests, your response should now look something like this after mapping:
+
+```json
+{
+    "message": "Request successful.",
+    "isError": false,
+    "data": {
+        "id": 7002,
+        "firstName": "Vianne",
+        "lastName": "Durano",
+        "dateOfBirth": "2018-11-01T00:00:00"
+    }
+}
+```
+Notice that the default `result` attribute is now replaced with the `data` attribute.
+
+Keep in mind that you are free to choose whatever property that you want to map. Here is the list of default properties that you can map:
+
+```csharp
+[AutoWrapperPropertyMap(Prop.Version)]
+[AutoWrapperPropertyMap(Prop.StatusCode)]
+[AutoWrapperPropertyMap(Prop.Message)]
+[AutoWrapperPropertyMap(Prop.IsError)]
+[AutoWrapperPropertyMap(Prop.Result)]
+[AutoWrapperPropertyMap(Prop.ResponseException)]
+[AutoWrapperPropertyMap(Prop.ResponseException_ExceptionMessage)]
+[AutoWrapperPropertyMap(Prop.ResponseException_Details)]
+[AutoWrapperPropertyMap(Prop.ResponseException_ReferenceErrorCode)]
+[AutoWrapperPropertyMap(Prop.ResponseException_ReferenceDocumentLink)]
+[AutoWrapperPropertyMap(Prop.ResponseException_ValidationErrors)]
+[AutoWrapperPropertyMap(Prop.ResponseException_ValidationErrors_Field)]
+[AutoWrapperPropertyMap(Prop.ResponseException_ValidationErrors_Message)]
+```
+
+# Using Your Own Error Schema
+You can now define your own `Error` object and pass it to the `ApiException()` method. For example, if you have the following `Error` model with mapping configured:
+
+```csharp
+public class MapResponseObject  
+{
+    [AutoWrapperPropertyMap(Prop.ResponseException)]
+    public object Error { get; set; }
+}
+
+public class Error  
+{
+    public string Message { get; set; }
+
+    public string Code { get; set; }
+    public InnerError InnerError { get; set; }
+
+    public Error(string message, string code, InnerError inner)
+    {
+        this.Message = message;
+        this.Code = code;
+        this.InnerError = inner;
+    }
+
+}
+
+public class InnerError  
+{
+    public string RequestId { get; set; }
+    public string Date { get; set; }
+
+    public InnerError(string reqId, string reqDate)
+    {
+        this.RequestId = reqId;
+        this.Date = reqDate;
+    }
+}
+```
+You can then throw an error like this:
+
+```csharp
+throw new ApiException(  
+      new Error("An error blah.", "InvalidRange",
+      new InnerError("12345678", DateTime.Now.ToShortDateString())
+));
+```
+
+The format of the output will now look like this:
+
+```json
+{
+    "isError": true,
+    "error": {
+        "message": "An error blah.",
+        "code": "InvalidRange",
+        "innerError": {
+            "requestId": "12345678",
+            "date": "10/16/2019"
+        }
+    }
+}
+```
+# Using Your Own API Response Schema
+If mapping wont work for you and you need to add additional attributes to the default `API` response schema, then you can now use your own custom schema/model to achieve that by setting the `UseCustomSchema` to true in `AutoWrapperOptions` as shown in the following code below:
+
+```csharp
+app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { UseCustomSchema = true }); 
+```
+
+Now let's say for example you wanted to have an attribute `SentDate` and `Pagination` object as part of your main `API` response, you might want to define your `API` response schema to something like this:
+
+```csharp
+public class MyCustomApiResponse  
+{
+    public int Code { get; set; }
+    public string Message { get; set; }
+    public object Payload { get; set; }
+    public DateTime SentDate { get; set; }
+    public Pagination Pagination { get; set; }
+
+    public MyCustomApiResponse(DateTime sentDate, object payload = null, string message = "", int statusCode = 200, Pagination pagination = null)
+    {
+        this.Code = statusCode;
+        this.Message = message == string.Empty ? "Success" : message;
+        this.Payload = payload;
+        this.SentDate = sentDate;
+        this.Pagination = pagination;
+    }
+
+    public MyCustomApiResponse(DateTime sentDate, object payload = null, Pagination pagination = null)
+    {
+        this.Code = 200;
+        this.Message = "Success";
+        this.Payload = payload;
+        this.SentDate = sentDate;
+        this.Pagination = pagination;
+    }
+
+    public MyCustomApiResponse(object payload)
+    {
+        this.Code = 200;
+        this.Payload = payload;
+    }
+
+}
+
+public class Pagination  
+{
+    public int TotalItemsCount { get; set; }
+    public int PageSize { get; set; }
+    public int CurrentPage { get; set; }
+    public int TotalPages { get; set; }
+}
+```
+
+To test the result, you can create a `GET` method to something like this:
+
+```csharp
+public async Task<MyCustomApiResponse> Get()  
+{
+    var data = await _personManager.GetAllAsync();
+
+    return new MyCustomApiResponse(DateTime.UtcNow, data,
+        new Pagination
+        {
+            CurrentPage = 1,
+            PageSize = 10,
+            TotalItemsCount = 200,
+            TotalPages = 20
+        });
+}
+```
+
+Running the code should give you now the following response format:
+
+```
+{
+    "code": 200,
+    "message": "Success",
+    "payload": [
+        {
+            "id": 1,
+            "firstName": "Vianne Maverich",
+            "lastName": "Durano",
+            "dateOfBirth": "2018-11-01T00:00:00"
+        },
+        {
+            "id": 2,
+            "firstName": "Vynn Markus",
+            "lastName": "Durano",
+            "dateOfBirth": "2018-11-01T00:00:00"
+        },
+        {
+            "id": 3,
+            "firstName": "Mitch",
+            "lastName": "Durano",
+            "dateOfBirth": "2018-11-01T00:00:00"
+        }
+    ],
+    "sentDate": "2019-10-17T02:26:32.5242353Z",
+    "pagination": {
+        "totalItemsCount": 200,
+        "pageSize": 10,
+        "currentPage": 1,
+        "totalPages": 20
+    }
+}
+```
+That’s it. One thing to note here is that once you use your own schema for your `API` response, you have the full ability to control how you would want to format your data, but at the same time losing some of the option configurations for the default `API` Response. The good thing is you can still take advantage of the `ApiException()` method to throw a user-defined error message.
+
 # Options
 The following properties are the options that you can set:
 
@@ -190,6 +411,11 @@ The following properties are the options that you can set:
 ### Version 1.x.0 Additions
 * `IsApiOnly`
 * `WrapWhenApiPathStartsWith`
+
+### Version 2.0.x Additions
+* `IgnoreNullValue`
+* `UseCamelCaseNamingStrategy`
+* `UseCustomSchema`
 
 #### ShowApiVersion
 if you want to show the `API` version in the response, then you can do:
@@ -247,12 +473,13 @@ Another good thing about `AutoWrapper` is that logging is already pre-configured
 `AutoWrapper` omit any request with “`/swagger`” in the `URL` so you can still be able to navigate to the Swagger UI for your API documentation.
 
 # Samples
-[AutoWrapper: Prettify Your ASP.NET Core APIs with Meaningful Responses](http://vmsdurano.com/autowrapper-prettify-your-asp-net-core-apis-with-meaningful-responses/)
+* [AutoWrapper: Prettify Your ASP.NET Core APIs with Meaningful Responses](http://vmsdurano.com/autowrapper-prettify-your-asp-net-core-apis-with-meaningful-responses/)
+* [AutoWrapper: Customizing the Default Response Output](http://vmsdurano.com/asp-net-core-with-autowrapper-customizing-the-default-response-output/)
 
 # Feedback
 I’m pretty sure there are still lots of things to improve in this project, so feel free to try it out and let me know your thoughts. Comments and suggestions are welcome, please drop a message and I’d be happy to answer any queries as I can.
 
-* Version 1.x.0 option additions are added based on the feedback from [sondreb](https://github.com/sondreb). Thank you!
+* Version 1.x.0 option additions are and Version 2.x features added based on the feedback from [sondreb](https://github.com/sondreb). Thank you!
 
 # Contributor
 
@@ -260,6 +487,7 @@ I’m pretty sure there are still lots of things to improve in this project, so 
 
 # Release History 
 
+* 10/17/2019: AutoWrapper version `2.0.1` - added new features.
 * 10/06/2019: AutoWrapper version `1.2.0` - refactor, cleanup and bugfixes for SPA support.
 * 10/04/2019: AutoWrapper version `1.1.0` - with newly added options.
 * 09/23/2019: AutoWrapper version `1.0.0` - offcial release. 
