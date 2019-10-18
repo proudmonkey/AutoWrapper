@@ -179,7 +179,7 @@ ApiException(IEnumerable<ValidationError> errors, int statusCode = 400)
 ApiException(System.Exception ex, int statusCode = 500)
 ApiException(object custom, int statusCode = 400)
 ```
-#Enable Property Mappings
+# Enable Property Mappings
 If you don’t like how the default properties are named, then you can now map whatever names you want for the property using the AutoWrapperPropertyMap attribute. For example, let's say you want to change the name of the result property to something else like data, then you can simply define your own schema for mapping it like in the following:
 
 ```csharp
@@ -229,7 +229,7 @@ Keep in mind that you are free to choose whatever property that you want to map.
 [AutoWrapperPropertyMap(Prop.ResponseException_ValidationErrors_Message)]
 ```
 
-#Using Your Own Error Schema
+# Using Your Own Error Schema
 You can now define your own `Error` object and pass it to the `ApiException()` method. For example, if you have the following `Error` model with mapping configured:
 
 ```csharp
