@@ -241,6 +241,10 @@ namespace AutoWrapper
                     return new ApiError(ResponseMessage.NotContent);
                 case (int)HttpStatusCode.MethodNotAllowed:
                     return new ApiError(ResponseMessage.MethodNotAllowed);
+                case (int)HttpStatusCode.Unauthorized:
+                    return new ApiError(ResponseMessage.UnAuthorized);
+                case (int)HttpStatusCode.BadRequest:
+                    return new ApiError(ResponseMessage.BadRequest);
                 default:
                     return new ApiError(ResponseMessage.Unknown);
             }
