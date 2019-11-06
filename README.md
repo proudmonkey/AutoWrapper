@@ -490,6 +490,7 @@ I’m pretty sure there are still lots of things to improve in this project, so 
 
 # Release History 
 
+* 11/05/2019: AutoWrapper version `2.0.2` - ddded UnAuthorize and BadRequest message for `HandleNotSucessAsync()` method response.
 * 10/17/2019: AutoWrapper version `2.0.1` - added new features.
 * 10/06/2019: AutoWrapper version `1.2.0` - refactor, cleanup and bugfixes for SPA support.
 * 10/04/2019: AutoWrapper version `1.1.0` - with newly added options.
