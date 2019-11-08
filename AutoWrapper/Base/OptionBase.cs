@@ -30,8 +30,24 @@
         /// </summary>
         public string WrapWhenApiPathStartsWith { get; set; } = "/api";
 
+        /// <summary>
+        /// Tells the wrapper to ignore attributes with null values. Default is true.
+        /// </summary>
         public bool IgnoreNullValue { get; set; } = true;
 
+        /// <summary>
+        /// Tells the wrapper to use camel case as the response format. Default is true.
+        /// </summary>
         public bool UseCamelCaseNamingStrategy { get; set; } = true;
+
+        /// <summary>
+        /// Tells the wrapper whether to enable request and response logging. Default is true.
+        /// </summary>
+        public bool EnableResponseLogging { get; set; } = true;
+
+        /// <summary>
+        /// Tells the wrapper whether to enable exception logging. Default is true.
+        /// </summary>
+        public bool EnableExceptionLogging { get; set; } = true;
     }
 }

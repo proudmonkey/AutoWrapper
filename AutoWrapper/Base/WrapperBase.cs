@@ -77,7 +77,9 @@ namespace AutoWrapper.Base
                     finally
                     {
                         stopWatch.Stop();
-                        _logger.Log(LogLevel.Information, $@"Request: {request} Responded with [{context.Response.StatusCode}] in {stopWatch.ElapsedMilliseconds}ms");
+
+                        if (_options.EnableResponseLogging)
+                            _logger.Log(LogLevel.Information, $@"Request: {request} Responded with [{context.Response.StatusCode}] in {stopWatch.ElapsedMilliseconds}ms");
                     }
                 }
 

@@ -67,13 +67,16 @@ namespace AutoWrapper
                         ReferenceErrorCode = ex.ReferenceErrorCode,
                         ReferenceDocumentLink = ex.ReferenceDocumentLink,
                     };
-                    
-                    _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessage.ValidationError}");
+
+                    if (_options.EnableExceptionLogging)
+                        _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessage.ValidationError}");
                 }
                 else if (ex.IsCustomErrorObject) //new addition
                 {
                     apiError = ex.CustomError;
-                    _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessage.Exception}");
+
+                    if (_options.EnableExceptionLogging)
+                        _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessage.Exception}");
                 }
                 else
                 {
@@ -83,7 +86,8 @@ namespace AutoWrapper
                         ReferenceDocumentLink = ex.ReferenceDocumentLink,
                     };
 
-                    _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessage.Exception}");
+                    if (_options.EnableExceptionLogging)
+                        _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessage.Exception}");
                 }
 
                 code = ex.StatusCode;
@@ -94,7 +98,8 @@ namespace AutoWrapper
                 apiError = new ApiError(ResponseMessageEnum.UnAuthorized.GetDescription());
                 code = (int)HttpStatusCode.Unauthorized;
 
-                _logger.Log(LogLevel.Warning, exception, $"[{code}]: {ResponseMessage.UnAuthorized}");
+                if (_options.EnableExceptionLogging)
+                    _logger.Log(LogLevel.Warning, exception, $"[{code}]: {ResponseMessage.UnAuthorized}");
             }
             else
             {
@@ -115,7 +120,8 @@ namespace AutoWrapper
                 apiError = new ApiError(exceptionMessage) { Details = stackTrace };
                 code = (int)HttpStatusCode.InternalServerError;
 
-                _logger.Log(LogLevel.Error, exception, $"[{code}]: {exceptionMessage}");
+                if (_options.EnableExceptionLogging)
+                    _logger.Log(LogLevel.Error, exception, $"[{code}]: {exceptionMessage}");
             }
 
             var jsonString = ConvertToJSONString(GetErrorResponse(code, apiError));
