@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace AutoWrapper.Base
 {
@@ -50,21 +51,21 @@ namespace AutoWrapper.Base
                             await awm.WrapIgnoreAsync(context, bodyAsText);return;
                         }
 
-                        if (context.Response.StatusCode != 304)
+                        if (context.Response.StatusCode != Status304NotModified)
                         {
 
-                            if (!_options.IsApiOnly && bodyAsText.IsHtml() && context.Response.StatusCode == 200)
-                                context.Response.StatusCode = 404;
+                            if (!_options.IsApiOnly && bodyAsText.IsHtml() && context.Response.StatusCode == Status200OK)
+                                context.Response.StatusCode = Status404NotFound;
 
                             if (!context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith))
-                                && bodyAsText.IsHtml() && context.Response.StatusCode == 200)
+                                && bodyAsText.IsHtml() && context.Response.StatusCode == Status200OK)
                             {
                                 if (newBodyStream.Length > 0)
                                 {
                                     await awm.HandleSpaSupportAsync(context); return;
                                 }
                             }
-                            else if (context.Response.StatusCode == 200)
+                            else if (context.Response.StatusCode == Status200OK)
                             {
                                 await awm.HandleSuccessRequestAsync(context, bodyAsText, context.Response.StatusCode);
                             }
