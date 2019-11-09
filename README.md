@@ -467,6 +467,31 @@ This will activate the `AutoWrapper` to intercept HTTP responses when a request 
 
 > Note that I would still recommend you to implement your `API Controllers` in a seperate project to value the separation of concerns and to avoid mixing route configurations for your `SPAs` and `APIs`.
 
+# AutoWrapIgnore Attribute
+You can now use the `[AutoWrapIgnore]` filter attribute for enpoints that you don't need to be wrapped.
+
+For example:
+
+```
+[HttpGet]
+[AutoWrapIgnore]
+public async Task<IActionResult> Get()  
+{
+    var data = await _personManager.GetAllAsync();
+    return Ok(data);
+}
+```
+or
+
+```
+[HttpGet]
+[AutoWrapIgnore]
+public async Task<IEnumerable<Person>> Get()  
+{
+    return await _personManager.GetAllAsync();
+}
+```
+
 # Support for Logging
 
 Another good thing about `AutoWrapper` is that logging is already pre-configured. .NET Core apps has built-in logging mechanism by default, and any requests and responses that has been intercepted by the wrapper will be automatically logged (thanks to Dependency Injecton!). .NET Core supports a logging `API` that works with a variety of built-in and third-party logging providers. Depending on what supported .NET Core logging provider you use and how you configure the location to log the data (e.g text file, Cloud , etc. ), AutoWrapper will automatically write the logs there for you.
