@@ -408,7 +408,7 @@ The following properties are the options that you can set:
 * `ShowStatusCode`
 * `IsDebug`
 
-### Version 1.x.0 Additions
+### Version 1.x.x Additions
 * `IsApiOnly`
 * `WrapWhenApiPathStartsWith`
 
@@ -416,6 +416,10 @@ The following properties are the options that you can set:
 * `IgnoreNullValue`
 * `UseCamelCaseNamingStrategy`
 * `UseCustomSchema`
+
+### Version 2.x.x Additions
+* `EnableResponseLogging`
+* `EnableExceptionLogging`
 
 #### ShowApiVersion
 if you want to show the `API` version in the response, then you can do:
@@ -466,6 +470,8 @@ This will activate the `AutoWrapper` to intercept HTTP responses when a request 
 # Support for Logging
 
 Another good thing about `AutoWrapper` is that logging is already pre-configured. .NET Core apps has built-in logging mechanism by default, and any requests and responses that has been intercepted by the wrapper will be automatically logged (thanks to Dependency Injecton!). .NET Core supports a logging `API` that works with a variety of built-in and third-party logging providers. Depending on what supported .NET Core logging provider you use and how you configure the location to log the data (e.g text file, Cloud , etc. ), AutoWrapper will automatically write the logs there for you.
+
+You can turn off Logging by setting `EnableResponseLogging` and `EnableExceptionLogging` options to `false`.
 
 # Support for Swagger
 [Swagger](https://swagger.io/) provides an advance documentation for your APIs where it allows developers to reference the details of your `API` endpoints and test them when necessary. This is very helpful especially when your `API` is public and you expect many developers to use it.
