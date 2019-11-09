@@ -408,7 +408,7 @@ The following properties are the options that you can set:
 * `ShowStatusCode`
 * `IsDebug`
 
-### Version 1.x.0 Additions
+### Version 1.x.x Additions
 * `IsApiOnly`
 * `WrapWhenApiPathStartsWith`
 
@@ -416,6 +416,10 @@ The following properties are the options that you can set:
 * `IgnoreNullValue`
 * `UseCamelCaseNamingStrategy`
 * `UseCustomSchema`
+
+### Version 2.x.x Additions
+* `EnableResponseLogging`
+* `EnableExceptionLogging`
 
 #### ShowApiVersion
 if you want to show the `API` version in the response, then you can do:
