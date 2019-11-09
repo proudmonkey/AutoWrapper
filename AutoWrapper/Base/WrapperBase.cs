@@ -47,7 +47,7 @@ namespace AutoWrapper.Base
                         var actionIgnore = context.Response.Headers["AutoWrapIgnoreFilter"];
                         if (actionIgnore.Count > 0)
                         {
-                            await awm.WrapIgnoreAsync(context, bodyAsText);
+                            await awm.WrapIgnoreAsync(context, bodyAsText);return;
                         }
 
                         if (context.Response.StatusCode != 304)
