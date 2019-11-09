@@ -129,9 +129,11 @@ namespace AutoWrapper
             return WriteFormattedResponseToHttpContext(context, code, jsonString, true);
         }
 
-        public Task HandleNotSuccessRequestAsync(HttpContext context, int code)
+        public Task HandleNotSuccessRequestAsync(HttpContext context, object body, int code)
         {
-            ApiError apiError = WrapError(code);
+            var bodyText = body.ToString();
+            ApiError apiError = !string.IsNullOrEmpty(bodyText) ? new ApiError(bodyText) : WrapError(code);
+
             var jsonString = ConvertToJSONString(GetErrorResponse(code, apiError));
             return WriteFormattedResponseToHttpContext(context, code, jsonString, true);
         }
@@ -202,6 +204,14 @@ namespace AutoWrapper
                 return true;
             
             return context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith));
+        }
+
+        public Task WrapIgnoreAsync(HttpContext context, object body)
+        {
+            var bodyText = !body.ToString().IsValidJson() ? ConvertToJSONString(body) : body.ToString();
+            context.Response.ContentType = "application/json";
+            context.Response.ContentLength = bodyText != null ? System.Text.Encoding.UTF8.GetByteCount(bodyText) : 0;
+            return context.Response.WriteAsync(bodyText);
         }
 
         #region Private Members

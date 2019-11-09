@@ -39,9 +39,16 @@ namespace AutoWrapper.Base
                     {
                         context.Response.Body = newBodyStream;
                         await _next.Invoke(context);
+
                         context.Response.Body = originalBodyStream;
 
                         var bodyAsText = await awm.FormatResponse(newBodyStream);
+
+                        var actionIgnore = context.Response.Headers["AutoWrapIgnoreFilter"];
+                        if (actionIgnore.Count > 0)
+                        {
+                            await awm.WrapIgnoreAsync(context, bodyAsText);
+                        }
 
                         if (context.Response.StatusCode != 304)
                         {
@@ -63,7 +70,7 @@ namespace AutoWrapper.Base
                             }
                             else
                             {
-                                await awm.HandleNotSuccessRequestAsync(context, context.Response.StatusCode);
+                                await awm.HandleNotSuccessRequestAsync(context, bodyAsText, context.Response.StatusCode);
                             }
                         }
 
