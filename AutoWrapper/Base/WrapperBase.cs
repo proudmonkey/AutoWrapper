@@ -87,7 +87,7 @@ namespace AutoWrapper.Base
                         stopWatch.Stop();
 
                         if (_options.EnableResponseLogging)
-                            _logger.Log(LogLevel.Information, $@"Request: {request} Responded with [{context.Response.StatusCode}] in {stopWatch.ElapsedMilliseconds}ms");
+                            _logger.Log(LogLevel.Information, $@"Source:[{context.Connection.RemoteIpAddress.ToString() }] Request: {request} Responded with [{context.Response.StatusCode}] in {stopWatch.ElapsedMilliseconds}ms");
                     }
                 }
 
