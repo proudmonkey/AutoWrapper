@@ -21,7 +21,7 @@
 * Enable property name mappings for the default `ApiResponse` properties.
 * Add support for implementing your own user-defined `Response` and `Error` schema / object.
 * Add support for ignoring action methods that don't need to be wrapped using `[AutoWrapIgnore]` filter attribute.
-* Enable backward compatibility support for `netcoreapp2.1` and `netcoreapp.2.2` .NET Core frameworks.
+* Enable backwards compatibility support for `netcoreapp2.1` and `netcoreapp.2.2` .NET Core frameworks.
 
 # Installation
 1. Download and Install the latest `AutoWrapper.Core` from NuGet or via CLI:
