@@ -19,4 +19,4 @@ Your feedback and contribution is very valuable to improve this project better! 
 7. Submit your PR
 
 # License
-By contributing, you agree that your contributions will be licensed under its MIT License.
+By contributing, you agree that your contributions will be licensed under its [MIT](https://github.com/proudmonkey/AutoWrapper/blob/master/LICENSE) License.
