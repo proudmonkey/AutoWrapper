@@ -524,9 +524,10 @@ app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions {
 * [AutoWrapper: Customizing the Default Response Output](http://vmsdurano.com/asp-net-core-with-autowrapper-customizing-the-default-response-output/)
 
 # Feedback
-I’m pretty sure there are still lots of things to improve in this project, so feel free to try it out and let me know your thoughts. Comments and suggestions are welcome, please drop a message and I’d be happy to answer any queries as I can.
+I’m pretty sure there are still lots of things to improve in this project, so feel free to try it out and let me know your thoughts.
+Feel free to request an issue on github if you find bugs or request a new feature. Your valuable feedback is much appreciated to better improve this project. If you find this useful, please give it a star to show your support for this project.
 
-* Version 1.x.0 option additions and Version 2.x features were added based on the feedback from [sondreb](https://github.com/sondreb). Thank you!
+Thank you!
 
 # Contributor
 
