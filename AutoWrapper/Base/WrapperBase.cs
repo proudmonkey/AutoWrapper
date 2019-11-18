@@ -84,15 +84,19 @@ namespace AutoWrapper.Base
                     }
                     finally
                     {
-                        stopWatch.Stop();
-
-                        if (_options.EnableResponseLogging)
-                            _logger.Log(LogLevel.Information, $@"Source:[{context.Connection.RemoteIpAddress.ToString() }] Request: {request} Responded with [{context.Response.StatusCode}] in {stopWatch.ElapsedMilliseconds}ms");
+                        LogResponse(context, request, stopWatch);
                     }
                 }
 
             }
 
+        }
+
+        private void LogResponse(HttpContext context, string request, Stopwatch stopWatch)
+        {
+            stopWatch.Stop();
+            if (_options.EnableResponseLogging)
+                _logger.Log(LogLevel.Information, $@"Source:[{context.Connection.RemoteIpAddress.ToString() }] Request: {request} Responded with [{context.Response.StatusCode}] in {stopWatch.ElapsedMilliseconds}ms");
         }
     }
 

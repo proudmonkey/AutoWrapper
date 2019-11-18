@@ -210,7 +210,7 @@ namespace AutoWrapper
         {
             var bodyText = !body.ToString().IsValidJson() ? ConvertToJSONString(body) : body.ToString();
             context.Response.ContentType = "application/json";
-            context.Response.ContentLength = bodyText != null ? System.Text.Encoding.UTF8.GetByteCount(bodyText) : 0;
+            context.Response.ContentLength = bodyText != null ? Encoding.UTF8.GetByteCount(bodyText) : 0;
             return context.Response.WriteAsync(bodyText);
         }
 
@@ -220,7 +220,7 @@ namespace AutoWrapper
         {
             context.Response.StatusCode = code;
             context.Response.ContentType = "application/json";
-            context.Response.ContentLength = jsonString != null ? System.Text.Encoding.UTF8.GetByteCount(jsonString) : 0;
+            context.Response.ContentLength = jsonString != null ? Encoding.UTF8.GetByteCount(jsonString) : 0;
             return context.Response.WriteAsync(jsonString);
         }
 
