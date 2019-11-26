@@ -519,9 +519,34 @@ app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions {
 # Support for NetCoreApp2.1 and NetCoreApp2.2
 `AutoWrapper` version 2.x also now supports both .NET Core 2.1 and 2.2. You just need to install the Nuget package `Newtonsoft.json` first before `AutoWrapper.Core`.
 
+#Unwrapping the Result from .NET Client 
+[AutoWrapper.Server](https://github.com/proudmonkey/AutoWrapper.Server) is simple library that enables you unwrap the `Result` property of the AutoWrapper's `ApiResponse` object in your C# .NET Client code. The goal is to deserialize the `Result` object directly to your matching `Model` without having you to create the ApiResponse schema. 
+
+For example:
+
+```csharp
+[HttpGet]
+public async Task<IEnumerable<PersonDTO>> Get()
+{
+    var client = HttpClientFactory.Create();
+    var httpResponse = await client.GetAsync("https://localhost:5001/api/v1/persons");
+
+    IEnumerable<PersonDTO> persons = null;
+    if (httpResponse.IsSuccessStatusCode)
+    {
+        var jsonString = await httpResponse.Content.ReadAsStringAsync();
+        persons = Unwrapper.Unwrap<IEnumerable<PersonDTO>>(jsonString);
+    }
+
+    return persons;
+}
+```
+
+For more information, see: [AutoWrapper.Server](https://github.com/proudmonkey/AutoWrapper.Server)
 # Samples
 * [AutoWrapper: Prettify Your ASP.NET Core APIs with Meaningful Responses](http://vmsdurano.com/autowrapper-prettify-your-asp-net-core-apis-with-meaningful-responses/)
 * [AutoWrapper: Customizing the Default Response Output](http://vmsdurano.com/asp-net-core-with-autowrapper-customizing-the-default-response-output/)
+* [AutoWrapper.Server: Sample Usage](http://vmsdurano.com/autowrapper-server-is-now-available/)
 
 # Feedback
 I’m pretty sure there are still lots of things to improve in this project, so feel free to try it out and let me know your thoughts.
