@@ -519,7 +519,7 @@ app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions {
 # Support for NetCoreApp2.1 and NetCoreApp2.2
 `AutoWrapper` version 2.x also now supports both .NET Core 2.1 and 2.2. You just need to install the Nuget package `Newtonsoft.json` first before `AutoWrapper.Core`.
 
-#Unwrapping the Result from .NET Client 
+# Unwrapping the Result from .NET Client 
 [AutoWrapper.Server](https://github.com/proudmonkey/AutoWrapper.Server) is simple library that enables you unwrap the `Result` property of the AutoWrapper's `ApiResponse` object in your C# .NET Client code. The goal is to deserialize the `Result` object directly to your matching `Model` without having you to create the ApiResponse schema. 
 
 For example:
