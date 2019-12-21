@@ -548,7 +548,7 @@ For more information, see: [AutoWrapper.Server](https://github.com/proudmonkey/A
 * [AutoWrapper: Customizing the Default Response Output](http://vmsdurano.com/asp-net-core-with-autowrapper-customizing-the-default-response-output/)
 * [AutoWrapper.Server: Sample Usage](http://vmsdurano.com/autowrapper-server-is-now-available/)
 
-# Feedback
+# Feedback and Give a Star <img src="https://github.githubassets.com/images/icons/emoji/unicode/2b50.png" />
 I’m pretty sure there are still lots of things to improve in this project, so feel free to try it out and let me know your thoughts.
 Feel free to request an issue on github if you find bugs or request a new feature. Your valuable feedback is much appreciated to better improve this project. If you find this useful, please give it a star to show your support for this project.
 
