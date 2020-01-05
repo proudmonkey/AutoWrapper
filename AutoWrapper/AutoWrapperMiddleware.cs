@@ -10,7 +10,7 @@ namespace AutoWrapper
         private AutoWrapperMembers _awm;
         public AutoWrapperMiddleware(RequestDelegate next, AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger) : base(next, options, logger)
         {
-            var jsonSettings = Helpers.JSONHelper.GetJSONSettings(options.IgnoreNullValue, options.UseCamelCaseNamingStrategy);
+            var jsonSettings = Helpers.JSONHelper.GetJSONSettings(options.IgnoreNullValue, options.ReferenceLoopHandling, options.UseCamelCaseNamingStrategy);
             _awm = new AutoWrapperMembers(options, logger, jsonSettings);
         }
 
@@ -25,7 +25,7 @@ namespace AutoWrapper
         private AutoWrapperMembers _awm;
         public AutoWrapperMiddleware(RequestDelegate next, AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger) : base(next, options, logger)
         {
-            var tup = Helpers.JSONHelper.GetJSONSettings<T>(options.IgnoreNullValue, options.UseCamelCaseNamingStrategy);
+            var tup = Helpers.JSONHelper.GetJSONSettings<T>(options.IgnoreNullValue, options.ReferenceLoopHandling, options.UseCamelCaseNamingStrategy);
             _awm = new AutoWrapperMembers(options, logger, tup.Settings, tup.Mappings, true);
         }
 
