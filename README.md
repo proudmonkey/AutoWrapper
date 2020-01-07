@@ -558,6 +558,7 @@ Thank you!
 # Contributor
 
 * **Vincent Maverick Durano** - [Blog](http://vmsdurano.com/)
+* **ITninja04** - [Github Profile](https://github.com/ITninja04)
 
 # Release History 
 
