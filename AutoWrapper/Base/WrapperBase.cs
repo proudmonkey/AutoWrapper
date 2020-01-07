@@ -54,7 +54,7 @@ namespace AutoWrapper.Base
                         if (context.Response.StatusCode != Status304NotModified)
                         {
 
-                            if (!_options.IsApiOnly && bodyAsText.IsHtml() && context.Response.StatusCode == Status200OK)
+                            if (!_options.IsApiOnly && (bodyAsText.IsHtml() && !_options.BypassHTMLValidation) && context.Response.StatusCode == Status200OK)
                                 context.Response.StatusCode = Status404NotFound;
 
                             if (!context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith))
