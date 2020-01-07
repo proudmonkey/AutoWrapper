@@ -7,14 +7,14 @@ namespace AutoWrapper.Helpers
 {
     internal static class JSONHelper
     {
-        public static JsonSerializerSettings GetJSONSettings(bool ignoreNull = true, bool useCamelCaseNaming = true)
+        public static JsonSerializerSettings GetJSONSettings(bool ignoreNull = true, ReferenceLoopHandling referenceLoopHandling = ReferenceLoopHandling.Ignore, bool useCamelCaseNaming = true)
         {
-            return new CamelCaseContractResolverJsonSettings().GetJSONSettings(ignoreNull, useCamelCaseNaming);
+            return new CamelCaseContractResolverJsonSettings().GetJSONSettings(ignoreNull, referenceLoopHandling, useCamelCaseNaming);
         }
 
-        public static (JsonSerializerSettings Settings, Dictionary<string, string> Mappings) GetJSONSettings<T>(bool ignoreNull = true, bool useCamelCaseNaming = true)
+        public static (JsonSerializerSettings Settings, Dictionary<string, string> Mappings) GetJSONSettings<T>(bool ignoreNull = true, ReferenceLoopHandling referenceLoopHandling = ReferenceLoopHandling.Ignore, bool useCamelCaseNaming = true)
         {
-            return new CustomContractResolverJsonSettings<T>().GetJSONSettings(ignoreNull, useCamelCaseNaming);
+            return new CustomContractResolverJsonSettings<T>().GetJSONSettings(ignoreNull, referenceLoopHandling, useCamelCaseNaming);
         }
 
         public static bool HasProperty(dynamic obj, string name)

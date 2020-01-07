@@ -26,6 +26,11 @@
         public bool IsApiOnly { get; set; } = true;
 
         /// <summary>
+        /// This will ignore validation that insures string does not contain HTML
+        /// </summary>
+        public bool BypassHTMLValidation { get; set; } = false;
+
+        /// <summary>
         /// Set the Api path segment to validate. The default value is '/api'. Only works if IsApiOnly is set to false.
         /// </summary>
         public string WrapWhenApiPathStartsWith { get; set; } = "/api";
