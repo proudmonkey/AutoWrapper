@@ -555,7 +555,7 @@ Feel free to request an issue on github if you find bugs or request a new featur
 
 Thank you!
 
-# Contributor
+# Contributors
 
 * **Vincent Maverick Durano** - [Blog](http://vmsdurano.com/)
 * **ITninja04** - [Github Profile](https://github.com/ITninja04)
