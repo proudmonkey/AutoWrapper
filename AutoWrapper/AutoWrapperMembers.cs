@@ -62,21 +62,18 @@ namespace AutoWrapper
                 var ex = exception as ApiException;
                 if (ex.IsModelValidatonError)
                 {
-                    apiError = new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ex.Errors)
+                    apiError = new ApiError(ResponseMessage.ValidationError, ex.Errors)
                     {
                         ReferenceErrorCode = ex.ReferenceErrorCode,
                         ReferenceDocumentLink = ex.ReferenceDocumentLink,
                     };
 
-                    if (_options.EnableExceptionLogging)
-                        _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessage.ValidationError}");
+                    if (_options.EnableExceptionLogging) { _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessage.ValidationError}"); } 
                 }
                 else if (ex.IsCustomErrorObject) //new addition
                 {
                     apiError = ex.CustomError;
-
-                    if (_options.EnableExceptionLogging)
-                        _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessage.Exception}");
+                    if (_options.EnableExceptionLogging) { _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessage.Exception}"); }
                 }
                 else
                 {
@@ -95,7 +92,7 @@ namespace AutoWrapper
             }
             else if (exception is UnauthorizedAccessException)
             {
-                apiError = new ApiError(ResponseMessageEnum.UnAuthorized.GetDescription());
+                apiError = new ApiError(ResponseMessage.UnAuthorized);
                 code = (int)HttpStatusCode.Unauthorized;
 
                 if (_options.EnableExceptionLogging)
@@ -120,8 +117,8 @@ namespace AutoWrapper
                 apiError = new ApiError(exceptionMessage) { Details = stackTrace };
                 code = (int)HttpStatusCode.InternalServerError;
 
-                if (_options.EnableExceptionLogging)
-                    _logger.Log(LogLevel.Error, exception, $"[{code}]: {exceptionMessage}");
+                if (_options.EnableExceptionLogging) { _logger.Log(LogLevel.Error, exception, $"[{code}]: {exceptionMessage}"); }
+                   
             }
 
             var jsonString = ConvertToJSONString(GetErrorResponse(code, apiError));
@@ -171,7 +168,7 @@ namespace AutoWrapper
                 else if ((apiResponse.StatusCode != code || apiResponse.Result != null) ||
                         (apiResponse.StatusCode == code && apiResponse.Result == null))
                 {
-                    code = apiResponse.StatusCode; // in case response is not 200 (e.g 201, etc)
+                    code = apiResponse.StatusCode; // in case response is not 200 (e.g 201)
                     jsonString = ConvertToJSONString(GetSucessResponse(apiResponse));
                     
                 }
@@ -209,7 +206,7 @@ namespace AutoWrapper
         public Task WrapIgnoreAsync(HttpContext context, object body)
         {
             var bodyText = !body.ToString().IsValidJson() ? ConvertToJSONString(body) : body.ToString();
-            context.Response.ContentType = "application/json";
+            context.Response.ContentType = TypeIdentifier.JSONHttpContentMediaType;
             context.Response.ContentLength = bodyText != null ? Encoding.UTF8.GetByteCount(bodyText) : 0;
             return context.Response.WriteAsync(bodyText);
         }
@@ -219,7 +216,7 @@ namespace AutoWrapper
         private Task WriteFormattedResponseToHttpContext(HttpContext context, int code, string jsonString, bool isError = false)
         {
             context.Response.StatusCode = code;
-            context.Response.ContentType = "application/json";
+            context.Response.ContentType = TypeIdentifier.JSONHttpContentMediaType;
             context.Response.ContentLength = jsonString != null ? Encoding.UTF8.GetByteCount(jsonString) : 0;
             return context.Response.WriteAsync(jsonString);
         }

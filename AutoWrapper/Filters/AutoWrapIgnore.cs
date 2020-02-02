@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+﻿using AutoWrapper.Helpers;
+using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 
 namespace AutoWrapper.Filters
@@ -7,7 +8,7 @@ namespace AutoWrapper.Filters
     {
         public void OnResultExecuting(ResultExecutingContext context)
         {
-            context.HttpContext.Response.Headers.Add("AutoWrapIgnoreFilter", new string[] { "true" });
+            context.HttpContext.Response.Headers.Add(TypeIdentifier.AutoWrapIgnoreFilterHeader, new string[] { "true" });
         }
 
         public void OnResultExecuted(ResultExecutedContext context)

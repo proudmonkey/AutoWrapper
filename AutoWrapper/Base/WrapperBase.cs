@@ -1,4 +1,5 @@
 ﻿using AutoWrapper.Extensions;
+using AutoWrapper.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
@@ -45,7 +46,7 @@ namespace AutoWrapper.Base
 
                         var bodyAsText = await awm.FormatResponse(newBodyStream);
 
-                        var actionIgnore = context.Response.Headers["AutoWrapIgnoreFilter"];
+                        var actionIgnore = context.Response.Headers[TypeIdentifier.AutoWrapIgnoreFilterHeader];
                         if (actionIgnore.Count > 0)
                         {
                             await awm.WrapIgnoreAsync(context, bodyAsText);return;
@@ -65,7 +66,7 @@ namespace AutoWrapper.Base
                                     await awm.HandleSpaSupportAsync(context); return;
                                 }
                             }
-                            else if (context.Response.StatusCode == Status200OK)
+                            else if (context.Response.StatusCode == Status200OK || context.Response.StatusCode == Status201Created || context.Response.StatusCode == Status202Accepted)
                             {
                                 await awm.HandleSuccessRequestAsync(context, bodyAsText, context.Response.StatusCode);
                             }

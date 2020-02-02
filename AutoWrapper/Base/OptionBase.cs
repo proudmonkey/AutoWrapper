@@ -21,12 +21,13 @@
         public bool ShowStatusCode { get; set; } = false;
 
         /// <summary>
-        /// Use to indicate if the wrapper is used for API project only. Set this to false when you want to use the wrapper within an Angular, MVC, React or Blazor projects.
+        /// Use to indicate if the wrapper is used for API project only. 
+        /// Set this to false when you want to use the wrapper within an Angular, MVC, React or Blazor projects.
         /// </summary>
         public bool IsApiOnly { get; set; } = true;
 
         /// <summary>
-        /// This will ignore validation that insures string does not contain HTML
+        /// Tells the wrapper to ignore validation for string that contains HTML
         /// </summary>
         public bool BypassHTMLValidation { get; set; } = false;
 
