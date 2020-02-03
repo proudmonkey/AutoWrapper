@@ -25,26 +25,25 @@ namespace AutoWrapper.Base
         public virtual async Task InvokeAsyncBase(HttpContext context, AutoWrapperMembers awm)
         {
             if (awm.IsSwagger(context) || !awm.IsApi(context))
-                await this._next(context);
+                await _next(context);
             else
             {
 
                 var stopWatch = Stopwatch.StartNew();
 
-                var request = await awm.FormatRequest(context.Request);
+                var request = await awm.FormatRequestAsync(context.Request);
 
-                var originalBodyStream = context.Response.Body;
+                var originalResponseBodyStream = context.Response.Body;
 
-                using (var newBodyStream = new MemoryStream())
+                using (var memoryStream = new MemoryStream())
                 {
                     try
                     {
-                        context.Response.Body = newBodyStream;
+                        context.Response.Body = memoryStream;
                         await _next.Invoke(context);
 
-                        context.Response.Body = originalBodyStream;
-
-                        var bodyAsText = await awm.FormatResponse(newBodyStream);
+                        var bodyAsText = await awm.ReadResponseBodyStreamAsync(memoryStream);
+                        context.Response.Body = originalResponseBodyStream;
 
                         var actionIgnore = context.Response.Headers[TypeIdentifier.AutoWrapIgnoreFilterHeader];
                         if (actionIgnore.Count > 0)
@@ -54,25 +53,24 @@ namespace AutoWrapper.Base
 
                         if (context.Response.StatusCode != Status304NotModified)
                         {
-
+                            //HTML content
                             if (!_options.IsApiOnly && (bodyAsText.IsHtml() && !_options.BypassHTMLValidation) && context.Response.StatusCode == Status200OK)
                                 context.Response.StatusCode = Status404NotFound;
-
                             if (!context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith))
                                 && bodyAsText.IsHtml() && context.Response.StatusCode == Status200OK)
                             {
-                                if (newBodyStream.Length > 0)
+                                if (memoryStream.Length > 0)
                                 {
                                     await awm.HandleSpaSupportAsync(context); return;
                                 }
                             }
                             else if (context.Response.StatusCode == Status200OK || context.Response.StatusCode == Status201Created || context.Response.StatusCode == Status202Accepted)
                             {
-                                await awm.HandleSuccessRequestAsync(context, bodyAsText, context.Response.StatusCode);
+                                await awm.HandleSuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
                             }
                             else
                             {
-                                await awm.HandleNotSuccessRequestAsync(context, bodyAsText, context.Response.StatusCode);
+                                await awm.HandleUnsuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
                             }
                         }
 
@@ -80,8 +78,7 @@ namespace AutoWrapper.Base
                     catch (Exception ex)
                     {
                         await awm.HandleExceptionAsync(context, ex);
-                        newBodyStream.Seek(0, SeekOrigin.Begin);
-                        await newBodyStream.CopyToAsync(originalBodyStream);
+                        await awm.RevertResponseBodyStreamAsync(memoryStream, originalResponseBodyStream);
                     }
                     finally
                     {

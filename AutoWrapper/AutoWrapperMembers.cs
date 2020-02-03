@@ -11,6 +11,8 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
+using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace AutoWrapper
 {
@@ -31,77 +33,71 @@ namespace AutoWrapper
             _hasSchemaForMappping = hasSchemaForMappping;
         }
 
-        public async Task<string> FormatRequest(HttpRequest request)
+        public async Task<string> FormatRequestAsync(HttpRequest request)
         {
-            request.EnableBuffering();
+            var httpMethodsWithRequestBody = new[] { "POST", "PUT", "PATCH" };
+            var hasRequestBody = httpMethodsWithRequestBody.Any(x => x.Equals(request.Method.ToUpper()));
+            string requestBody = default;
 
-            var buffer = new byte[Convert.ToInt32(request.ContentLength)];
-            await request.Body.ReadAsync(buffer, 0, buffer.Length);
-            var bodyAsText = Encoding.UTF8.GetString(buffer);
-            request.Body.Seek(0, SeekOrigin.Begin);
+            if (hasRequestBody)
+            {
+                request.EnableBuffering();
 
-            return $"{request.Method} {request.Scheme} {request.Host}{request.Path} {request.QueryString} {bodyAsText}";
+                using var memoryStream = new MemoryStream();
+                await request.Body.CopyToAsync(memoryStream);
+                requestBody = Encoding.UTF8.GetString(memoryStream.ToArray());
+                request.Body.Seek(0, SeekOrigin.Begin);
+            }
+
+            return $"{request.Method} {request.Scheme} {request.Host}{request.Path} {request.QueryString} {requestBody}";
         }
 
-        public async Task<string> FormatResponse(Stream bodyStream)
+        public async Task<string> ReadResponseBodyStreamAsync(Stream bodyStream)
         {
             bodyStream.Seek(0, SeekOrigin.Begin);
-            var plainBodyText = await new StreamReader(bodyStream).ReadToEndAsync();
+            var responseBody = await new StreamReader(bodyStream).ReadToEndAsync();
             bodyStream.Seek(0, SeekOrigin.Begin);
 
-            return plainBodyText;
+            return responseBody;
         }
 
-        public Task HandleExceptionAsync(HttpContext context, System.Exception exception)
+        public async Task RevertResponseBodyStreamAsync(Stream bodyStream, Stream orginalBodyStream)
+        {
+            bodyStream.Seek(0, SeekOrigin.Begin);
+            await bodyStream.CopyToAsync(orginalBodyStream);
+        }
+
+        public async Task HandleExceptionAsync(HttpContext context, System.Exception exception)
         {
             object apiError = null;
-            int code = 0;
+            int httpStatusCode = 0;
+            string exceptionMessage = default;
 
             if (exception is ApiException)
             {
                 var ex = exception as ApiException;
                 if (ex.IsModelValidatonError)
                 {
-                    apiError = new ApiError(ResponseMessage.ValidationError, ex.Errors)
-                    {
-                        ReferenceErrorCode = ex.ReferenceErrorCode,
-                        ReferenceDocumentLink = ex.ReferenceDocumentLink,
-                    };
-
-                    if (_options.EnableExceptionLogging) { _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessage.ValidationError}"); } 
+                    apiError = new ApiError(ResponseMessage.ValidationError, ex.Errors) { ReferenceErrorCode = ex.ReferenceErrorCode, ReferenceDocumentLink = ex.ReferenceDocumentLink };
                 }
-                else if (ex.IsCustomErrorObject) //new addition
+                else if (ex.IsCustomErrorObject) 
                 {
                     apiError = ex.CustomError;
-                    if (_options.EnableExceptionLogging) { _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessage.Exception}"); }
                 }
                 else
                 {
-                    apiError = new ApiError(ex.Message)
-                    {
-                        ReferenceErrorCode = ex.ReferenceErrorCode,
-                        ReferenceDocumentLink = ex.ReferenceDocumentLink,
-                    };
-
-                    if (_options.EnableExceptionLogging)
-                        _logger.Log(LogLevel.Warning, exception, $"[{ex.StatusCode}]: {ResponseMessage.Exception}");
+                    apiError = new ApiError(ex.Message) { ReferenceErrorCode = ex.ReferenceErrorCode, ReferenceDocumentLink = ex.ReferenceDocumentLink };
                 }
 
-                code = ex.StatusCode;
-
+                httpStatusCode = ex.StatusCode;
             }
             else if (exception is UnauthorizedAccessException)
             {
                 apiError = new ApiError(ResponseMessage.UnAuthorized);
-                code = (int)HttpStatusCode.Unauthorized;
-
-                if (_options.EnableExceptionLogging)
-                    _logger.Log(LogLevel.Warning, exception, $"[{code}]: {ResponseMessage.UnAuthorized}");
+                httpStatusCode = Status401Unauthorized;
             }
             else
             {
-
-                string exceptionMessage = string.Empty;
                 string stackTrace = null;
 
                 if (_options.IsDebug)
@@ -115,27 +111,30 @@ namespace AutoWrapper
                 }
 
                 apiError = new ApiError(exceptionMessage) { Details = stackTrace };
-                code = (int)HttpStatusCode.InternalServerError;
-
-                if (_options.EnableExceptionLogging) { _logger.Log(LogLevel.Error, exception, $"[{code}]: {exceptionMessage}"); }
-                   
+                httpStatusCode = Status500InternalServerError;     
             }
 
-            var jsonString = ConvertToJSONString(GetErrorResponse(code, apiError));
+            
+            if (_options.EnableExceptionLogging) {
+                var errorMessage = apiError is ApiError ? ((ApiError)apiError).ExceptionMessage : ResponseMessage.Exception;
+                _logger.Log(LogLevel.Error, exception, $"[{httpStatusCode}]: { errorMessage }"); 
+            }
 
-            return WriteFormattedResponseToHttpContext(context, code, jsonString, true);
+            var jsonString = ConvertToJSONString(GetErrorResponse(httpStatusCode, apiError));
+
+            await WriteFormattedResponseToHttpContextAsync(context, httpStatusCode, jsonString);
         }
 
-        public Task HandleNotSuccessRequestAsync(HttpContext context, object body, int code)
+        public async Task HandleUnsuccessfulRequestAsync(HttpContext context, object body, int httpStatusCode)
         {
             var bodyText = body.ToString();
-            ApiError apiError = !string.IsNullOrEmpty(bodyText) ? new ApiError(bodyText) : WrapError(code);
+            ApiError apiError = !string.IsNullOrEmpty(bodyText) ? new ApiError(bodyText) : WrapUnsucessfulError(httpStatusCode);
 
-            var jsonString = ConvertToJSONString(GetErrorResponse(code, apiError));
-            return WriteFormattedResponseToHttpContext(context, code, jsonString, true);
+            var jsonString = ConvertToJSONString(GetErrorResponse(httpStatusCode, apiError));
+            await WriteFormattedResponseToHttpContextAsync(context, httpStatusCode, jsonString);
         }
 
-        public Task HandleSuccessRequestAsync(HttpContext context, object body, int code)
+        public async Task HandleSuccessfulRequestAsync(HttpContext context, object body, int httpStatusCode)
         {
             string jsonString = string.Empty;
 
@@ -153,7 +152,7 @@ namespace AutoWrapper
                 if (_options.UseCustomSchema)
                 {
                     var formatJson = _options.IgnoreNullValue ? JSONHelper.RemoveEmptyChildren(bodyContent) : bodyContent;
-                    return WriteFormattedResponseToHttpContext(context, code, JsonConvert.SerializeObject(formatJson));
+                    await WriteFormattedResponseToHttpContextAsync(context, httpStatusCode, JsonConvert.SerializeObject(formatJson));
                 }
                 else
                 {
@@ -164,30 +163,30 @@ namespace AutoWrapper
                 }
 
                 if (apiResponse.StatusCode == 0 && apiResponse.Result == null && apiResponse.ResponseException == null)
-                    jsonString = ConvertToJSONString(code, bodyContent);
-                else if ((apiResponse.StatusCode != code || apiResponse.Result != null) ||
-                        (apiResponse.StatusCode == code && apiResponse.Result == null))
+                    jsonString = ConvertToJSONString(httpStatusCode, bodyContent, context.Request.Method);
+                else if ((apiResponse.StatusCode != httpStatusCode || apiResponse.Result != null) ||
+                        (apiResponse.StatusCode == httpStatusCode && apiResponse.Result == null))
                 {
-                    code = apiResponse.StatusCode; // in case response is not 200 (e.g 201)
-                    jsonString = ConvertToJSONString(GetSucessResponse(apiResponse));
+                    httpStatusCode = apiResponse.StatusCode; // in case response is not 200 (e.g 201)
+                    jsonString = ConvertToJSONString(GetSucessResponse(apiResponse, context.Request.Method));
                     
                 }
                 else
-                    jsonString = ConvertToJSONString(code, bodyContent);
+                    jsonString = ConvertToJSONString(httpStatusCode, bodyContent, context.Request.Method);
             }
             else
             {
-                jsonString = ConvertToJSONString(code, bodyContent);
+                jsonString = ConvertToJSONString(httpStatusCode, bodyContent, context.Request.Method);
             }
 
-            return WriteFormattedResponseToHttpContext(context, code, jsonString);
+            await WriteFormattedResponseToHttpContextAsync(context, httpStatusCode, jsonString);
         }
 
-        public Task HandleSpaSupportAsync(HttpContext context)
+        public async Task HandleSpaSupportAsync(HttpContext context)
         {
             string configErrorText = ResponseMessage.NotApiOnly;
             context.Response.ContentLength = configErrorText != null ? System.Text.Encoding.UTF8.GetByteCount(configErrorText) : 0;
-            return context.Response.WriteAsync(configErrorText);
+            await context.Response.WriteAsync(configErrorText);
         }
 
         public bool IsSwagger(HttpContext context)
@@ -203,30 +202,26 @@ namespace AutoWrapper
             return context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith));
         }
 
-        public Task WrapIgnoreAsync(HttpContext context, object body)
+        public async Task WrapIgnoreAsync(HttpContext context, object body)
         {
             var bodyText = !body.ToString().IsValidJson() ? ConvertToJSONString(body) : body.ToString();
             context.Response.ContentType = TypeIdentifier.JSONHttpContentMediaType;
             context.Response.ContentLength = bodyText != null ? Encoding.UTF8.GetByteCount(bodyText) : 0;
-            return context.Response.WriteAsync(bodyText);
+            await context.Response.WriteAsync(bodyText);
         }
 
         #region Private Members
 
-        private Task WriteFormattedResponseToHttpContext(HttpContext context, int code, string jsonString, bool isError = false)
+        private async Task WriteFormattedResponseToHttpContextAsync(HttpContext context, int httpStatusCode, string jsonString)
         {
-            context.Response.StatusCode = code;
+            context.Response.StatusCode = httpStatusCode;
             context.Response.ContentType = TypeIdentifier.JSONHttpContentMediaType;
             context.Response.ContentLength = jsonString != null ? Encoding.UTF8.GetByteCount(jsonString) : 0;
-            return context.Response.WriteAsync(jsonString);
+            await context.Response.WriteAsync(jsonString);
         }
 
-
-        private string ConvertToJSONString(int code, object content)
-        {
-            code = !_options.ShowStatusCode ? 0 : code;
-            return JsonConvert.SerializeObject(new ApiResponse(ResponseMessage.Success, content, code, GetApiVersion()), _jsonSettings);
-        }
+        private string ConvertToJSONString(int httpStatusCode, object content, string httpMethod)
+            => JsonConvert.SerializeObject(new ApiResponse($"{httpMethod} {ResponseMessage.Success}", content, !_options.ShowStatusCode ? 0 : httpStatusCode , GetApiVersion()), _jsonSettings);
 
         private string ConvertToJSONString(ApiResponse apiResponse)
         {
@@ -234,53 +229,34 @@ namespace AutoWrapper
             return JsonConvert.SerializeObject(apiResponse, _jsonSettings);
         }
 
-        private string ConvertToJSONString(ApiError apiError)
-        {
-            return JsonConvert.SerializeObject(apiError, _jsonSettings);
-        }
+        private string ConvertToJSONString(ApiError apiError) => JsonConvert.SerializeObject(apiError, _jsonSettings);
 
-        private string ConvertToJSONString(object rawJSON)
-        {
-            return JsonConvert.SerializeObject(rawJSON, _jsonSettings);
-        }
+        private string ConvertToJSONString(object rawJSON) => JsonConvert.SerializeObject(rawJSON, _jsonSettings);
 
-        private ApiError WrapError(int statusCode)
-        {
-            switch (statusCode)
+        private ApiError WrapUnsucessfulError(int statusCode) =>
+            statusCode switch
             {
-                case (int)HttpStatusCode.NotFound:
-                    return new ApiError(ResponseMessage.NotFound);
-                case (int)HttpStatusCode.NoContent:
-                    return new ApiError(ResponseMessage.NotContent);
-                case (int)HttpStatusCode.MethodNotAllowed:
-                    return new ApiError(ResponseMessage.MethodNotAllowed);
-                case (int)HttpStatusCode.Unauthorized:
-                    return new ApiError(ResponseMessage.UnAuthorized);
-                case (int)HttpStatusCode.BadRequest:
-                    return new ApiError(ResponseMessage.BadRequest);
-                default:
-                    return new ApiError(ResponseMessage.Unknown);
-            }
-        }
+                Status204NoContent => new ApiError(ResponseMessage.NotContent),
+                Status400BadRequest => new ApiError(ResponseMessage.BadRequest),
+                Status401Unauthorized => new ApiError(ResponseMessage.UnAuthorized),
+                Status404NotFound =>  new ApiError(ResponseMessage.NotFound),
+                Status405MethodNotAllowed => new ApiError(ResponseMessage.MethodNotAllowed),
+                _ => new ApiError(ResponseMessage.Unknown)
 
-        private ApiResponse GetErrorResponse(int code, object apiError)
-        {
-            code = !_options.ShowStatusCode ? 0 : code;
-            return new ApiResponse(code, apiError) { Version = GetApiVersion() };
-        }
+            };
 
-        private ApiResponse GetSucessResponse(ApiResponse apiResponse)
+
+        private ApiResponse GetErrorResponse(int httpStatusCode, object apiError) 
+            => new ApiResponse(!_options.ShowStatusCode ? 0 : httpStatusCode, apiError) { Version = GetApiVersion() };
+
+        private ApiResponse GetSucessResponse(ApiResponse apiResponse, string httpMethod)
         {
-            apiResponse.Message = apiResponse.Message == null ? ResponseMessage.Success : apiResponse.Message;
+            apiResponse.Message = apiResponse.Message == null ? $"{httpMethod} {ResponseMessage.Success}" : apiResponse.Message;
             apiResponse.Version = GetApiVersion();
             return apiResponse;
         }
 
-        private string GetApiVersion()
-        {
-            return !_options.ShowApiVersion ? null : _options.ApiVersion;
-        }
-
+        private string GetApiVersion() => !_options.ShowApiVersion ? null : _options.ApiVersion;
         #endregion
     }
 

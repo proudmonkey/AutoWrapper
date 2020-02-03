@@ -2,7 +2,7 @@
 {
     internal class ResponseMessage
     {
-        internal const string Success = "Request successful.";
+        internal const string Success = "request successful.";
         internal const string NotFound = "Request not found. The specified uri does not exist.";
         internal const string BadRequest = "Request invalid.";
         internal const string MethodNotAllowed = "Request responded with 'Method Not Allowed'.";
