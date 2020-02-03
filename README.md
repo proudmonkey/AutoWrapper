@@ -1,4 +1,4 @@
-<img align="right" src="/AutoWrapper/logo.jpg" />
+<img align="right" src="/AutoWrapper/logo.png" />
 
 # AutoWrapper  [![Nuget](https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue)](https://www.nuget.org/packages/AutoWrapper.Core) [![Nuget downloads](https://img.shields.io/nuget/dt/AutoWrapper.Core?color=green)](https://www.nuget.org/packages/AutoWrapper.Core)
 
@@ -27,7 +27,7 @@
 1. Download and Install the latest `AutoWrapper.Core` from NuGet or via CLI:
 
 ```
-PM> Install-Package AutoWrapper.Core -Version 2.1.0
+PM> Install-Package AutoWrapper.Core -Version 3.0.0
 ```
 
 2. Declare the following namespace within `Startup.cs`
@@ -562,6 +562,7 @@ Thank you!
 
 # Release History 
 
+* 02/02/2020: AutoWrapper version `3.0.0` - added new options, bug fix and code cleanup.
 * 11/09/2019: AutoWrapper version `2.1.0` - added new options and features.
 * 11/05/2019: AutoWrapper version `2.0.2` - added UnAuthorize and BadRequest method response.
 * 10/17/2019: AutoWrapper version `2.0.1` - added new features.
