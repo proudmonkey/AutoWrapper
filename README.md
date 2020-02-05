@@ -231,7 +231,7 @@ Keep in mind that you are free to choose whatever property that you want to map.
 ```
 
 # Using Your Own Error Schema
-You can now define your own `Error` object and pass it to the `ApiException()` method. For example, if you have the following `Error` model with mapping configured:
+You can define your own `Error` object and pass it to the `ApiException()` method. For example, if you have the following `Error` model with mapping configured:
 
 ```csharp
 public class MapResponseObject  
@@ -293,7 +293,7 @@ The format of the output will now look like this:
 }
 ```
 # Using Your Own API Response Schema
-If mapping wont work for you and you need to add additional attributes to the default `API` response schema, then you can now use your own custom schema/model to achieve that by setting the `UseCustomSchema` to true in `AutoWrapperOptions` as shown in the following code below:
+If mapping wont work for you and you need to add additional attributes to the default `API` response schema, then you can use your own custom schema/model to achieve that by setting the `UseCustomSchema` to true in `AutoWrapperOptions` as shown in the following code below:
 
 ```csharp
 app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { UseCustomSchema = true }); 
@@ -401,26 +401,30 @@ Running the code should give you now the following response format:
 That’s it. One thing to note here is that once you use your own schema for your `API` response, you have the full ability to control how you would want to format your data, but at the same time losing some of the option configurations for the default `API` Response. The good thing is you can still take advantage of the `ApiException()` method to throw a user-defined error message.
 
 # Options
-The following properties are the options that you can set:
+The following properties are the available options that you can set:
 
-### Version 1.0.0
-* `ApiVersion`
-* `ShowApiVersion`
-* `ShowStatusCode`
-* `IsDebug`
+### Version 3.0.0 Addtions
+* `BypassHTMLValidation `
+* `ReferenceLoopHandling `
 
-### Version 1.x.x Additions
-* `IsApiOnly`
-* `WrapWhenApiPathStartsWith`
+### Version 2.x.x Additions
+* `EnableResponseLogging`
+* `EnableExceptionLogging`
 
 ### Version 2.0.x Additions
 * `IgnoreNullValue`
 * `UseCamelCaseNamingStrategy`
 * `UseCustomSchema`
 
-### Version 2.x.x Additions
-* `EnableResponseLogging`
-* `EnableExceptionLogging`
+### Version 1.x.x Additions
+* `IsApiOnly`
+* `WrapWhenApiPathStartsWith`
+
+### Version 1.0.0
+* `ApiVersion`
+* `ShowApiVersion`
+* `ShowStatusCode`
+* `IsDebug`
 
 #### ShowApiVersion
 if you want to show the `API` version in the response, then you can do:
@@ -471,8 +475,44 @@ This will activate the `AutoWrapper` to intercept HTTP responses when a request 
 
 > Note that I would still recommend you to implement your `API Controllers` in a seperate project to value the separation of concerns and to avoid mixing route configurations for your `SPAs` and `APIs`.
 
+#### EnableResponseLogging and EnableExceptionLogging 
+You can turn off default Logging by setting `EnableResponseLogging` and `EnableExceptionLogging` options to `false` in AutoWrapper options.
+
+For example:
+
+```csharp
+app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions {  
+              EnableResponseLogging = false, 
+              EnableExceptionLogging = false 
+});
+```
+
+#### AutoWrapperPropertyMap Attribute
+Use the `AutoWrapperPropertyMap` attribute to map the AutoWrapper default property to something else. For example, let's say you want to change the name of the `result` property to something else like `data`, then you can simply define your own schema for mapping it like in the following:
+
+```csharp
+public class MapResponseObject  
+{
+    [AutoWrapperPropertyMap(Prop.Result)]
+    public object Data { get; set; }
+}
+```
+You can then pass the `MapResponseObject` class to the AutoWrapper middleware like this:
+
+```csharp
+app.UseApiResponseAndExceptionWrapper<MapResponseObject>();  
+
+```
+
+#### UseCustomSchema
+If mapping wont work for you and you need to add additional attributes to the default `API` response schema, then you can use your own custom schema/model to achieve that by setting the `UseCustomSchema` to `true` as shown in the following code below:
+
+```csharp
+app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { UseCustomSchema = true });  
+```
+
 # AutoWrapIgnore Attribute
-You can now use the `[AutoWrapIgnore]` filter attribute for enpoints that you don't need to be wrapped.
+You can use the `[AutoWrapIgnore]` filter attribute for enpoints that you don't need to be wrapped.
 
 For example:
 
