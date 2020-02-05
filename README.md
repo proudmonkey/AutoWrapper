@@ -181,7 +181,7 @@ ApiException(System.Exception ex, int statusCode = 500)
 ApiException(object custom, int statusCode = 400)
 ```
 # Enable Property Mappings
-If you don’t like how the default properties are named, then you can now map whatever names you want for the property using the `AutoWrapperPropertyMap` attribute. For example, let's say you want to change the name of the default `result` property to something else like `data`, then you can simply define your own schema for mapping it like in the following:
+Use the `AutoWrapperPropertyMap` attribute to map the AutoWrapper default property to something else. For example, let's say you want to change the name of the `result` property to something else like `data`, then you can simply define your own schema for mapping it like in the following:
 
 ```csharp
 public class MapResponseObject  
@@ -485,30 +485,6 @@ app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions {
               EnableResponseLogging = false, 
               EnableExceptionLogging = false 
 });
-```
-
-#### AutoWrapperPropertyMap Attribute
-Use the `AutoWrapperPropertyMap` attribute to map the AutoWrapper default property to something else. For example, let's say you want to change the name of the `result` property to something else like `data`, then you can simply define your own schema for mapping it like in the following:
-
-```csharp
-public class MapResponseObject  
-{
-    [AutoWrapperPropertyMap(Prop.Result)]
-    public object Data { get; set; }
-}
-```
-You can then pass the `MapResponseObject` class to the AutoWrapper middleware like this:
-
-```csharp
-app.UseApiResponseAndExceptionWrapper<MapResponseObject>();  
-
-```
-
-#### UseCustomSchema
-If mapping wont work for you and you need to add additional attributes to the default `API` response schema, then you can use your own custom schema/model to achieve that by setting the `UseCustomSchema` to `true` as shown in the following code below:
-
-```csharp
-app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { UseCustomSchema = true });  
 ```
 
 # AutoWrapIgnore Attribute
