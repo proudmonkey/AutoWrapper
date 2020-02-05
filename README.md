@@ -475,17 +475,6 @@ This will activate the `AutoWrapper` to intercept HTTP responses when a request 
 
 > Note that I would still recommend you to implement your `API Controllers` in a seperate project to value the separation of concerns and to avoid mixing route configurations for your `SPAs` and `APIs`.
 
-#### EnableResponseLogging and EnableExceptionLogging 
-You can turn off default Logging by setting `EnableResponseLogging` and `EnableExceptionLogging` options to `false` in AutoWrapper options.
-
-For example:
-
-```csharp
-app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions {  
-              EnableResponseLogging = false, 
-              EnableExceptionLogging = false 
-});
-```
 
 # AutoWrapIgnore Attribute
 You can use the `[AutoWrapIgnore]` filter attribute for enpoints that you don't need to be wrapped.
