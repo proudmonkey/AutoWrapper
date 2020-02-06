@@ -4,8 +4,6 @@
 
 `AutoWrapper` is a simple, yet customizable global `HTTP` exception handler and response wrapper for ASP.NET Core APIs. It uses an ASP.NET Core `middleware` to intercept incoming `HTTP` requests and automatically wraps the responses for you by providing a consistent response format for both successful and error results. The goal is to let you focus on your business code specific requirements and let the wrapper automatically handle the `HTTP` response. This can speedup the development time when building your APIs while enforcing own standards for your `HTTP` responses.
 
-`AutoWrapper` is a project fork based from [VMD.RESTApiResponseWrapper.Core](https://github.com/proudmonkey/RESTApiResponseWrapper.Core) which is designed to support .NET Core 2.1, 2.2, 3.x and above. The implementation of this package was refactored to provide a more convenient way to use the middleware with added flexibility.
-
 #### Main features:
 
 * Exception handling
