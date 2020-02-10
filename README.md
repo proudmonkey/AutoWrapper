@@ -15,7 +15,7 @@
 * A configurable `HTTP` `StatusCodes` and messages
 * Add support for `Swagger`
 * Add Logging support for `Request`, `Response` and `Exceptions`
-* A configurable middleware `options` to configure the wrapper.
+* A configurable middleware `options` to configure the wrapper. See **Options** section below for details.
 * Enable property name mappings for the default `ApiResponse` properties.
 * Add support for implementing your own user-defined `Response` and `Error` schema / object.
 * Add support for ignoring action methods that don't need to be wrapped using `[AutoWrapIgnore]` filter attribute.
