@@ -180,9 +180,9 @@ ApiException(object custom, int statusCode = 400)
 ```
 
 # Implement Model Validations
-Model validations allows you to enforce pre-defined validation rules at a `class`/`property` level. You'd normally use this validation technique to keep a clear separation of concerns, so your validation code becomes much simpler to write, maintain, and test.
+`Model` validations allows you to enforce pre-defined validation rules at a `class`/`property` level. You'd normally use this validation technique to keep a clear separation of concerns, so your validation code becomes much simpler to write, maintain, and test.
 
-As you have already known, ASP.NET Core 2.1 introduced the `ApiController` attribute which performs automatic model state validation for `400 Bad Request` error. When the `Controller` is decorated with `ApiController` attribute, the framework will automatically register a `ModelStateInvalidFilter` which runs on the `OnActionExecuting` event. This checks for the `Model State` validity and returns the response accordingly. This is a great feature, but since we want to return a custom response object instead of the `400 Bad Request` error, we will disable this feature in our case.
+As you have already known, starting ASP.NET Core 2.1, it introduced the `ApiController` attribute which performs automatic model state validation for `400 Bad Request` error. When the `Controller` is decorated with `ApiController` attribute, the framework will automatically register a `ModelStateInvalidFilter` which runs on the `OnActionExecuting` event. This checks for the `Model State` validity and returns the response accordingly. This is a great feature, but since we want to return a custom response object instead of the `400 Bad Request` error, we will disable this feature in our case.
 
 To disable the automatic model state validation, just add the following code at `ConfigureServices()` method in `Startup.cs` file:
 
