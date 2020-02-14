@@ -193,6 +193,11 @@ namespace AutoWrapper
         {
             return context.Request.Path.StartsWithSegments(new PathString("/swagger"));
         }
+        
+        public bool IsHangfire(HttpContext context)
+        {
+            return context.Request.Path.StartsWithSegments(new PathString("/hangfire"));
+        }
 
         public bool IsApi(HttpContext context)
         {
