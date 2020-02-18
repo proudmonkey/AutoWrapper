@@ -176,7 +176,9 @@ namespace AutoWrapper
             }
             else
             {
-                jsonString = ConvertToJSONString(httpStatusCode, bodyContent, context.Request.Method);
+                var validated = ValidateSingleValueType(bodyContent); 
+                object result = validated.Item1  ? validated.Item2 : bodyContent;
+                jsonString = ConvertToJSONString(httpStatusCode, result, context.Request.Method);
             }
 
             await WriteFormattedResponseToHttpContextAsync(context, httpStatusCode, jsonString);
@@ -257,6 +259,16 @@ namespace AutoWrapper
         }
 
         private string GetApiVersion() => !_options.ShowApiVersion ? null : _options.ApiVersion;
+
+        private (bool, object) ValidateSingleValueType(string value)
+        {
+            if (value.IsWholeNumber()) { return (true, value.ToInt64()); }
+            if (value.IsDecimalNumber()) { return (true, value.ToDecimal()); }
+            if (value.IsBoolean()) { return (true, value.ToBoolean()); }
+
+            return (false, value);
+        }
+
         #endregion
     }
 

@@ -28,11 +28,8 @@ namespace AutoWrapper.Base
                 await _next(context);
             else
             {
-
                 var stopWatch = Stopwatch.StartNew();
-
                 var request = await awm.FormatRequestAsync(context.Request);
-
                 var originalResponseBodyStream = context.Response.Body;
 
                 using (var memoryStream = new MemoryStream())
@@ -51,11 +48,12 @@ namespace AutoWrapper.Base
                             await awm.WrapIgnoreAsync(context, bodyAsText);return;
                         }
 
-                        if (context.Response.StatusCode != Status304NotModified)
+                        if (context.Response.StatusCode != Status304NotModified && context.Response.StatusCode != Status204NoContent)
                         {
-                            //HTML content
+
                             if (!_options.IsApiOnly && (bodyAsText.IsHtml() && !_options.BypassHTMLValidation) && context.Response.StatusCode == Status200OK)
                                 context.Response.StatusCode = Status404NotFound;
+
                             if (!context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith))
                                 && bodyAsText.IsHtml() && context.Response.StatusCode == Status200OK)
                             {
