@@ -51,7 +51,7 @@ namespace AutoWrapper.Base
                             await awm.WrapIgnoreAsync(context, bodyAsText);return;
                         }
 
-                        if (context.Response.StatusCode != Status304NotModified)
+                        if (context.Response.StatusCode != Status304NotModified && context.Response.StatusCode != Status204NoContent)
                         {
                             //HTML content
                             if (!_options.IsApiOnly && (bodyAsText.IsHtml() && !_options.BypassHTMLValidation) && context.Response.StatusCode == Status200OK)
