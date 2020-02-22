@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace AutoWrapper.Wrappers
 {
@@ -12,13 +11,13 @@ namespace AutoWrapper.Wrappers
         public IEnumerable<ValidationError> ValidationErrors { get; set; }
         public ApiError(object message)
         {
-            this.ExceptionMessage = message;
+           ExceptionMessage = message;
         }
 
         public ApiError(string message, IEnumerable<ValidationError> validationErrors)
         {
-            this.ExceptionMessage = message;
-            this.ValidationErrors = validationErrors;
+            ExceptionMessage = message;
+            ValidationErrors = validationErrors;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace AutoWrapper.Wrappers
 {
@@ -13,31 +14,31 @@ namespace AutoWrapper.Wrappers
         public bool IsCustomErrorObject { get; set; } = false;
 
         public ApiException(string message,
-                            int statusCode = 400,
+                            int statusCode = Status400BadRequest,
                             string errorCode = default,
                             string refLink = default) :
             base(message)
         {
-            this.StatusCode = statusCode;
-            this.ReferenceErrorCode = errorCode;
-            this.ReferenceDocumentLink = refLink;
+            StatusCode = statusCode;
+            ReferenceErrorCode = errorCode;
+            ReferenceDocumentLink = refLink;
         }
 
-        public ApiException(object custom, int statusCode = 400)
+        public ApiException(object customError, int statusCode = Status400BadRequest)
         {
-            this.IsCustomErrorObject = true;
-            this.StatusCode = statusCode;
-            this.CustomError = custom;
+            IsCustomErrorObject = true;
+            StatusCode = statusCode;
+            CustomError = customError;
         }
 
-        public ApiException(IEnumerable<ValidationError> errors, int statusCode = 400)
+        public ApiException(IEnumerable<ValidationError> errors, int statusCode = Status400BadRequest)
         {
-            this.IsModelValidatonError = true;
-            this.StatusCode = statusCode;
-            this.Errors = errors;
+            IsModelValidatonError = true;
+            StatusCode = statusCode;
+            Errors = errors;
         }
 
-        public ApiException(System.Exception ex, int statusCode = 500) : base(ex.Message)
+        public ApiException(System.Exception ex, int statusCode = Status500InternalServerError) : base(ex.Message)
         {
             StatusCode = statusCode;
         }
