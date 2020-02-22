@@ -27,6 +27,19 @@ namespace AutoWrapper.Extensions
             }
         }
 
+        public static (bool IsEncoded, string ParsedText) VerifyBodyContent(this string text)
+        {
+            try
+            {
+                var obj = JToken.Parse(text);
+                return (true, obj.ToString());
+            }
+            catch (Exception)
+            {
+                return (false, text);
+            }
+        }
+
         public static bool IsHtml(this string text)
         {
             Regex tagRegex = new Regex(@"<\s*([^ >]+)[^>]*>.*?<\s*/\s*\1\s*>");

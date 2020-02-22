@@ -32,56 +32,55 @@ namespace AutoWrapper.Base
                 var request = await awm.FormatRequestAsync(context.Request);
                 var originalResponseBodyStream = context.Response.Body;
 
-                using (var memoryStream = new MemoryStream())
+                using var memoryStream = new MemoryStream();
+
+                try
                 {
-                    try
+                    context.Response.Body = memoryStream;
+                    await _next.Invoke(context);
+
+                    var bodyAsText = await awm.ReadResponseBodyStreamAsync(memoryStream);
+                    context.Response.Body = originalResponseBodyStream;
+
+                    var actionIgnore = context.Response.Headers[TypeIdentifier.AutoWrapIgnoreFilterHeader];
+                    if (actionIgnore.Count > 0)
                     {
-                        context.Response.Body = memoryStream;
-                        await _next.Invoke(context);
+                        await awm.WrapIgnoreAsync(context, bodyAsText); return;
+                    }
 
-                        var bodyAsText = await awm.ReadResponseBodyStreamAsync(memoryStream);
-                        context.Response.Body = originalResponseBodyStream;
+                    if (context.Response.StatusCode != Status304NotModified || context.Response.StatusCode != Status204NoContent)
+                    {
 
-                        var actionIgnore = context.Response.Headers[TypeIdentifier.AutoWrapIgnoreFilterHeader];
-                        if (actionIgnore.Count > 0)
+                        if (!_options.IsApiOnly && (bodyAsText.IsHtml() && !_options.BypassHTMLValidation) && context.Response.StatusCode == Status200OK)
+                            context.Response.StatusCode = Status404NotFound;
+
+                        if (!context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith))
+                            && bodyAsText.IsHtml() && context.Response.StatusCode == Status200OK)
                         {
-                            await awm.WrapIgnoreAsync(context, bodyAsText);return;
-                        }
-
-                        if (context.Response.StatusCode != Status304NotModified || context.Response.StatusCode != Status204NoContent)
-                        {
-
-                            if (!_options.IsApiOnly && (bodyAsText.IsHtml() && !_options.BypassHTMLValidation) && context.Response.StatusCode == Status200OK)
-                                context.Response.StatusCode = Status404NotFound;
-
-                            if (!context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith))
-                                && bodyAsText.IsHtml() && context.Response.StatusCode == Status200OK)
+                            if (memoryStream.Length > 0)
                             {
-                                if (memoryStream.Length > 0)
-                                {
-                                    await awm.HandleSpaSupportAsync(context); return;
-                                }
-                            }
-                            else if (context.Response.StatusCode == Status200OK || context.Response.StatusCode == Status201Created || context.Response.StatusCode == Status202Accepted)
-                            {
-                                await awm.HandleSuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
-                            }
-                            else
-                            {
-                                await awm.HandleUnsuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
+                                await awm.HandleSpaSupportAsync(context); return;
                             }
                         }
+                        else if (context.Response.StatusCode == Status200OK || context.Response.StatusCode == Status201Created || context.Response.StatusCode == Status202Accepted)
+                        {
+                            await awm.HandleSuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
+                        }
+                        else
+                        {
+                            await awm.HandleUnsuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
+                        }
+                    }
 
-                    }
-                    catch (Exception ex)
-                    {
-                        await awm.HandleExceptionAsync(context, ex);
-                        await awm.RevertResponseBodyStreamAsync(memoryStream, originalResponseBodyStream);
-                    }
-                    finally
-                    {
-                        LogResponse(context, request, stopWatch);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    await awm.HandleExceptionAsync(context, ex);
+                    await awm.RevertResponseBodyStreamAsync(memoryStream, originalResponseBodyStream);
+                }
+                finally
+                {
+                    LogResponse(context, request, stopWatch);
                 }
 
             }

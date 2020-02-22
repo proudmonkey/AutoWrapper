@@ -7,5 +7,6 @@ namespace AutoWrapper
     {
         public bool UseCustomSchema { get; set; } = false;
         public ReferenceLoopHandling ReferenceLoopHandling { get; set; } = ReferenceLoopHandling.Ignore;
+        public bool UseCustomExceptionFormat { get; set; } = false;
     }
 }

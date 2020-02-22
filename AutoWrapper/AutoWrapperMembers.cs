@@ -21,7 +21,7 @@ namespace AutoWrapper
 
         private readonly AutoWrapperOptions _options;
         private readonly ILogger<AutoWrapperMiddleware> _logger;
-        private JsonSerializerSettings _jsonSettings;
+        private readonly JsonSerializerSettings _jsonSettings;
         public readonly Dictionary<string, string> _propertyMappings;
         private readonly bool _hasSchemaForMappping;
         public AutoWrapperMembers(AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger, JsonSerializerSettings jsonSettings, Dictionary<string, string> propertyMappings = null, bool hasSchemaForMappping = false)
@@ -58,7 +58,9 @@ namespace AutoWrapper
             var responseBody = await new StreamReader(bodyStream).ReadToEndAsync();
             bodyStream.Seek(0, SeekOrigin.Begin);
 
-            return responseBody;
+            var (IsEncoded, ParsedText) = responseBody.VerifyBodyContent();
+
+            return IsEncoded? ParsedText : responseBody;
         }
 
         public async Task RevertResponseBodyStreamAsync(Stream bodyStream, Stream orginalBodyStream)
@@ -69,10 +71,15 @@ namespace AutoWrapper
 
         public async Task HandleExceptionAsync(HttpContext context, System.Exception exception)
         {
-            object apiError = null;
-            int httpStatusCode = 0;
-            string exceptionMessage = default;
+            if (_options.UseCustomExceptionFormat)
+            {
+                await WriteFormattedResponseToHttpContextAsync(context, context.Response.StatusCode, exception.GetBaseException().Message);
+                return;
+            }
 
+            string exceptionMessage = default;
+            object apiError;
+            int httpStatusCode;
             if (exception is ApiException)
             {
                 var ex = exception as ApiException;
@@ -80,7 +87,7 @@ namespace AutoWrapper
                 {
                     apiError = new ApiError(ResponseMessage.ValidationError, ex.Errors) { ReferenceErrorCode = ex.ReferenceErrorCode, ReferenceDocumentLink = ex.ReferenceDocumentLink };
                 }
-                else if (ex.IsCustomErrorObject) 
+                else if (ex.IsCustomErrorObject)
                 {
                     apiError = ex.CustomError;
                 }
@@ -111,10 +118,10 @@ namespace AutoWrapper
                 }
 
                 apiError = new ApiError(exceptionMessage) { Details = stackTrace };
-                httpStatusCode = Status500InternalServerError;     
+                httpStatusCode = Status500InternalServerError;
             }
 
-            
+
             if (_options.EnableExceptionLogging) {
                 var errorMessage = apiError is ApiError ? ((ApiError)apiError).ExceptionMessage : ResponseMessage.Exception;
                 _logger.Log(LogLevel.Error, exception, $"[{httpStatusCode}]: { errorMessage }"); 
@@ -127,8 +134,18 @@ namespace AutoWrapper
 
         public async Task HandleUnsuccessfulRequestAsync(HttpContext context, object body, int httpStatusCode)
         {
-            var bodyText = body.ToString();
-            ApiError apiError = !string.IsNullOrEmpty(bodyText) ? new ApiError(bodyText) : WrapUnsucessfulError(httpStatusCode);
+            var (IsEncoded, ParsedText) = body.ToString().VerifyBodyContent();
+
+            if (IsEncoded && _options.UseCustomExceptionFormat)
+            {
+                await WriteFormattedResponseToHttpContextAsync(context, httpStatusCode, body.ToString());
+                return;
+            }
+
+            var bodyText = IsEncoded ? ParsedText : body.ToString();
+            var errorMessage = !bodyText.IsValidJson() ? ConvertToJSONString(bodyText) : JsonConvert.DeserializeObject<dynamic>(bodyText);
+            
+            ApiError apiError = !string.IsNullOrEmpty(bodyText) ? new ApiError(errorMessage) : WrapUnsucessfulError(httpStatusCode);
 
             var jsonString = ConvertToJSONString(GetErrorResponse(httpStatusCode, apiError));
             await WriteFormattedResponseToHttpContextAsync(context, httpStatusCode, jsonString);
@@ -136,15 +153,13 @@ namespace AutoWrapper
 
         public async Task HandleSuccessfulRequestAsync(HttpContext context, object body, int httpStatusCode)
         {
-            string jsonString = string.Empty;
-
             var bodyText = !body.ToString().IsValidJson() ? ConvertToJSONString(body) : body.ToString();
 
             dynamic bodyContent = JsonConvert.DeserializeObject<dynamic>(bodyText);
 
             Type type = bodyContent?.GetType();
 
-           
+            string jsonString;
             if (type.Equals(typeof(JObject)))
             {
                 ApiResponse apiResponse = new ApiResponse();
@@ -157,7 +172,7 @@ namespace AutoWrapper
                 else
                 {
                     if (_hasSchemaForMappping && (_propertyMappings.Count == 0 || _propertyMappings == null))
-                          throw new ApiException(ResponseMessage.NoMappingFound);
+                        throw new ApiException(ResponseMessage.NoMappingFound);
                     else
                         apiResponse = JsonConvert.DeserializeObject<ApiResponse>(bodyText);
                 }
@@ -169,15 +184,15 @@ namespace AutoWrapper
                 {
                     httpStatusCode = apiResponse.StatusCode; // in case response is not 200 (e.g 201)
                     jsonString = ConvertToJSONString(GetSucessResponse(apiResponse, context.Request.Method));
-                    
+
                 }
                 else
                     jsonString = ConvertToJSONString(httpStatusCode, bodyContent, context.Request.Method);
             }
             else
             {
-                var validated = ValidateSingleValueType(bodyContent); 
-                object result = validated.Item1  ? validated.Item2 : bodyContent;
+                var validated = ValidateSingleValueType(bodyContent);
+                object result = validated.Item1 ? validated.Item2 : bodyContent;
                 jsonString = ConvertToJSONString(httpStatusCode, result, context.Request.Method);
             }
 
@@ -253,7 +268,7 @@ namespace AutoWrapper
 
         private ApiResponse GetSucessResponse(ApiResponse apiResponse, string httpMethod)
         {
-            apiResponse.Message = apiResponse.Message == null ? $"{httpMethod} {ResponseMessage.Success}" : apiResponse.Message;
+            apiResponse.Message ??= $"{httpMethod} {ResponseMessage.Success}";
             apiResponse.Version = GetApiVersion();
             return apiResponse;
         }

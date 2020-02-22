@@ -7,7 +7,7 @@ namespace AutoWrapper
 {
     internal class AutoWrapperMiddleware : WrapperBase
     {
-        private AutoWrapperMembers _awm;
+        private readonly AutoWrapperMembers _awm;
         public AutoWrapperMiddleware(RequestDelegate next, AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger) : base(next, options, logger)
         {
             var jsonSettings = Helpers.JSONHelper.GetJSONSettings(options.IgnoreNullValue, options.ReferenceLoopHandling, options.UseCamelCaseNamingStrategy);
@@ -22,11 +22,11 @@ namespace AutoWrapper
 
     internal class AutoWrapperMiddleware<T> : WrapperBase
     {
-        private AutoWrapperMembers _awm;
+        private readonly AutoWrapperMembers _awm;
         public AutoWrapperMiddleware(RequestDelegate next, AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger) : base(next, options, logger)
         {
-            var tup = Helpers.JSONHelper.GetJSONSettings<T>(options.IgnoreNullValue, options.ReferenceLoopHandling, options.UseCamelCaseNamingStrategy);
-            _awm = new AutoWrapperMembers(options, logger, tup.Settings, tup.Mappings, true);
+            var (Settings, Mappings) = Helpers.JSONHelper.GetJSONSettings<T>(options.IgnoreNullValue, options.ReferenceLoopHandling, options.UseCamelCaseNamingStrategy);
+            _awm = new AutoWrapperMembers(options, logger, Settings, Mappings, true);
         }
 
         public async Task InvokeAsync(HttpContext context)
