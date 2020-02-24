@@ -53,19 +53,19 @@ namespace AutoWrapper.Wrappers
 
             if (isDebug) { return new DebugExceptionetails(defaultException); }
 
-            return defaultException;
+            return new ApiProblemDetails((int)defaultException.Status) { Detail = defaultException.Exception.Message };
         }
 
         internal class ErrorDetails
         {
             public string Message { get; set; }
-
             public string Type { get; set; }
-
+            public string Source { get; set; }
             public string Raw { get; set; }
 
             public ErrorDetails(ExceptionFallback detail)
             {
+                Source = detail.Exception.Source;
                 Raw = detail.Exception.StackTrace;
                 Message = detail.Exception.Message;
                 Type = detail.Exception.GetType().Name;
@@ -76,6 +76,7 @@ namespace AutoWrapper.Wrappers
         {
             public ExceptionFallback(Exception exception) : this(exception, Status500InternalServerError)
             {
+                Detail = exception.Message;
             }
 
             public ExceptionFallback(Exception exception, int statusCode) : base(statusCode)
