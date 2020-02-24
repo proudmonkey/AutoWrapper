@@ -14,15 +14,14 @@ namespace AutoWrapper.Helpers
 
         public CustomContractResolver(bool useCamelCaseNaming)
         {
-            this._propertyMappings = new Dictionary<string, string>();
+            _propertyMappings = new Dictionary<string, string>();
             _useCamelCaseNaming = useCamelCaseNaming;
             SetObjectMappings();
         }
 
         protected override string ResolvePropertyName(string propertyName)
         {
-            string resolvedName = null;
-            var resolved = this._propertyMappings.TryGetValue(propertyName, out resolvedName);
+            var resolved = _propertyMappings.TryGetValue(propertyName, out string resolvedName);
 
             if (_useCamelCaseNaming)
                 return (resolved) ? resolvedName.ToCamelCase() : base.ResolvePropertyName(propertyName.ToCamelCase());

@@ -1,6 +1,8 @@
 ﻿using AutoWrapper.Extensions;
 using AutoWrapper.Helpers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
@@ -15,11 +17,13 @@ namespace AutoWrapper.Base
         private readonly RequestDelegate _next;
         private readonly AutoWrapperOptions _options;
         private readonly ILogger<AutoWrapperMiddleware> _logger;
-        public WrapperBase(RequestDelegate next, AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger)
+        private IActionResultExecutor<ObjectResult> _executor { get; }
+        public WrapperBase(RequestDelegate next, AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger, IActionResultExecutor<ObjectResult> executor)
         {
             _next = next;
             _options = options;
             _logger = logger;
+            _executor = executor;
         }
 
         public virtual async Task InvokeAsyncBase(HttpContext context, AutoWrapperMembers awm)
@@ -68,14 +72,17 @@ namespace AutoWrapper.Base
                         }
                         else
                         {
+                            if (_options.UseApiProblemDetailsException) { await awm.HandleProblemDetailsAsync(context, _executor, bodyAsText); return; }
+                            
                             await awm.HandleUnsuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
                         }
                     }
 
                 }
-                catch (Exception ex)
+                catch (Exception exception)
                 {
-                    await awm.HandleExceptionAsync(context, ex);
+                    if (_options.UseApiProblemDetailsException) { await awm.HandleProblemDetailsAsync(context, _executor, null, exception); }
+                    else { await awm.HandleExceptionAsync(context, exception); }
                     await awm.RevertResponseBodyStreamAsync(memoryStream, originalResponseBodyStream);
                 }
                 finally

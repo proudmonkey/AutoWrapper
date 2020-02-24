@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using static Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AutoWrapper
 {
@@ -24,7 +26,11 @@ namespace AutoWrapper
         private readonly JsonSerializerSettings _jsonSettings;
         public readonly Dictionary<string, string> _propertyMappings;
         private readonly bool _hasSchemaForMappping;
-        public AutoWrapperMembers(AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger, JsonSerializerSettings jsonSettings, Dictionary<string, string> propertyMappings = null, bool hasSchemaForMappping = false)
+        public AutoWrapperMembers(AutoWrapperOptions options, 
+                                    ILogger<AutoWrapperMiddleware> logger, 
+                                    JsonSerializerSettings jsonSettings,
+                                    Dictionary<string, string> propertyMappings = null, 
+                                    bool hasSchemaForMappping = false)
         {
             _options = options;
             _logger = logger;
@@ -60,7 +66,7 @@ namespace AutoWrapper
 
             var (IsEncoded, ParsedText) = responseBody.VerifyBodyContent();
 
-            return IsEncoded? ParsedText : responseBody;
+            return IsEncoded ? ParsedText : responseBody;
         }
 
         public async Task RevertResponseBodyStreamAsync(Stream bodyStream, Stream orginalBodyStream)
@@ -124,7 +130,7 @@ namespace AutoWrapper
 
             if (_options.EnableExceptionLogging) {
                 var errorMessage = apiError is ApiError ? ((ApiError)apiError).ExceptionMessage : ResponseMessage.Exception;
-                _logger.Log(LogLevel.Error, exception, $"[{httpStatusCode}]: { errorMessage }"); 
+                _logger.Log(LogLevel.Error, exception, $"[{httpStatusCode}]: { errorMessage }");
             }
 
             var jsonString = ConvertToJSONString(GetErrorResponse(httpStatusCode, apiError));
@@ -142,10 +148,8 @@ namespace AutoWrapper
                 return;
             }
 
-            var bodyText = IsEncoded ? ParsedText : body.ToString();
-            var errorMessage = !bodyText.IsValidJson() ? ConvertToJSONString(bodyText) : JsonConvert.DeserializeObject<dynamic>(bodyText);
-            
-            ApiError apiError = !string.IsNullOrEmpty(bodyText) ? new ApiError(errorMessage) : WrapUnsucessfulError(httpStatusCode);
+            var bodyText = IsEncoded ? JsonConvert.DeserializeObject<dynamic>(ParsedText) : body.ToString();
+            ApiError apiError = !string.IsNullOrEmpty(body.ToString()) ? new ApiError(bodyText) : WrapUnsucessfulError(httpStatusCode);
 
             var jsonString = ConvertToJSONString(GetErrorResponse(httpStatusCode, apiError));
             await WriteFormattedResponseToHttpContextAsync(context, httpStatusCode, jsonString);
@@ -215,7 +219,7 @@ namespace AutoWrapper
         {
             if (_options.IsApiOnly && !context.Request.Path.Value.Contains(".js") && !context.Request.Path.Value.Contains(".css"))
                 return true;
-            
+
             return context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith));
         }
 
@@ -226,6 +230,12 @@ namespace AutoWrapper
             context.Response.ContentLength = bodyText != null ? Encoding.UTF8.GetByteCount(bodyText) : 0;
             await context.Response.WriteAsync(bodyText);
         }
+
+        public async Task HandleProblemDetailsAsync(HttpContext context, IActionResultExecutor<ObjectResult> executor, object body, Exception exception = null)
+        {
+            await new ApiProblemDetailsMember().WriteProblemDetails(context, executor, body, exception, _options.IsDebug);
+        }
+
 
         #region Private Members
 
@@ -275,11 +285,12 @@ namespace AutoWrapper
 
         private string GetApiVersion() => !_options.ShowApiVersion ? null : _options.ApiVersion;
 
-        private (bool, object) ValidateSingleValueType(string value)
+        private (bool, object) ValidateSingleValueType(object value)
         {
-            if (value.IsWholeNumber()) { return (true, value.ToInt64()); }
-            if (value.IsDecimalNumber()) { return (true, value.ToDecimal()); }
-            if (value.IsBoolean()) { return (true, value.ToBoolean()); }
+            var result = value.ToString();
+            if (result.IsWholeNumber()) { return (true, result.ToInt64()); }
+            if (result.IsDecimalNumber()) { return (true, result.ToDecimal()); }
+            if (result.IsBoolean()) { return (true, result.ToBoolean()); }
 
             return (false, value);
         }

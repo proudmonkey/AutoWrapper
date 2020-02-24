@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AutoWrapper.Helpers
+﻿namespace AutoWrapper.Helpers
 {
     internal class TypeIdentifier
     {
         internal const string JSONHttpContentMediaType = "application/json";
+        internal const string ProblemJSONHttpContentMediaType = "application/problem+json";
+        internal const string ProblemXMLHttpContentMediaType = "application/problem+xml";
         internal const string AutoWrapIgnoreFilterHeader = "AutoWrapIgnoreFilter";
     }
 }
