@@ -86,6 +86,7 @@ namespace AutoWrapper
             string exceptionMessage = default;
             object apiError;
             int httpStatusCode;
+
             if (exception is ApiException)
             {
                 var ex = exception as ApiException;
@@ -231,7 +232,7 @@ namespace AutoWrapper
             await context.Response.WriteAsync(bodyText);
         }
 
-        public async Task HandleProblemDetailsAsync(HttpContext context, IActionResultExecutor<ObjectResult> executor, object body, Exception exception = null)
+        public async Task HandleProblemDetailsExceptionAsync(HttpContext context, IActionResultExecutor<ObjectResult> executor, object body, Exception exception = null)
         {
             await new ApiProblemDetailsMember().WriteProblemDetails(context, executor, body, exception, _options.IsDebug);
         }

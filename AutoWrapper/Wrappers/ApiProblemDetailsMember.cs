@@ -47,7 +47,7 @@ namespace AutoWrapper.Wrappers
         }
         private ProblemDetails GetProblemDetails(Exception exception, bool isDebug)
         {
-            if (exception is ApiProblemDetailsException problem){ return problem.Details; }
+            if (exception is ApiProblemDetailsException problem){ return problem.Problem.Details; }
 
             var defaultException = new ExceptionFallback(exception);
 

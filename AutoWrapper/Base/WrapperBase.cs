@@ -55,24 +55,29 @@ namespace AutoWrapper.Base
                     if (context.Response.StatusCode != Status304NotModified || context.Response.StatusCode != Status204NoContent)
                     {
 
-                        if (!_options.IsApiOnly && (bodyAsText.IsHtml() && !_options.BypassHTMLValidation) && context.Response.StatusCode == Status200OK)
-                            context.Response.StatusCode = Status404NotFound;
+                        if (!_options.IsApiOnly
+                            && (bodyAsText.IsHtml()
+                            && !_options.BypassHTMLValidation)
+                            && context.Response.StatusCode == Status200OK)
+                        { context.Response.StatusCode = Status404NotFound; }
 
                         if (!context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith))
-                            && bodyAsText.IsHtml() && context.Response.StatusCode == Status200OK)
+                            && bodyAsText.IsHtml() 
+                            && context.Response.StatusCode == Status200OK)
                         {
-                            if (memoryStream.Length > 0)
-                            {
-                                await awm.HandleSpaSupportAsync(context); return;
-                            }
+                            if (memoryStream.Length > 0) { await awm.HandleSpaSupportAsync(context); }
+                            return;
                         }
-                        else if (context.Response.StatusCode == Status200OK || context.Response.StatusCode == Status201Created || context.Response.StatusCode == Status202Accepted)
+                        
+                        if (context.Response.StatusCode == Status200OK 
+                            || context.Response.StatusCode == Status201Created 
+                            || context.Response.StatusCode == Status202Accepted)
                         {
                             await awm.HandleSuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
                         }
                         else
                         {
-                            if (_options.UseApiProblemDetailsException) { await awm.HandleProblemDetailsAsync(context, _executor, bodyAsText); return; }
+                            if (_options.UseApiProblemDetailsException) { await awm.HandleProblemDetailsExceptionAsync(context, _executor, bodyAsText); return; }
                             
                             await awm.HandleUnsuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
                         }
@@ -81,7 +86,7 @@ namespace AutoWrapper.Base
                 }
                 catch (Exception exception)
                 {
-                    if (_options.UseApiProblemDetailsException) { await awm.HandleProblemDetailsAsync(context, _executor, null, exception); }
+                    if (_options.UseApiProblemDetailsException) { await awm.HandleProblemDetailsExceptionAsync(context, _executor, null, exception); }
                     else { await awm.HandleExceptionAsync(context, exception); }
                     await awm.RevertResponseBodyStreamAsync(memoryStream, originalResponseBodyStream);
                 }
@@ -98,7 +103,9 @@ namespace AutoWrapper.Base
         {
             stopWatch.Stop();
             if (_options.EnableResponseLogging)
+            {
                 _logger.Log(LogLevel.Information, $@"Source:[{context.Connection.RemoteIpAddress.ToString() }] Request: {request} Responded with [{context.Response.StatusCode}] in {stopWatch.ElapsedMilliseconds}ms");
+            }
         }
     }
 

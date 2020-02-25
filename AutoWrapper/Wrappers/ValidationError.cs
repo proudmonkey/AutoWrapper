@@ -2,12 +2,12 @@
 {
     public class ValidationError
     {
-        public string Field { get; }
-        public string Message { get; }
-        public ValidationError(string field, string message)
+        public string Name { get; }
+        public string Reason { get; }
+        public ValidationError(string name, string reason)
         {
-            Field = field != string.Empty ? field : null;
-            Message = message;
+            Name = name != string.Empty ? name : null;
+            Reason = reason;
         }
     }
 }

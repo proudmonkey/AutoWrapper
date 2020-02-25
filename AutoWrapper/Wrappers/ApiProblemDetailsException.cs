@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Text;
+using AutoWrapper.Extensions;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace AutoWrapper.Wrappers
@@ -21,25 +22,25 @@ namespace AutoWrapper.Wrappers
         public ApiProblemDetailsException(ProblemDetails details)
             : base($"{details.Type} : {details.Title}")
         {
-            Details = details;
+            Problem = new ApiProblemDetails(details);
         }
 
         public ApiProblemDetailsException(ModelStateDictionary modelState, int statusCode = Status422UnprocessableEntity)
+             : this(new ApiProblemDetails(statusCode) { Detail = "Your request parameters didn't validate.", ValidationErrors = modelState.AllErrors() })
         {
-            Details = new ValidationProblemDetails(modelState) { Status = statusCode };
         }
 
-        public ProblemDetails Details { get; }
+        internal ApiProblemDetails Problem { get; }
 
         public override string ToString()
         {
             var stringBuilder = new StringBuilder();
 
-            stringBuilder.AppendLine($"Type    : {Details.Type}");
-            stringBuilder.AppendLine($"Title   : {Details.Title}");
-            stringBuilder.AppendLine($"Status  : {Details.Status}");
-            stringBuilder.AppendLine($"Detail  : {Details.Detail}");
-            stringBuilder.AppendLine($"Instance: {Details.Instance}");
+            stringBuilder.AppendLine($"Type    : {Problem.Details.Type}");
+            stringBuilder.AppendLine($"Title   : {Problem.Details.Title}");
+            stringBuilder.AppendLine($"Status  : {Problem.Details.Status}");
+            stringBuilder.AppendLine($"Detail  : {Problem.Details.Detail}");
+            stringBuilder.AppendLine($"Instance: {Problem.Details.Instance}");
 
             return stringBuilder.ToString();
         }
