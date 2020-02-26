@@ -138,7 +138,7 @@ The format of the exception result would look something like this when validatio
 {
     "isError": true,
     "responseException": {
-        "exceptionMessage": "Request responded with validation error(s). Please correct the specified validation errors and try again.",
+        "exceptionMessage": "Request responded with one or more validation errors occurred.",
         "validationErrors": [
             {
                 "name": "LastName",
