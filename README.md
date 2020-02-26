@@ -223,12 +223,12 @@ The result would look something like this:
 
 An example using `ApiProblemDetailsException`:
 
-```
+```csharp
 throw new ApiProblemDetailsException($"Record with id: {id} does not exist.", Status404NotFound);  
 ```
 The result would look something like this:
 
-```
+```json
 {
     "isError": true,
     "type": "https://httpstatuses.com/404",
