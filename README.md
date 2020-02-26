@@ -25,7 +25,7 @@
 1. Download and Install the latest `AutoWrapper.Core` from NuGet or via CLI:
 
 ```
-PM> Install-Package AutoWrapper.Core -Version 3.0.0
+PM> Install-Package AutoWrapper.Core -Version 4.0.0-rc
 ```
 
 2. Declare the following namespace within `Startup.cs`
