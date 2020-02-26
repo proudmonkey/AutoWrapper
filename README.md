@@ -268,7 +268,7 @@ As you have already known, starting ASP.NET Core 2.1, it introduced the `ApiCont
 
 To disable the automatic model state validation, just add the following code at `ConfigureServices()` method in `Startup.cs` file:
 
-```
+```csharp
 public void ConfigureServices(IServiceCollection services) {  
     services.Configure<ApiBehaviorOptions>(options =>
     {
@@ -411,7 +411,11 @@ public class MyCustomApiResponse
     public DateTime SentDate { get; set; }
     public Pagination Pagination { get; set; }
 
-    public MyCustomApiResponse(DateTime sentDate, object payload = null, string message = "", int statusCode = 200, Pagination pagination = null)
+    public MyCustomApiResponse(DateTime sentDate, 
+                               object payload = null, 
+                               string message = "", 
+                               int statusCode = 200, 
+                               Pagination pagination = null)
     {
         this.Code = statusCode;
         this.Message = message == string.Empty ? "Success" : message;
@@ -420,7 +424,9 @@ public class MyCustomApiResponse
         this.Pagination = pagination;
     }
 
-    public MyCustomApiResponse(DateTime sentDate, object payload = null, Pagination pagination = null)
+    public MyCustomApiResponse(DateTime sentDate, 
+                               object payload = null, 
+                               Pagination pagination = null)
     {
         this.Code = 200;
         this.Message = "Success";
