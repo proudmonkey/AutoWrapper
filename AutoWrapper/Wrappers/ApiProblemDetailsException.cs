@@ -14,7 +14,7 @@ namespace AutoWrapper.Wrappers
         {
         }
 
-        public ApiProblemDetailsException(int statusCode, string title)
+        public ApiProblemDetailsException(string title, int statusCode)
             : this(new ApiProblemDetails(statusCode) { Title = title })
         {
         }

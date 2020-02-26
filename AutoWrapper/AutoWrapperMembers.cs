@@ -204,10 +204,10 @@ namespace AutoWrapper
             await WriteFormattedResponseToHttpContextAsync(context, httpStatusCode, jsonString);
         }
 
-        public async Task HandleSpaSupportAsync(HttpContext context)
+        public async Task HandleNotApiRequestAsync(HttpContext context)
         {
             string configErrorText = ResponseMessage.NotApiOnly;
-            context.Response.ContentLength = configErrorText != null ? System.Text.Encoding.UTF8.GetByteCount(configErrorText) : 0;
+            context.Response.ContentLength = configErrorText != null ? Encoding.UTF8.GetByteCount(configErrorText) : 0;
             await context.Response.WriteAsync(configErrorText);
         }
 
@@ -237,6 +237,10 @@ namespace AutoWrapper
             await new ApiProblemDetailsMember().WriteProblemDetails(context, executor, body, exception, _options.IsDebug);
         }
 
+        public bool IsRequestSuccessful(int statusCode)
+        {
+            return (statusCode >= 200 && statusCode < 400);
+        }
 
         #region Private Members
 
@@ -269,6 +273,7 @@ namespace AutoWrapper
                 Status401Unauthorized => new ApiError(ResponseMessage.UnAuthorized),
                 Status404NotFound =>  new ApiError(ResponseMessage.NotFound),
                 Status405MethodNotAllowed => new ApiError(ResponseMessage.MethodNotAllowed),
+                Status415UnsupportedMediaType => new ApiError(ResponseMessage.MediaTypeNotSupported),
                 _ => new ApiError(ResponseMessage.Unknown)
 
             };

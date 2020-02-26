@@ -40,8 +40,11 @@ namespace AutoWrapper.Base
 
                 try
                 {
+                  
                     context.Response.Body = memoryStream;
                     await _next.Invoke(context);
+
+                    if (context.Response.HasStarted) { Log(); return;  }
 
                     var bodyAsText = await awm.ReadResponseBodyStreamAsync(memoryStream);
                     context.Response.Body = originalResponseBodyStream;
@@ -65,13 +68,14 @@ namespace AutoWrapper.Base
                             && bodyAsText.IsHtml() 
                             && context.Response.StatusCode == Status200OK)
                         {
-                            if (memoryStream.Length > 0) { await awm.HandleSpaSupportAsync(context); }
+                            if (memoryStream.Length > 0) { await awm.HandleNotApiRequestAsync(context); }
                             return;
                         }
                         
-                        if (context.Response.StatusCode == Status200OK 
-                            || context.Response.StatusCode == Status201Created 
-                            || context.Response.StatusCode == Status202Accepted)
+                        //if (context.Response.StatusCode == Status200OK 
+                        //    || context.Response.StatusCode == Status201Created 
+                        //    || context.Response.StatusCode == Status202Accepted)
+                        if(awm.IsRequestSuccessful(context.Response.StatusCode))
                         {
                             await awm.HandleSuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
                         }
@@ -86,6 +90,8 @@ namespace AutoWrapper.Base
                 }
                 catch (Exception exception)
                 {
+                    if (context.Response.HasStarted) { Log(); return; }
+
                     if (_options.UseApiProblemDetailsException) { await awm.HandleProblemDetailsExceptionAsync(context, _executor, null, exception); }
                     else { await awm.HandleExceptionAsync(context, exception); }
                     await awm.RevertResponseBodyStreamAsync(memoryStream, originalResponseBodyStream);
@@ -104,8 +110,15 @@ namespace AutoWrapper.Base
             stopWatch.Stop();
             if (_options.EnableResponseLogging)
             {
-                _logger.Log(LogLevel.Information, $@"Source:[{context.Connection.RemoteIpAddress.ToString() }] Request: {request} Responded with [{context.Response.StatusCode}] in {stopWatch.ElapsedMilliseconds}ms");
+                _logger.Log(LogLevel.Information, $@"Source:[{context.Connection.RemoteIpAddress.ToString() }] 
+                                                     Request: {request} 
+                                                     Responded with [{context.Response.StatusCode}] in {stopWatch.ElapsedMilliseconds}ms");
             }
+        }
+
+        private void Log()
+        {
+            _logger.Log(LogLevel.Warning, "The response has already started, the AutoWrapper middleware will not be executed.");
         }
     }
 
