@@ -19,7 +19,7 @@
 * Enable property name mappings for the default `ApiResponse` properties.
 * Add support for implementing your own user-defined `Response` and `Error` schema / object.
 * Add support for ignoring action methods that don't need to be wrapped using `[AutoWrapIgnore]` filter attribute.
-* Enable backwards compatibility support for `netcoreapp2.1` and `netcoreapp.2.2` .NET Core frameworks.
+* V3.x enable backwards compatibility support for `netcoreapp2.1` and `netcoreapp.2.2` .NET Core frameworks.
 
 # Installation
 1. Download and Install the latest `AutoWrapper.Core` from NuGet or via CLI:
@@ -115,43 +115,23 @@ ApiResponse(string message, object result = null, int statusCode = 200, string a
 ```
 
 # Defining Your Own Api Exception
-`AutoWrapper` also provides an `ApiException` object that you can use to define your own exception. For example, if you want to throw your own exception message, you could simply do:
+`AutoWrapper` provides two flavors that you can use to define your own custom exception:
 
-#### For capturing ModelState validation errors
+* `ApiException` - default
+* `ApiProblemDetailsException` - available only in version 4 and up. 
 
-```csharp
-throw new ApiException(ModelState.AllErrors());
-```
+Here are a few examples for throwing your own exception message.
 
-#### For throwing your own exception message
-```csharp
-throw new ApiException($"Record with id: {id} does not exist.", 400);
-```
-For example, let’s modify the `POST` method with `ModelState` validation:
+#### Capturing ModelState Validation Errors
 
 ```csharp
-[HttpPost]
-public async Task<ApiResponse> Post([FromBody]CreateBandDTO band)
+if (!ModelState.IsValid)
 {
-    if (ModelState.IsValid)
-    {
-        //Call a method to add a new record to the database
-        try
-        {
-            var result = await SampleData.AddNew(band);
-            return new ApiResponse("New record has been created to the database", result, 201);
-        }
-        catch (Exception ex)
-        {
-            //TO DO: Log ex
-            throw;
-        }
-    }
-    else
-        throw new ApiException(ModelState.AllErrors());
+    throw new ApiException(ModelState.AllErrors());
 }
 ```
-Running the code will result to something like this when validation fails:
+
+The format of the exception result would look something like this when validation fails:
 
 ```json
 {
@@ -160,15 +140,105 @@ Running the code will result to something like this when validation fails:
         "exceptionMessage": "Request responded with validation error(s). Please correct the specified validation errors and try again.",
         "validationErrors": [
             {
-                "field": "Name",
-                "message": "The Name field is required."
+                "name": "LastName",
+                "reason": "'Last Name' must not be empty."
+            },
+            {
+                "name": "FirstName",
+                "reason": "'First Name' must not be empty."
+            },
+            {
+                "name": "DateOfBirth",
+                "reason": "'Date Of Birth' must not be empty."
             }
         ]
     }
 }
 ```
 
-See how the `validationErrors` property is automatically populated with the violated `fields` from your model.
+To use Problem Details as an error format, just set `UseApiProblemDetailsException` to `true`:
+
+```csharp
+app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { UseApiProblemDetailsException = true }); 
+```
+
+Then you can use the `ApiProblemDetailsException` object like in the following:
+
+```csharp
+if (!ModelState.IsValid)
+{
+    throw new ApiProblemDetailsException(ModelState);
+}
+
+```
+
+The format of the exception result would now look something like this when validation fails:
+
+```json
+{
+    "isError": true,
+    "type": "https://httpstatuses.com/422",
+    "title": "Unprocessable Entity",
+    "status": 422,
+    "detail": "Your request parameters didn't validate.",
+    "instance": null,
+    "extensions": {},
+    "validationErrors": [
+        {
+            "name": "LastName",
+            "reason": "'Last Name' must not be empty."
+        },
+        {
+            "name": "FirstName",
+            "reason": "'First Name' must not be empty."
+        },
+        {
+            "name": "DateOfBirth",
+            "reason": "'Date Of Birth' must not be empty."
+        }
+    ]
+}
+```
+
+You can see how the `validationErrors` property is automatically populated with the violated `name` from your model.
+
+#### Throwing Your Own Exception Message
+
+An example using `ApiException`:
+
+```csharp
+throw new ApiException($"Record with id: {id} does not exist.", Status404NotFound);
+```
+
+The result would look something like this:
+
+```json
+{
+    "isError": true,
+    "responseException": {
+        "exceptionMessage": "Record with id: 1001 does not exist.",
+    }
+}
+```
+
+An example using `ApiProblemDetailsException`:
+
+```
+throw new ApiProblemDetailsException($"Record with id: {id} does not exist.", Status404NotFound);  
+```
+The result would look something like this:
+
+```
+{
+    "isError": true,
+    "type": "https://httpstatuses.com/404",
+    "title": "Record with id: 1001 does not exist.",
+    "status": 404,
+    "detail": null,
+    "instance": null,
+    "extensions": {}
+}
+```
 
 The `ApiException` object contains the following overload constructors that you can use to define an exception:
 
@@ -178,6 +248,17 @@ ApiException(IEnumerable<ValidationError> errors, int statusCode = 400)
 ApiException(System.Exception ex, int statusCode = 500)
 ApiException(object custom, int statusCode = 400)
 ```
+
+The `ApiProblemDetailsException` object contains the following overload constructors that you can use to define an exception:
+
+```csharp
+ApiProblemDetailsException(int statusCode)
+ApiProblemDetailsException(string title, int statusCode)
+ApiProblemDetailsException(ProblemDetails details)
+ApiProblemDetailsException(ModelStateDictionary modelState, int statusCode = Status422UnprocessableEntity)
+```
+
+For more information, checkout the links below at the **Samples** section.
 
 # Implement Model Validations
 `Model` validations allows you to enforce pre-defined validation rules at a `class`/`property` level. You'd normally use this validation technique to keep a clear separation of concerns, so your validation code becomes much simpler to write, maintain, and test.
@@ -197,6 +278,9 @@ public void ConfigureServices(IServiceCollection services) {
 ```
 
 # Enable Property Mappings
+
+> Note: Property Mappings is not available for Problem Details attributes.
+
 Use the `AutoWrapperPropertyMap` attribute to map the AutoWrapper default property to something else. For example, let's say you want to change the name of the `result` property to something else like `data`, then you can simply define your own schema for mapping it like in the following:
 
 ```csharp
@@ -527,8 +611,8 @@ For example:
 
 ```csharp
 app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions {  
-              EnableResponseLogging = false, 
-              EnableExceptionLogging = false 
+    EnableResponseLogging = false, 
+    EnableExceptionLogging = false 
 });
 ```
 
@@ -567,6 +651,7 @@ For more information, see: [AutoWrapper.Server](https://github.com/proudmonkey/A
 # Samples
 * [AutoWrapper: Prettify Your ASP.NET Core APIs with Meaningful Responses](http://vmsdurano.com/autowrapper-prettify-your-asp-net-core-apis-with-meaningful-responses/)
 * [AutoWrapper: Customizing the Default Response Output](http://vmsdurano.com/asp-net-core-with-autowrapper-customizing-the-default-response-output/)
+* [AutoWrapper Now Supports Problem Details For Your ASP.NET Core APIs](http://vmsdurano.com/autowrapper-now-supports-problemdetails/)
 * [AutoWrapper.Server: Sample Usage](http://vmsdurano.com/autowrapper-server-is-now-available/)
 
 # Feedback and Give a Star! :star:
