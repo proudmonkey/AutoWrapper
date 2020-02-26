@@ -235,6 +235,11 @@ namespace AutoWrapper
         public async Task HandleProblemDetailsExceptionAsync(HttpContext context, IActionResultExecutor<ObjectResult> executor, object body, Exception exception = null)
         {
             await new ApiProblemDetailsMember().WriteProblemDetails(context, executor, body, exception, _options.IsDebug);
+
+            if (_options.EnableExceptionLogging && exception != null)
+            {
+                _logger.Log(LogLevel.Error, exception, $"[{context.Response.StatusCode}]: { exception.GetBaseException().Message }");
+            }
         }
 
         public bool IsRequestSuccessful(int statusCode)

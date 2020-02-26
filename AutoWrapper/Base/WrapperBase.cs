@@ -44,7 +44,7 @@ namespace AutoWrapper.Base
                     context.Response.Body = memoryStream;
                     await _next.Invoke(context);
 
-                    if (context.Response.HasStarted) { Log(); return;  }
+                    if (context.Response.HasStarted) { LogResponseHasStartedError(); return;  }
 
                     var bodyAsText = await awm.ReadResponseBodyStreamAsync(memoryStream);
                     context.Response.Body = originalResponseBodyStream;
@@ -71,10 +71,7 @@ namespace AutoWrapper.Base
                             if (memoryStream.Length > 0) { await awm.HandleNotApiRequestAsync(context); }
                             return;
                         }
-                        
-                        //if (context.Response.StatusCode == Status200OK 
-                        //    || context.Response.StatusCode == Status201Created 
-                        //    || context.Response.StatusCode == Status202Accepted)
+
                         if(awm.IsRequestSuccessful(context.Response.StatusCode))
                         {
                             await awm.HandleSuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
@@ -90,7 +87,7 @@ namespace AutoWrapper.Base
                 }
                 catch (Exception exception)
                 {
-                    if (context.Response.HasStarted) { Log(); return; }
+                    if (context.Response.HasStarted) { LogResponseHasStartedError(); return; }
 
                     if (_options.UseApiProblemDetailsException) { await awm.HandleProblemDetailsExceptionAsync(context, _executor, null, exception); }
                     else { await awm.HandleExceptionAsync(context, exception); }
@@ -116,7 +113,7 @@ namespace AutoWrapper.Base
             }
         }
 
-        private void Log()
+        private void LogResponseHasStartedError()
         {
             _logger.Log(LogLevel.Warning, "The response has already started, the AutoWrapper middleware will not be executed.");
         }
