@@ -503,6 +503,10 @@ That’s it. One thing to note here is that once you use your own schema for you
 # Options
 The following properties are the available options that you can set:
 
+### Version 4.0.0 Addtions
+* `UseApiProblemDetailsException`
+* `UseCustomExceptionFormat`
+
 ### Version 3.0.0 Addtions
 * `BypassHTMLValidation `
 * `ReferenceLoopHandling `
@@ -665,6 +669,7 @@ Thank you!
 
 * **Vincent Maverick Durano** - [Blog](http://vmsdurano.com/)
 * **ITninja04** - [Github Profile](https://github.com/ITninja04)
+* **Rahmat Slamet** - [Github Profile](https://github.com/arhen)
 
 # Release History 
 
