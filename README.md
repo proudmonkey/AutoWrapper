@@ -90,7 +90,7 @@ public async Task<ApiResponse> Post([FromBody]CreatePersonRequest createRequest)
     try
     {
         var personId = await _personManager.CreateAsync(createRequest);
-        return new ApiResponse("New record has been created to the database", personId, Status201Created);
+        return new ApiResponse("New record has been created in the database.", personId, Status201Created);
     }
     catch (Exception ex)
     {
@@ -103,7 +103,7 @@ Running the code will give you the following result when successful:
 
 ```json
 {
-    "message": "New record has been created to the database",
+    "message": "New record has been created in the database.",
     "isError": false,
     "result": 100
 }
