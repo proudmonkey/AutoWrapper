@@ -85,13 +85,12 @@ To display a custom message in your response, use the `ApiResponse` object from 
 
 ```csharp
 [HttpPost]
-public async Task<ApiResponse> Post([FromBody]CreateBandDTO band)  
+public async Task<ApiResponse> Post([FromBody]CreatePersonRequest createRequest)  
 {
-    //Call a method to add a new record to the database
     try
     {
-        var result = await SampleData.AddNew(band);
-        return new ApiResponse("New record has been created to the database", result, 201);
+        var personId = await _personManager.CreateAsync(createRequest);
+        return new ApiResponse("New record has been created to the database", personId, Status201Created);
     }
     catch (Exception ex)
     {
