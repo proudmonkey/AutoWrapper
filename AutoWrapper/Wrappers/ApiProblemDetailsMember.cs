@@ -21,6 +21,8 @@ namespace AutoWrapper.Wrappers
             var statusCode = context.Response.StatusCode;
             object details = exception == null ? DelegateResponse(body, statusCode) : GetProblemDetails(exception, isDebug);
 
+            if (details is ProblemDetails) { (details as ProblemDetails).Instance = context.Request.Path; }
+
             var routeData = context.GetRouteData() ?? _emptyRouteData;
 
             var actionContext = new ActionContext(context, routeData, _emptyActionDescriptor);
@@ -28,7 +30,7 @@ namespace AutoWrapper.Wrappers
             var result = new ObjectResult(details)
             {
                 StatusCode = (details is ProblemDetails problem) ? problem.Status : statusCode,
-                DeclaredType = details.GetType(),
+                DeclaredType = details.GetType()
             };
 
             result.ContentTypes.Add(TypeIdentifier.ProblemJSONHttpContentMediaType);
