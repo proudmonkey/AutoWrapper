@@ -679,6 +679,7 @@ Thank you!
 
 # Release History 
 
+* 03/03/2020: AutoWrapper version `4.0.0` - offcial release.
 * 02/26/2020: AutoWrapper version `4.0.0-rc` - added new options and support for Problem Details, bug fixes and code cleanup.
 * 02/02/2020: AutoWrapper version `3.0.0` - added new options, bug fix and code cleanup.
 * 11/09/2019: AutoWrapper version `2.1.0` - added new options and features.
