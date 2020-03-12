@@ -697,6 +697,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) f
 # Donate
 If you find this project useful — or just feeling generous, consider buying me a beer or a coffee. Cheers! :beers: :coffee:
 
-[![Paypal Donate](https://github.com/proudmonkey/Resources/blob/master/donate_paypal.svg)](https://www.paypal.com/paypalme2/vmsdurano?locale.x=en_US)
+<a href="https://www.paypal.me/vmsdurano"><img src="https://github.com/proudmonkey/Resources/blob/master/donate_paypal.svg" height="40"></a>  
 
 [![BMC](https://github.com/proudmonkey/Resources/blob/master/donate_coffee.png)](https://www.buymeacoffee.com/ImP9gONBW)
