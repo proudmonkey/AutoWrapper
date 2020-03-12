@@ -669,8 +669,6 @@ I’m pretty sure there are still lots of things to improve in this project, so 
 
 Feel free to request an issue on github if you find bugs or request a new feature. Your valuable feedback is much appreciated to better improve this project. If you find this useful, please give it a star to show your support for this project.
 
-Thank you!
-
 # Contributors
 
 * **Vincent Maverick Durano** - [Blog](http://vmsdurano.com/)
@@ -701,4 +699,4 @@ If you find this project useful — or just feeling generous, consider buying me
 |   <a href="https://www.paypal.me/vmsdurano"><img src="https://github.com/proudmonkey/Resources/blob/master/donate_paypal.svg" height="40"></a>   | [![BMC](https://github.com/proudmonkey/Resources/blob/master/donate_coffee.png)](https://www.buymeacoffee.com/ImP9gONBW) |
   
 
-
+Thank you!
