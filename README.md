@@ -692,4 +692,11 @@ Thank you!
 
 # License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details.
+
+# Donate
+If you find this project useful — or just feeling generous, consider buying me a beer or a coffee. Cheers! :beers: :coffee:
+
+[![Paypal Donate](https://github.com/proudmonkey/Resources/blob/master/donate_paypal.svg)](https://www.paypal.com/paypalme2/vmsdurano?locale.x=en_US)
+
+[![BMC](https://github.com/proudmonkey/Resources/blob/master/donate_coffee.png)](https://www.buymeacoffee.com/ImP9gONBW)
