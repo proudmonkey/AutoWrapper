@@ -677,6 +677,7 @@ Feel free to request an issue on github if you find bugs or request a new featur
 
 # Release History 
 
+* 03/15/2020: AutoWrapper version `4.0.1` - expose StatusCode property in ApiProblemDetailsException object.
 * 03/03/2020: AutoWrapper version `4.0.0` - offcial release.
 * 02/26/2020: AutoWrapper version `4.0.0-rc` - added new options and support for Problem Details, bug fixes and code cleanup.
 * 02/02/2020: AutoWrapper version `3.0.0` - added new options, bug fix and code cleanup.
