@@ -26,7 +26,7 @@
 1. Download and Install the latest `AutoWrapper.Core` from NuGet or via CLI:
 
 ```
-PM> Install-Package AutoWrapper.Core -Version 4.0.0-rc
+PM> Install-Package AutoWrapper.Core -Version 4.0.0
 ```
 
 2. Declare the following namespace within `Startup.cs`
@@ -632,7 +632,7 @@ app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions {
 `AutoWrapper` omit any request with “`/swagger`” in the `URL` so you can still be able to navigate to the Swagger UI for your API documentation.
 
 # Support for NetCoreApp2.1 and NetCoreApp2.2
-`AutoWrapper` version 2.x also now supports both .NET Core 2.1 and 2.2. You just need to install the Nuget package `Newtonsoft.json` first before `AutoWrapper.Core`.
+`AutoWrapper` version 2.x - 3.0 also supports both .NET Core 2.1 and 2.2. You just need to install the Nuget package `Newtonsoft.json` first before `AutoWrapper.Core`.
 
 # Unwrapping the Result from .NET Client 
 [AutoWrapper.Server](https://github.com/proudmonkey/AutoWrapper.Server) is simple library that enables you unwrap the `Result` property of the AutoWrapper's `ApiResponse` object in your C# .NET Client code. The goal is to deserialize the `Result` object directly to your matching `Model` without having you to create the ApiResponse schema. 
@@ -669,8 +669,6 @@ I’m pretty sure there are still lots of things to improve in this project, so 
 
 Feel free to request an issue on github if you find bugs or request a new feature. Your valuable feedback is much appreciated to better improve this project. If you find this useful, please give it a star to show your support for this project.
 
-Thank you!
-
 # Contributors
 
 * **Vincent Maverick Durano** - [Blog](http://vmsdurano.com/)
@@ -679,6 +677,7 @@ Thank you!
 
 # Release History 
 
+* 03/03/2020: AutoWrapper version `4.0.0` - offcial release.
 * 02/26/2020: AutoWrapper version `4.0.0-rc` - added new options and support for Problem Details, bug fixes and code cleanup.
 * 02/02/2020: AutoWrapper version `3.0.0` - added new options, bug fix and code cleanup.
 * 11/09/2019: AutoWrapper version `2.1.0` - added new options and features.
@@ -691,4 +690,13 @@ Thank you!
 
 # License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details.
+
+# Donate
+If you find this project useful — or just feeling generous, consider buying me a beer or a coffee. Cheers! :beers: :coffee:
+|               |               |
+| ------------- |:-------------:|
+|   <a href="https://www.paypal.me/vmsdurano"><img src="https://github.com/proudmonkey/Resources/blob/master/donate_paypal.svg" height="40"></a>   | [![BMC](https://github.com/proudmonkey/Resources/blob/master/donate_coffee.png)](https://www.buymeacoffee.com/ImP9gONBW) |
+  
+
+Thank you!
