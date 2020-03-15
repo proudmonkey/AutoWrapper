@@ -30,6 +30,7 @@ namespace AutoWrapper.Wrappers
         {
         }
 
+        public int StatusCode => Problem.Details.Status ?? 0;
         internal ApiProblemDetails Problem { get; }
 
         public override string ToString()
