@@ -1,4 +1,6 @@
 
+#Release Log
+
 * 03/15/2020: AutoWrapper version `4.1.0-rc` - added `[ResponseLogIgnore]` attribute and `ShouldLogResponse` property in `[AutoWrapIgnore]` attribute.
 * 03/15/2020: AutoWrapper version `4.0.1` - expose StatusCode property in ApiProblemDetailsException object.
 * 03/03/2020: AutoWrapper version `4.0.0` - offcial release.
