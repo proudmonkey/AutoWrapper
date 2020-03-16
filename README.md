@@ -677,7 +677,7 @@ Feel free to request an issue on github if you find bugs or request a new featur
 
 # Release History 
 
-See: [Release Log]https://github.com/proudmonkey/AutoWrapper/blob/master/RELEASE.MD
+See: [Release Log](https://github.com/proudmonkey/AutoWrapper/blob/master/RELEASE.MD)
 
 # License
 
