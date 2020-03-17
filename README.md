@@ -677,16 +677,7 @@ Feel free to request an issue on github if you find bugs or request a new featur
 
 # Release History 
 
-* 03/03/2020: AutoWrapper version `4.0.0` - offcial release.
-* 02/26/2020: AutoWrapper version `4.0.0-rc` - added new options and support for Problem Details, bug fixes and code cleanup.
-* 02/02/2020: AutoWrapper version `3.0.0` - added new options, bug fix and code cleanup.
-* 11/09/2019: AutoWrapper version `2.1.0` - added new options and features.
-* 11/05/2019: AutoWrapper version `2.0.2` - added UnAuthorize and BadRequest method response.
-* 10/17/2019: AutoWrapper version `2.0.1` - added new features.
-* 10/06/2019: AutoWrapper version `1.2.0` - refactor, cleanup and bugfixes for SPA support.
-* 10/04/2019: AutoWrapper version `1.1.0` - with newly added options.
-* 09/23/2019: AutoWrapper version `1.0.0` - offcial release. 
-* 09/14/2019: AutoWrapper version `1.0.0-rc` - prerelease. 
+See: [Release Log](https://github.com/proudmonkey/AutoWrapper/blob/master/RELEASE.MD)
 
 # License
 
