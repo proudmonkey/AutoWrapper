@@ -33,14 +33,14 @@ namespace AutoWrapper.Base
             else
             {
                 var stopWatch = Stopwatch.StartNew();
-                var request = await awm.FormatRequestAsync(context.Request);
+                var requestBody = await awm.GetRequestBodyAsync(context.Request);
                 var originalResponseBodyStream = context.Response.Body;
+                bool isRequestOk = false;
 
                 using var memoryStream = new MemoryStream();
-
+                bool shouldLogRequestData = ShouldLogRequestData(context);
                 try
                 {
-                  
                     context.Response.Body = memoryStream;
                     await _next.Invoke(context);
 
@@ -49,11 +49,8 @@ namespace AutoWrapper.Base
                     var bodyAsText = await awm.ReadResponseBodyStreamAsync(memoryStream);
                     context.Response.Body = originalResponseBodyStream;
 
-                    var actionIgnore = context.Response.Headers[TypeIdentifier.AutoWrapIgnoreFilterHeader];
-                    if (actionIgnore.Count > 0)
-                    {
-                        await awm.WrapIgnoreAsync(context, bodyAsText); return;
-                    }
+                    var actionIgnore = context.Request.Headers[TypeIdentifier.AutoWrapIgnoreFilterHeader];
+                    if (actionIgnore.Count > 0){ await awm.WrapIgnoreAsync(context, bodyAsText); return; }
 
                     if (context.Response.StatusCode != Status304NotModified || context.Response.StatusCode != Status204NoContent)
                     {
@@ -72,7 +69,8 @@ namespace AutoWrapper.Base
                             return;
                         }
 
-                        if(awm.IsRequestSuccessful(context.Response.StatusCode))
+                        isRequestOk = awm.IsRequestSuccessful(context.Response.StatusCode);
+                        if (isRequestOk)
                         {
                             await awm.HandleSuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
                         }
@@ -95,18 +93,33 @@ namespace AutoWrapper.Base
                 }
                 finally
                 {
-                    LogResponse(context, request, stopWatch);
+                    LogHttpRequest(context, requestBody, stopWatch, isRequestOk);
                 }
-
             }
-
         }
 
-        private void LogResponse(HttpContext context, string request, Stopwatch stopWatch)
+        private bool ShouldLogRequestData(HttpContext context)
+        {
+            return context.Request.Headers[TypeIdentifier.ShouldLogRequestDataFilterHeader].Count > 0
+                            ? context.Response.Headers[TypeIdentifier.ShouldLogRequestDataFilterHeader].ToString().ToBoolean()
+                            : true;
+        }
+
+        private void LogHttpRequest(HttpContext context, string requestBody, Stopwatch stopWatch, bool isRequestOk)
         {
             stopWatch.Stop();
             if (_options.EnableResponseLogging)
             {
+                bool shouldLogRequestData = ShouldLogRequestData(context);
+
+                var request = shouldLogRequestData
+                            ? isRequestOk 
+                                ? $"{context.Request.Method} {context.Request.Scheme} {context.Request.Host}{context.Request.Path} {context.Request.QueryString} {requestBody}"
+                                : (!isRequestOk && _options.LogRequestDataOnException)
+                                   ? $"{context.Request.Method} {context.Request.Scheme} {context.Request.Host}{context.Request.Path} {context.Request.QueryString} {requestBody}"
+                                   : $"{context.Request.Method} {context.Request.Scheme} {context.Request.Host}{context.Request.Path}"
+                            : $"{context.Request.Method} {context.Request.Scheme} {context.Request.Host}{context.Request.Path}";
+
                 _logger.Log(LogLevel.Information, $@"Source:[{context.Connection.RemoteIpAddress.ToString() }] 
                                                      Request: {request} 
                                                      Responded with [{context.Response.StatusCode}] in {stopWatch.ElapsedMilliseconds}ms");

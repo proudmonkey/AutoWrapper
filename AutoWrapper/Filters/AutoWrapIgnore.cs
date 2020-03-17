@@ -4,16 +4,23 @@ using System;
 
 namespace AutoWrapper.Filters
 {
-    public class AutoWrapIgnore : Attribute, IResultFilter
+    public class AutoWrapIgnore : Attribute, IActionFilter
     {
-        public void OnResultExecuting(ResultExecutingContext context)
+        public bool ShouldLogRequestData{ get; set; } = true;
+        public AutoWrapIgnore(){}
+        public void OnActionExecuting(ActionExecutingContext context)
         {
-            context.HttpContext.Response.Headers.Add(TypeIdentifier.AutoWrapIgnoreFilterHeader, new string[] { "true" });
+            context.HttpContext.Request.Headers.Add(TypeIdentifier.AutoWrapIgnoreFilterHeader, new string[] { "true" });
+
+            if (!ShouldLogRequestData)
+            {
+                context.HttpContext.Request.Headers.Add(TypeIdentifier.ShouldLogRequestDataFilterHeader, new string[] { "false" });
+            }
         }
 
-        public void OnResultExecuted(ResultExecutedContext context)
+        public void OnActionExecuted(ActionExecutedContext context)
         {
-            // Can't add to headers here because response has started.
+            // our code after action executes
         }
     }
 }

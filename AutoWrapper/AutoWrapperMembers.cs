@@ -1,20 +1,19 @@
 ﻿using AutoWrapper.Extensions;
-using AutoWrapper.Wrappers;
 using AutoWrapper.Helpers;
+using AutoWrapper.Wrappers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Net;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
 using static Microsoft.AspNetCore.Http.StatusCodes;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc;
 
 namespace AutoWrapper
 {
@@ -39,7 +38,7 @@ namespace AutoWrapper
             _hasSchemaForMappping = hasSchemaForMappping;
         }
 
-        public async Task<string> FormatRequestAsync(HttpRequest request)
+        public async Task<string> GetRequestBodyAsync(HttpRequest request)
         {
             var httpMethodsWithRequestBody = new[] { "POST", "PUT", "PATCH" };
             var hasRequestBody = httpMethodsWithRequestBody.Any(x => x.Equals(request.Method.ToUpper()));
@@ -54,8 +53,7 @@ namespace AutoWrapper
                 requestBody = Encoding.UTF8.GetString(memoryStream.ToArray());
                 request.Body.Seek(0, SeekOrigin.Begin);
             }
-
-            return $"{request.Method} {request.Scheme} {request.Host}{request.Path} {request.QueryString} {requestBody}";
+            return requestBody;
         }
 
         public async Task<string> ReadResponseBodyStreamAsync(Stream bodyStream)

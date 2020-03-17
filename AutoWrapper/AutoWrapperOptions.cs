@@ -9,5 +9,6 @@ namespace AutoWrapper
         public ReferenceLoopHandling ReferenceLoopHandling { get; set; } = ReferenceLoopHandling.Ignore;
         public bool UseCustomExceptionFormat { get; set; } = false;
         public bool UseApiProblemDetailsException { get; set; } = false;
+        public bool LogRequestDataOnException { get; set; } = true;
     }
 }
