@@ -573,7 +573,7 @@ app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { IsApiOnly = false
 ```
 
 #### WrapWhenApiPathStartsWith
-If you set the `IsApiOnly` option to `false`, you can also specify the segment of your `API` path for validation. By default it was set to `"/api"`. If you want to set it to something else, then you can do:
+If you set the `IsApiOnly` option to `false`, you can also specify the segment of your `API` path for validation. By default it is set to `"/api"`. If you want to set it to something else, then you can do:
 
 ```csharp
 app.UseApiResponseAndExceptionWrapper( new AutoWrapperOptions { 
