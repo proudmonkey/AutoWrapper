@@ -665,9 +665,9 @@ For more information, see: [AutoWrapper.Server](https://github.com/proudmonkey/A
 * [AutoWrapper.Server: Sample Usage](http://vmsdurano.com/autowrapper-server-is-now-available/)
 
 # Feedback and Give a Star! :star:
-I’m pretty sure there are still lots of things to improve in this project, so feel free to try it out and let me know your thoughts.
+I’m pretty sure there are still lots of things to improve in this project. Try it out and let me know your thoughts.
 
-Feel free to request an issue on github if you find bugs or request a new feature. Your valuable feedback is much appreciated to better improve this project. If you find this useful, please give it a star to show your support for this project.
+Feel free to submit a [ticket](https://github.com/proudmonkey/AutoWrapper/issues) if you find bugs or request a new feature. Your valuable feedback is much appreciated to better improve this project. If you find this useful, please give it a star to show your support for this project.
 
 # Contributors
 
