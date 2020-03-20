@@ -127,7 +127,7 @@ Here are a few examples for throwing your own exception message.
 ```csharp
 if (!ModelState.IsValid)
 {
-    throw new ApiException(ModelState.AllErrors());
+    throw new ApiException(ModelState);
 }
 ```
 
@@ -243,7 +243,7 @@ The result would look something like this:
 The `ApiException` object contains the following overload constructors that you can use to define an exception:
 
 ```csharp
-ApiException(string message, int statusCode = 500, string errorCode = "", string refLink = "")
+ApiException(string message, int statusCode = 400, string errorCode = "", string refLink = "")
 ApiException(IEnumerable<ValidationError> errors, int statusCode = 400)
 ApiException(System.Exception ex, int statusCode = 500)
 ApiException(object custom, int statusCode = 400)
