@@ -127,7 +127,7 @@ Here are a few examples for throwing your own exception message.
 ```csharp
 if (!ModelState.IsValid)
 {
-    throw new ApiException(ModelState);
+    throw new ApiException(ModelState.AllErrors());
 }
 ```
 
