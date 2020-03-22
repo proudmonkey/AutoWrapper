@@ -672,6 +672,7 @@ Feel free to submit a [ticket](https://github.com/proudmonkey/AutoWrapper/issues
 # Contributors
 
 * **Vincent Maverick Durano** - [Blog](http://vmsdurano.com/)
+* **Huei Feng** - [Github Profile](https://github.com/hueifeng)
 * **ITninja04** - [Github Profile](https://github.com/ITninja04)
 * **Rahmat Slamet** - [Github Profile](https://github.com/arhen)
 
