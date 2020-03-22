@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29230.61
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoWrapper", "src\AutoWrapper\AutoWrapper.csproj", "{AE14D156-A166-47CF-90D7-4A5A17E8D1F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoWrapper", "AutoWrapper\AutoWrapper.csproj", "{AE14D156-A166-47CF-90D7-4A5A17E8D1F0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoWrapper.Test", "test\AutoWrapper.Test\AutoWrapper.Test.csproj", "{B6E2E6D3-977C-458A-9F67-1497F400637E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoWrapper.Test", "AutoWrapper.Test\AutoWrapper.Test.csproj", "{B6E2E6D3-977C-458A-9F67-1497F400637E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
