@@ -62,7 +62,8 @@ namespace AutoWrapper.Base
                         { context.Response.StatusCode = Status404NotFound; }
 
                         if (!context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith))
-                            && bodyAsText.IsHtml() 
+                            && (bodyAsText.IsHtml()
+                            && !_options.BypassHTMLValidation)
                             && context.Response.StatusCode == Status200OK)
                         {
                             if (memoryStream.Length > 0) { await awm.HandleNotApiRequestAsync(context); }
