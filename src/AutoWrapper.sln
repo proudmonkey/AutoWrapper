@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29230.61
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoWrapper", "AutoWrapper\AutoWrapper.csproj", "{3CE65976-128D-486C-9454-A42055A361F2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoWrapper.Test", "AutoWrapper.Test\AutoWrapper.Test.csproj", "{2E533B82-6A8C-466C-92AC-42C2346DB5C5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3CE65976-128D-486C-9454-A42055A361F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CE65976-128D-486C-9454-A42055A361F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CE65976-128D-486C-9454-A42055A361F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CE65976-128D-486C-9454-A42055A361F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E533B82-6A8C-466C-92AC-42C2346DB5C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E533B82-6A8C-466C-92AC-42C2346DB5C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E533B82-6A8C-466C-92AC-42C2346DB5C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E533B82-6A8C-466C-92AC-42C2346DB5C5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D0276B23-82B9-4372-95E8-631B10BB65D8}
+	EndGlobalSection
+EndGlobal
