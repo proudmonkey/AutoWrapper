@@ -1,4 +1,4 @@
-<img align="right" src="/AutoWrapper/logo.png" />
+<img align="right" src="/src/AutoWrapper/logo.png" />
 
 # AutoWrapper  [![Nuget](https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue)](https://www.nuget.org/packages/AutoWrapper.Core) [![Nuget downloads](https://img.shields.io/nuget/dt/AutoWrapper.Core?color=green)](https://www.nuget.org/packages/AutoWrapper.Core)
 
@@ -672,6 +672,7 @@ Feel free to submit a [ticket](https://github.com/proudmonkey/AutoWrapper/issues
 # Contributors
 
 * **Vincent Maverick Durano** - [Blog](http://vmsdurano.com/)
+* **Huei Feng** - [Github Profile](https://github.com/hueifeng)
 * **ITninja04** - [Github Profile](https://github.com/ITninja04)
 * **Rahmat Slamet** - [Github Profile](https://github.com/arhen)
 
