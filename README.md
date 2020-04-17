@@ -6,15 +6,15 @@
 
 #### Main features:
 
-* Exception handling
-* `ModelState` validation error handling (support both `Data Annotation` and `FluentValidation`)
-* A configurable `API` exception
-* A consistent response format for `Result` and `Errors`
-* A detailed `Result` response
-* A detailed `Error` response
-* A configurable `HTTP` `StatusCodes` and messages
-* Add support for `Swagger`
-* Add Logging support for `Request`, `Response` and `Exceptions`
+* Exception handling.
+* `ModelState` validation error handling (support both `Data Annotation` and `FluentValidation`).
+* A configurable `API` exception.
+* A consistent response format for `Result` and `Errors`.
+* A detailed `Result` response.
+* A detailed `Error` response.
+* A configurable `HTTP` `StatusCodes` and messages.
+* Add support for `Swagger`.
+* Add Logging support for `Request`, `Response` and `Exceptions`.
 * A configurable middleware `options` to configure the wrapper. See **Options** section below for details.
 * Enable property name mappings for the default `ApiResponse` properties.
 * Add support for implementing your own user-defined `Response` and `Error` schema / object.
