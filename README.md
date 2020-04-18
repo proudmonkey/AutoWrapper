@@ -108,10 +108,13 @@ Running the code will give you the following result when successful:
     "result": 100
 }
 ```
-The `ApiResponse` object has the following parameters that you can set:
+The `ApiResponse` object has the following overload constructors that you can use:
 
 ```csharp
-ApiResponse(string message, object result = null, int statusCode = 200, string apiVersion = "1.0.0.0")  
+ApiResponse(string message, object result = null, int statusCode = 200, string apiVersion = "1.0.0.0")
+ApiResponse(object result, int statusCode = 200)
+ApiResponse(int statusCode, object apiError)
+ApiResponse()
 ```
 
 # Defining Your Own Api Exception
