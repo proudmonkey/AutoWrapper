@@ -6,15 +6,15 @@
 
 #### Main features:
 
-* Exception handling
-* `ModelState` validation error handling (support both `Data Annotation` and `FluentValidation`)
-* A configurable `API` exception
-* A consistent response format for `Result` and `Errors`
-* A detailed `Result` response
-* A detailed `Error` response
-* A configurable `HTTP` `StatusCodes` and messages
-* Add support for `Swagger`
-* Add Logging support for `Request`, `Response` and `Exceptions`
+* Exception handling.
+* `ModelState` validation error handling (support both `Data Annotation` and `FluentValidation`).
+* A configurable `API` exception.
+* A consistent response format for `Result` and `Errors`.
+* A detailed `Result` response.
+* A detailed `Error` response.
+* A configurable `HTTP` `StatusCodes` and messages.
+* Add support for `Swagger`.
+* Add Logging support for `Request`, `Response` and `Exceptions`.
 * A configurable middleware `options` to configure the wrapper. See **Options** section below for details.
 * Enable property name mappings for the default `ApiResponse` properties.
 * Add support for implementing your own user-defined `Response` and `Error` schema / object.
@@ -108,10 +108,13 @@ Running the code will give you the following result when successful:
     "result": 100
 }
 ```
-The `ApiResponse` object has the following parameters that you can set:
+The `ApiResponse` object has the following overload constructors that you can use:
 
 ```csharp
-ApiResponse(string message, object result = null, int statusCode = 200, string apiVersion = "1.0.0.0")  
+ApiResponse(string message, object result = null, int statusCode = 200, string apiVersion = "1.0.0.0")
+ApiResponse(object result, int statusCode = 200)
+ApiResponse(int statusCode, object apiError)
+ApiResponse()
 ```
 
 # Defining Your Own Api Exception
