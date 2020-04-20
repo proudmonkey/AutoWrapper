@@ -512,6 +512,9 @@ That’s it. One thing to note here is that once you use your own schema for you
 # Options
 The following properties are the available options that you can set:
 
+### Version 4.1.0 Addtions
+* `LogRequestDataOnException`
+
 ### Version 4.0.0 Addtions
 * `UseApiProblemDetailsException`
 * `UseCustomExceptionFormat`
@@ -614,6 +617,36 @@ public async Task<IEnumerable<Person>> Get()
 }
 ```
 
+# RequestDataLogIgnore Attribute
+You can use the `[RequestDataLogIgnore]` if you don't want certain endpoints to log the data in the requests:
+
+```csharp
+[HttpGet]
+[RequestDataLogIgnore]
+public async Task<ApiResponse> Post([FromBody] CreatePersonRequest personRequest)  
+{
+    if (!ModelState.IsValid)
+    {
+        throw new ApiException(ModelState.AllErrors());
+    }
+
+    return new ApiResponse("Record successfully created.", 
+                            await _repo.CreateAsync(personRequest), 
+                            Status201Created);
+}
+```
+
+You can use the `[AutoWrapIgnore]` attribute and set `ShouldLogRequestData` property to `false` if you have an endpoint that don't need to be wrapped and also don't want to log the data in the requests:
+
+```csharp
+[HttpGet]
+[AutoWrapIgnore(ShouldLogRequestData = false)]
+public async Task<IEnumerable<PersonResponse>> Get()  
+{
+     // Rest of the code here
+}
+```
+
 # Support for Logging
 
 Another good thing about `AutoWrapper` is that logging is already pre-configured. .NET Core apps has built-in logging mechanism by default, and any requests and responses that has been intercepted by the wrapper will be automatically logged (thanks to Dependency Injecton!). .NET Core supports a logging `API` that works with a variety of built-in and third-party logging providers. Depending on what supported .NET Core logging provider you use and how you configure the location to log the data (e.g text file, Cloud , etc. ), AutoWrapper will automatically write the logs there for you.
@@ -626,6 +659,14 @@ For example:
 app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions {  
     EnableResponseLogging = false, 
     EnableExceptionLogging = false 
+});
+```
+
+You can set the `LogRequestDataOnException` option to `false` if you want to exclude the request body data in the logs when an exception occurs.
+
+```csharp
+app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions {  
+    LogRequestDataOnException = false 
 });
 ```
 
