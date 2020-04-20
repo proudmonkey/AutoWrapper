@@ -625,14 +625,7 @@ You can use the `[RequestDataLogIgnore]` if you don't want certain endpoints to 
 [RequestDataLogIgnore]
 public async Task<ApiResponse> Post([FromBody] CreatePersonRequest personRequest)  
 {
-    if (!ModelState.IsValid)
-    {
-        throw new ApiException(ModelState.AllErrors());
-    }
-
-    return new ApiResponse("Record successfully created.", 
-                            await _repo.CreateAsync(personRequest), 
-                            Status201Created);
+    //Rest of the code here
 }
 ```
 
@@ -643,7 +636,7 @@ You can use the `[AutoWrapIgnore]` attribute and set `ShouldLogRequestData` prop
 [AutoWrapIgnore(ShouldLogRequestData = false)]
 public async Task<IEnumerable<PersonResponse>> Get()  
 {
-     // Rest of the code here
+     //Rest of the code here
 }
 ```
 
