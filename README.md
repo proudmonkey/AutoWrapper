@@ -713,6 +713,8 @@ Feel free to submit a [ticket](https://github.com/proudmonkey/AutoWrapper/issues
 * **ITninja04** - [Github Profile](https://github.com/ITninja04)
 * **Rahmat Slamet** - [Github Profile](https://github.com/arhen)
 
+Want to contribute? Please read the CONTRIBUTING docs [here](https://github.com/proudmonkey/AutoWrapper/blob/master/CONTRIBUTING.md).
+
 # Release History 
 
 See: [Release Log](https://github.com/proudmonkey/AutoWrapper/blob/master/RELEASE.MD)
