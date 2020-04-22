@@ -12,5 +12,5 @@
 * 10/17/2019: AutoWrapper version `2.0.1` - added new features. More info, see [release notes](https://vmsdurano.com/autowrapper-version-2-is-now-released/).
 * 10/06/2019: AutoWrapper version `1.2.0` - refactor, cleanup and bugfixes for SPA support.
 * 10/04/2019: AutoWrapper version `1.1.0` - with newly added options.
-* 09/23/2019: AutoWrapper version `1.0.0` - offcial release. 
+* 09/23/2019: AutoWrapper version `1.0.0` - offcial release. More info, see [release notes](https://vmsdurano.com/autowrapper-is-officially-released/).
 * 09/14/2019: AutoWrapper version `1.0.0-rc` - prerelease. 
