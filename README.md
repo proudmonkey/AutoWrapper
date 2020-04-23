@@ -43,7 +43,7 @@ That's simple! Here’s how the response is going to look like for the default A
 
 ```json
 {
-    "message": "Request successful.",
+    "message": "GET Request successful.",
     "isError": false,
     "result": [
         {
