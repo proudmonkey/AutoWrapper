@@ -6,15 +6,15 @@
 
 #### Main features:
 
-* Exception handling
-* `ModelState` validation error handling (support both `Data Annotation` and `FluentValidation`)
-* A configurable `API` exception
-* A consistent response format for `Result` and `Errors`
-* A detailed `Result` response
-* A detailed `Error` response
-* A configurable `HTTP` `StatusCodes` and messages
-* Add support for `Swagger`
-* Add Logging support for `Request`, `Response` and `Exceptions`
+* Exception handling.
+* `ModelState` validation error handling (support both `Data Annotation` and `FluentValidation`).
+* A configurable `API` exception.
+* A consistent response format for `Result` and `Errors`.
+* A detailed `Result` response.
+* A detailed `Error` response.
+* A configurable `HTTP` `StatusCodes` and messages.
+* Add support for `Swagger`.
+* Add Logging support for `Request`, `Response` and `Exceptions`.
 * A configurable middleware `options` to configure the wrapper. See **Options** section below for details.
 * Enable property name mappings for the default `ApiResponse` properties.
 * Add support for implementing your own user-defined `Response` and `Error` schema / object.
@@ -43,7 +43,7 @@ That's simple! Here’s how the response is going to look like for the default A
 
 ```json
 {
-    "message": "Request successful.",
+    "message": "GET Request successful.",
     "isError": false,
     "result": [
         {
@@ -108,10 +108,13 @@ Running the code will give you the following result when successful:
     "result": 100
 }
 ```
-The `ApiResponse` object has the following parameters that you can set:
+The `ApiResponse` object has the following overload constructors that you can use:
 
 ```csharp
-ApiResponse(string message, object result = null, int statusCode = 200, string apiVersion = "1.0.0.0")  
+ApiResponse(string message, object result = null, int statusCode = 200, string apiVersion = "1.0.0.0")
+ApiResponse(object result, int statusCode = 200)
+ApiResponse(int statusCode, object apiError)
+ApiResponse()
 ```
 
 # Defining Your Own Api Exception
@@ -509,6 +512,9 @@ That’s it. One thing to note here is that once you use your own schema for you
 # Options
 The following properties are the available options that you can set:
 
+### Version 4.1.0 Addtions
+* `LogRequestDataOnException`
+
 ### Version 4.0.0 Addtions
 * `UseApiProblemDetailsException`
 * `UseCustomExceptionFormat`
@@ -611,6 +617,29 @@ public async Task<IEnumerable<Person>> Get()
 }
 ```
 
+# RequestDataLogIgnore Attribute
+You can use the `[RequestDataLogIgnore]` if you don't want certain endpoints to log the data in the requests:
+
+```csharp
+[HttpGet]
+[RequestDataLogIgnore]
+public async Task<ApiResponse> Post([FromBody] CreatePersonRequest personRequest)  
+{
+    //Rest of the code here
+}
+```
+
+You can use the `[AutoWrapIgnore]` attribute and set `ShouldLogRequestData` property to `false` if you have an endpoint that don't need to be wrapped and also don't want to log the data in the requests:
+
+```csharp
+[HttpGet]
+[AutoWrapIgnore(ShouldLogRequestData = false)]
+public async Task<IEnumerable<PersonResponse>> Get()  
+{
+     //Rest of the code here
+}
+```
+
 # Support for Logging
 
 Another good thing about `AutoWrapper` is that logging is already pre-configured. .NET Core apps has built-in logging mechanism by default, and any requests and responses that has been intercepted by the wrapper will be automatically logged (thanks to Dependency Injecton!). .NET Core supports a logging `API` that works with a variety of built-in and third-party logging providers. Depending on what supported .NET Core logging provider you use and how you configure the location to log the data (e.g text file, Cloud , etc. ), AutoWrapper will automatically write the logs there for you.
@@ -623,6 +652,14 @@ For example:
 app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions {  
     EnableResponseLogging = false, 
     EnableExceptionLogging = false 
+});
+```
+
+You can set the `LogRequestDataOnException` option to `false` if you want to exclude the request body data in the logs when an exception occurs.
+
+```csharp
+app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions {  
+    LogRequestDataOnException = false 
 });
 ```
 
@@ -675,6 +712,8 @@ Feel free to submit a [ticket](https://github.com/proudmonkey/AutoWrapper/issues
 * **Huei Feng** - [Github Profile](https://github.com/hueifeng)
 * **ITninja04** - [Github Profile](https://github.com/ITninja04)
 * **Rahmat Slamet** - [Github Profile](https://github.com/arhen)
+
+Want to contribute? Please read the CONTRIBUTING docs [here](https://github.com/proudmonkey/AutoWrapper/blob/master/CONTRIBUTING.md).
 
 # Release History 
 

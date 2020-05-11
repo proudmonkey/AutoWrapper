@@ -52,7 +52,7 @@ namespace AutoWrapper.Base
                     var actionIgnore = context.Request.Headers[TypeIdentifier.AutoWrapIgnoreFilterHeader];
                     if (actionIgnore.Count > 0){ await awm.WrapIgnoreAsync(context, bodyAsText); return; }
 
-                    if (context.Response.StatusCode != Status304NotModified || context.Response.StatusCode != Status204NoContent)
+                    if (context.Response.StatusCode != Status304NotModified && context.Response.StatusCode != Status204NoContent)
                     {
 
                         if (!_options.IsApiOnly
