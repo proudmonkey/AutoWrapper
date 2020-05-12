@@ -25,12 +25,7 @@ namespace AutoWrapper.Test
         {
             var builder = new WebHostBuilder()
                  .ConfigureServices(services => { services.AddMvcCore(); })
-                 .ConfigureLogging(
-                     (hostingContext, logging) =>
-                     {
-                         logging.AddConsole();
-                     })
-                .Configure(app =>
+                 .Configure(app =>
                 {
                     app.UseApiResponseAndExceptionWrapper();
                     app.Run(context => Task.FromResult(0));
@@ -39,8 +34,9 @@ namespace AutoWrapper.Test
             var req = new HttpRequestMessage(HttpMethod.Get, "");
             var rep = await server.CreateClient().SendAsync(req);
             var content = await rep.Content.ReadAsStringAsync();
+            var json = JsonHelper.ToJson(new ApiResponse("GET Request successful.", "", 0, null),null);
             Convert.ToInt32(rep.StatusCode).ShouldBe(200);
-            "{\"message\":\"GET Request successful.\",\"isError\":false,\"result\":\"\"}".ShouldBe(content);
+            content.ShouldBe(json);
         }
 
 
@@ -50,11 +46,6 @@ namespace AutoWrapper.Test
         {
             var builder = new WebHostBuilder()
                 .ConfigureServices(services => { services.AddMvcCore(); })
-                .ConfigureLogging(
-                    (hostingContext, logging) =>
-                    {
-                        logging.AddConsole();
-                    })
                 .Configure(app =>
                 {
                     app.UseApiResponseAndExceptionWrapper();
@@ -65,18 +56,14 @@ namespace AutoWrapper.Test
             var rep = await server.CreateClient().SendAsync(req);
             var content = await rep.Content.ReadAsStringAsync();
             Convert.ToInt32(rep.StatusCode).ShouldBe(200);
-            "{\"message\":\"GET Request successful.\",\"isError\":false,\"result\":\"HueiFeng\"}".ShouldBe(content);
+            var json = JsonHelper.ToJson(new ApiResponse("GET Request successful.", "HueiFeng", 0, null), null);
+            content.ShouldBe(json);
         }
         [Fact(DisplayName = "CustomMessage")]
         public async Task AutoWrapperCustomMessage_Test()
         {
             var builder = new WebHostBuilder()
             .ConfigureServices(services => { services.AddMvcCore(); })
-            .ConfigureLogging(
-                (hostingContext, logging) =>
-                {
-                    logging.AddConsole();
-                })
             .Configure(app =>
             {
                 app.UseApiResponseAndExceptionWrapper();
@@ -88,7 +75,8 @@ namespace AutoWrapper.Test
             var rep = await server.CreateClient().SendAsync(req);
             var content = await rep.Content.ReadAsStringAsync();
             Convert.ToInt32(rep.StatusCode).ShouldBe(200);
-            "{\"message\":\"customMessage.\",\"isError\":false,\"result\":\"Test\"}".ShouldBe(content);
+            var json = JsonHelper.ToJson(new ApiResponse("customMessage.", "Test", 0, null), null);
+            content.ShouldBe(json);
         }
 
         [Fact(DisplayName = "CapturingModelStateApiException")]
@@ -98,25 +86,29 @@ namespace AutoWrapper.Test
             dictionary.AddModelError("name", "some error");
             var builder = new WebHostBuilder()
                 .ConfigureServices(services => { services.AddMvcCore(); })
-                .ConfigureLogging(
-                    (hostingContext, logging) =>
-                    {
-                        logging.AddConsole();
-                    })
                 .Configure(app =>
                 {
                     app.UseApiResponseAndExceptionWrapper();
 
-
                     app.Run(context => throw new ApiException(dictionary["name"]));
                 });
+            Exception ex;
+            try
+            {
+                throw new ApiException(dictionary["name"]);
+            }
+            catch (Exception e)
+            {
+                ex = e;
+            }
             var server = new TestServer(builder);
             var req = new HttpRequestMessage(HttpMethod.Get, "");
             var rep = await server.CreateClient().SendAsync(req);
             var content = await rep.Content.ReadAsStringAsync();
             Convert.ToInt32(rep.StatusCode).ShouldBe(400);
-            var str = "{\"isError\":true,\"responseException\":{\"key\":\"name\",\"subKey\":{\"buffer\":\"name\",\"offset\":0,\"length\":4,\"value\":\"name\",\"hasValue\":true},\"isContainerNode\":false,\"errors\":[{\"errorMessage\":\"some error\"}],\"validationState\":\"Invalid\"}}";
-            str.ShouldBe(content);
+            var ex1 = ex as ApiException;
+            var json=JsonHelper.ToJson(new ApiResponse(0, ex1.CustomError), null);
+            content.ShouldBe(json);
         }
         [Fact(DisplayName = "CapturingModelStateApiProblemDetailsException")]
         public async Task AutoWrapperCapturingModelState_ApiProblemDetailsException_Test()
@@ -125,16 +117,9 @@ namespace AutoWrapper.Test
             dictionary.AddModelError("name", "some error");
             var builder = new WebHostBuilder()
                 .ConfigureServices(services => { services.AddMvcCore(); })
-                .ConfigureLogging(
-                    (hostingContext, logging) =>
-                    {
-                        logging.AddConsole();
-                    })
                 .Configure(app =>
                 {
                     app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { UseApiProblemDetailsException = true });
-
-
                     app.Run(context => throw new ApiProblemDetailsException(dictionary));
                 });
             var server = new TestServer(builder);
@@ -151,11 +136,6 @@ namespace AutoWrapper.Test
         {
             var builder = new WebHostBuilder()
                 .ConfigureServices(services => { services.AddMvcCore(); })
-                .ConfigureLogging(
-                    (hostingContext, logging) =>
-                    {
-                        logging.AddConsole();
-                    })
                 .Configure(app =>
                 {
                     app.UseApiResponseAndExceptionWrapper();
@@ -166,8 +146,12 @@ namespace AutoWrapper.Test
             var rep = await server.CreateClient().SendAsync(req);
             var content = await rep.Content.ReadAsStringAsync();
             Convert.ToInt32(rep.StatusCode).ShouldBe(404);
-            var str = "{\"isError\":true,\"responseException\":{\"exceptionMessage\":\"does not exist.\"}}";
-            str.ShouldBe(content);
+            var ex1 = new ApiException("does not exist.", 404);
+            var json = JsonHelper.ToJson(
+                new ApiResponse(0, new ApiError(ex1.Message) { ReferenceErrorCode = ex1.ReferenceErrorCode, ReferenceDocumentLink = ex1.ReferenceDocumentLink })
+                , null);
+            content.ShouldBe(json);
+
         }
 
         [Fact(DisplayName = "ThrowingExceptionMessageApiProblemDetailsException")]
@@ -175,11 +159,6 @@ namespace AutoWrapper.Test
         {
             var builder = new WebHostBuilder()
                 .ConfigureServices(services => { services.AddMvcCore(); })
-                .ConfigureLogging(
-                    (hostingContext, logging) =>
-                    {
-                        logging.AddConsole();
-                    })
                 .Configure(app =>
                 {
                     app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { UseApiProblemDetailsException = true });
@@ -206,11 +185,6 @@ namespace AutoWrapper.Test
                     });
                     services.AddMvcCore();
                 })
-                .ConfigureLogging(
-                    (hostingContext, logging) =>
-                    {
-                        logging.AddConsole();
-                    })
                 .Configure(app =>
                 {
                     app.UseApiResponseAndExceptionWrapper<MapResponseObject>();
@@ -222,8 +196,10 @@ namespace AutoWrapper.Test
             var rep = await server.CreateClient().SendAsync(req);
             var content = await rep.Content.ReadAsStringAsync();
             Convert.ToInt32(rep.StatusCode).ShouldBe(200);
-            var str = "{\"message\":\"customMessage.\",\"isError\":false,\"data\":\"Test\"}";
-            str.ShouldBe(content);
+            var options = new AutoWrapperOptions();
+            var jsonSettings = JsonHelper.GetJSONSettings<MapResponseObject>(options.IgnoreNullValue, options.ReferenceLoopHandling, options.UseCamelCaseNamingStrategy);
+            var json = JsonHelper.ToJson(new ApiResponse("customMessage.", "Test", 0, null), jsonSettings.Settings);
+            content.ShouldBe(json);
         }
 
         [Fact(DisplayName = "CustomErrorObject")]
@@ -234,11 +210,6 @@ namespace AutoWrapper.Test
                 {
                     services.AddMvcCore();
                 })
-                .ConfigureLogging(
-                    (hostingContext, logging) =>
-                    {
-                        logging.AddConsole();
-                    })
                 .Configure(app =>
                 {
                     app.UseApiResponseAndExceptionWrapper<MapResponseCustomErrorObject>();
@@ -274,7 +245,7 @@ namespace AutoWrapper.Test
                 .Configure(app =>
                 {
                     app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { UseCustomSchema = true });
-                    app.Run(context => context.Response.WriteAsync(new MyCustomApiResponse("Mr.A").ToJson())); 
+                    app.Run(context => context.Response.WriteAsync(new MyCustomApiResponse("Mr.A").ToJson()));
                 });
             var server = new TestServer(builder);
             var req = new HttpRequestMessage(HttpMethod.Get, "");
