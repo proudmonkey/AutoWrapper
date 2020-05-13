@@ -1,4 +1,5 @@
-﻿using AutoWrapper.Test.Helper;
+﻿using AutoWrapper.Helpers;
+using AutoWrapper.Test.Helper;
 using AutoWrapper.Test.Models;
 using AutoWrapper.Wrappers;
 using Microsoft.AspNetCore.Builder;
@@ -197,7 +198,7 @@ namespace AutoWrapper.Test
             var content = await rep.Content.ReadAsStringAsync();
             Convert.ToInt32(rep.StatusCode).ShouldBe(200);
             var options = new AutoWrapperOptions();
-            var jsonSettings = JsonHelper.GetJSONSettings<MapResponseObject>(options.IgnoreNullValue, options.ReferenceLoopHandling, options.UseCamelCaseNamingStrategy);
+            var jsonSettings = JSONHelper.GetJSONSettings<MapResponseObject>(options.IgnoreNullValue, options.ReferenceLoopHandling, options.UseCamelCaseNamingStrategy);
             var json = JsonHelper.ToJson(new ApiResponse("customMessage.", "Test", 0, null), jsonSettings.Settings);
             content.ShouldBe(json);
         }
@@ -237,11 +238,6 @@ namespace AutoWrapper.Test
                 {
                     services.AddMvcCore();
                 })
-                .ConfigureLogging(
-                    (hostingContext, logging) =>
-                    {
-                        logging.AddConsole();
-                    })
                 .Configure(app =>
                 {
                     app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { UseCustomSchema = true });

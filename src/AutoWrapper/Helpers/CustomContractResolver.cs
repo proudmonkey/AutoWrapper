@@ -7,7 +7,7 @@ using AutoWrapper.Extensions;
 
 namespace AutoWrapper.Helpers
 {
-    internal class CustomContractResolver<T> : DefaultContractResolver
+    public class CustomContractResolver<T> : DefaultContractResolver
     {
         public Dictionary<string, string> _propertyMappings { get; set; }
         private readonly bool _useCamelCaseNaming;

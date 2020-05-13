@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace AutoWrapper.Helpers
 {
-    internal static class JSONHelper
+    public static class JSONHelper
     {
         public static JsonSerializerSettings GetJSONSettings(bool ignoreNull = true, ReferenceLoopHandling referenceLoopHandling = ReferenceLoopHandling.Ignore, bool useCamelCaseNaming = true)
         {
