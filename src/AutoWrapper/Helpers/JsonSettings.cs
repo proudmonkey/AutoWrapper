@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace AutoWrapper.Helpers
 {
-    internal class CamelCaseContractResolverJsonSettings
+    public class CamelCaseContractResolverJsonSettings
     {
         public JsonSerializerSettings GetJSONSettings(bool ignoreNull, ReferenceLoopHandling referenceLoopHandling = ReferenceLoopHandling.Ignore, bool useCamelCaseNaming = true)
         {
@@ -19,7 +19,7 @@ namespace AutoWrapper.Helpers
         }
     }
 
-    internal class CustomContractResolverJsonSettings<T>
+    public class CustomContractResolverJsonSettings<T>
     {
         public (JsonSerializerSettings Settings, Dictionary<string, string> Mappings) GetJSONSettings(bool ignoreNull, ReferenceLoopHandling referenceLoopHandling = ReferenceLoopHandling.Ignore, bool useCamelCaseNaming = true)
         {
