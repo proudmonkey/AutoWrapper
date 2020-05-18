@@ -512,14 +512,14 @@ That’s it. One thing to note here is that once you use your own schema for you
 # Options
 The following properties are the available options that you can set:
 
-### Version 4.1.0 Addtions
+### Version 4.1.0 Additions
 * `LogRequestDataOnException`
 
-### Version 4.0.0 Addtions
+### Version 4.0.0 Additions
 * `UseApiProblemDetailsException`
 * `UseCustomExceptionFormat`
 
-### Version 3.0.0 Addtions
+### Version 3.0.0 Additions
 * `BypassHTMLValidation `
 * `ReferenceLoopHandling `
 
@@ -572,7 +572,7 @@ app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { IsDebug = true })
 ```
 
 #### IsApiOnly
-`AutoWrapper` is meant to be used for ASP.NET Core API project templates only. If you are combining `API Controllers` within your front-end projects like Angular, MVC, React, Blazor Server and other SPA frameworks that supports .NET Core, then use this property to enable it.
+`AutoWrapper` is meant to be used for ASP.NET Core API project templates only. If you are combining `API Controllers` within your front-end projects like Angular, MVC, React, Blazor Server and other SPA frameworks that supports .NET Core, then use this property to enable it.
 
 ```csharp
 app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { IsApiOnly = false} );
@@ -589,11 +589,11 @@ app.UseApiResponseAndExceptionWrapper( new AutoWrapperOptions {
 ```
 This will activate the `AutoWrapper` to intercept HTTP responses when a request contains the `WrapWhenApiPathStartsWith` value.
 
-> Note that I would still recommend you to implement your `API Controllers` in a seperate project to value the separation of concerns and to avoid mixing route configurations for your `SPAs` and `APIs`.
+> Note that I would still recommend you to implement your `API Controllers` in a separate project to value the separation of concerns and to avoid mixing route configurations for your `SPAs` and `APIs`.
 
 
 # AutoWrapIgnore Attribute
-You can use the `[AutoWrapIgnore]` filter attribute for enpoints that you don't need to be wrapped.
+You can use the `[AutoWrapIgnore]` filter attribute for endpoints that you don't need to be wrapped.
 
 For example:
 
@@ -642,7 +642,7 @@ public async Task<IEnumerable<PersonResponse>> Get()
 
 # Support for Logging
 
-Another good thing about `AutoWrapper` is that logging is already pre-configured. .NET Core apps has built-in logging mechanism by default, and any requests and responses that has been intercepted by the wrapper will be automatically logged (thanks to Dependency Injecton!). .NET Core supports a logging `API` that works with a variety of built-in and third-party logging providers. Depending on what supported .NET Core logging provider you use and how you configure the location to log the data (e.g text file, Cloud , etc. ), AutoWrapper will automatically write the logs there for you.
+Another good thing about `AutoWrapper` is that logging is already pre-configured. .NET Core apps has built-in logging mechanism by default, and any requests and responses that has been intercepted by the wrapper will be automatically logged (thanks to Dependency Injection!). .NET Core supports a logging `API` that works with a variety of built-in and third-party logging providers. Depending on what supported .NET Core logging provider you use and how you configure the location to log the data (e.g text file, Cloud , etc. ), AutoWrapper will automatically write the logs there for you.
 
 You can turn off the default Logging by setting `EnableResponseLogging` and `EnableExceptionLogging` options to `false`.
 
