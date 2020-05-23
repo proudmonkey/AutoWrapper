@@ -73,7 +73,12 @@ namespace AutoWrapper.Base
                         isRequestOk = awm.IsRequestSuccessful(context.Response.StatusCode);
                         if (isRequestOk)
                         {
-                            await awm.HandleSuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
+                            if (_options.IgnoreWrapForOkRequests) {
+                                await awm.WrapIgnoreAsync(context, bodyAsText);
+                            }
+                            else {
+                                await awm.HandleSuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
+                            }
                         }
                         else
                         {
@@ -121,9 +126,9 @@ namespace AutoWrapper.Base
                                    : $"{context.Request.Method} {context.Request.Scheme} {context.Request.Host}{context.Request.Path}"
                             : $"{context.Request.Method} {context.Request.Scheme} {context.Request.Host}{context.Request.Path}";
 
-                _logger.Log(LogLevel.Information, $@"Source:[{context.Connection.RemoteIpAddress }] 
-                                                     Request: {request} 
-                                                     Responded with [{context.Response.StatusCode}] in {stopWatch.ElapsedMilliseconds}ms");
+                _logger.Log(LogLevel.Information, $"Source:[{context.Connection.RemoteIpAddress }] " +
+                                                  $"Request: {request} " +
+                                                  $"Responded with [{context.Response.StatusCode}] in {stopWatch.ElapsedMilliseconds}ms");
             }
         }
 
