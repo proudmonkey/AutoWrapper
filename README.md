@@ -2,6 +2,8 @@
 
 # AutoWrapper  [![Nuget](https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue)](https://www.nuget.org/packages/AutoWrapper.Core) [![Nuget downloads](https://img.shields.io/nuget/dt/AutoWrapper.Core?color=green)](https://www.nuget.org/packages/AutoWrapper.Core)
 
+Language: English | [中文](README.zh-cn.md)  
+
 `AutoWrapper` is a simple, yet customizable global `HTTP` exception handler and response wrapper for ASP.NET Core APIs. It uses an ASP.NET Core `middleware` to intercept incoming `HTTP` requests and automatically wraps the responses for you by providing a consistent response format for both successful and error results. The goal is to let you focus on your business code specific requirements and let the wrapper automatically handle the `HTTP` response. This can speedup the development time when building your APIs while enforcing own standards for your `HTTP` responses.
 
 #### Main features:
@@ -20,7 +22,7 @@
 * Add support for implementing your own user-defined `Response` and `Error` schema / object.
 * Add support for Problem Details exception format.
 * Add support for ignoring action methods that don't need to be wrapped using `[AutoWrapIgnore]` filter attribute.
-* V3.x enable backwards compatibility support for `netcoreapp2.1` and `netcoreapp.2.2` .NET Core frameworks.
+* V3.x enable backwards compatibility support for `netcoreapp2.1` and `netcoreapp2.2` .NET Core frameworks.
 
 # Installation
 1. Download and Install the latest `AutoWrapper.Core` from NuGet or via CLI:
@@ -728,6 +730,6 @@ If you find this project useful — or just feeling generous, consider buying me
 |               |               |
 | ------------- |:-------------:|
 |   <a href="https://www.paypal.me/vmsdurano"><img src="https://github.com/proudmonkey/Resources/blob/master/donate_paypal.svg" height="40"></a>   | [![BMC](https://github.com/proudmonkey/Resources/blob/master/donate_coffee.png)](https://www.buymeacoffee.com/ImP9gONBW) |
-  
+
 
 Thank you!
