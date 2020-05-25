@@ -1,8 +1,8 @@
-* <img align="right" src="/src/AutoWrapper/logo.png" />
+<img align="right" src="/src/AutoWrapper/logo.png" />
 
-  # AutoWrapper  [![Nuget](https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue)](https://www.nuget.org/packages/AutoWrapper.Core) [![Nuget downloads](https://img.shields.io/nuget/dt/AutoWrapper.Core?color=green)](https://www.nuget.org/packages/AutoWrapper.Core) 
+# AutoWrapper  [![Nuget](https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue)](https://www.nuget.org/packages/AutoWrapper.Core) [![Nuget downloads](https://img.shields.io/nuget/dt/AutoWrapper.Core?color=green)](https://www.nuget.org/packages/AutoWrapper.Core)
 
-  `AutoWrapper`是一个简单，可自定义的全局`HTTP`异常处理程序和针对ASP.NET Core API的响应包装器。它使用ASP.NET Core `middleware` 来拦截传入的`HTTP`请求，并通过为成功和错误结果提供一致的响应格式来自动为您包装响应。目的是让您专注于特定于业务代码的要求，并让包装器自动处理`HTTP`响应。这可以加快构建API的开发时间，同时为`HTTP`响应强制执行自己的标准。
+`AutoWrapper`是一个简单，可自定义的全局`HTTP`异常处理程序和针对ASP.NET Core API的响应包装器。它使用ASP.NET Core `middleware` 来拦截传入的`HTTP`请求，并通过为成功和错误结果提供一致的响应格式来自动为您包装响应。目的是让您专注于特定于业务代码的要求，并让包装器自动处理`HTTP`响应。这可以加快构建API的开发时间，同时为`HTTP`响应强制执行自己的标准。
 
   #### 主要特点：
 
