@@ -714,8 +714,7 @@
   * [AutoWrapper Now Supports Problem Details For Your ASP.NET Core APIs](http://vmsdurano.com/autowrapper-now-supports-problemdetails/)
   * [AutoWrapper.Server: Sample Usage](http://vmsdurano.com/autowrapper-server-is-now-available/)
 
-
-  ＃ 反馈并给予好评！:star:
+# 反馈并给予好评！:star:
   我敢肯定，这个项目还有很多事情需要改进。试试看，让我知道您的想法。
 
   如果发现错误或要求新功能，请随时提交[ticket](https://github.com/proudmonkey/AutoWrapper/issues)。非常感谢您宝贵的反馈意见，以更好地改进该项目。如果您觉得此功能有用，请给它加星号，以表示您对该项目的支持。
