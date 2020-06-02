@@ -105,7 +105,6 @@ Running the code will give you the following result when successful:
 ```json
 {
     "message": "New record has been created in the database.",
-    "isError": false,
     "result": 100
 }
 ```
