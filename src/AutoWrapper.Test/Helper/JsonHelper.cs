@@ -27,6 +27,5 @@ namespace AutoWrapper.Test.Helper
             var jsonSettings = JSONHelper.GetJSONSettings(options.IgnoreNullValue, options.ReferenceLoopHandling, options.UseCamelCaseNamingStrategy);
             return JsonConvert.SerializeObject(obj, settings ?? jsonSettings);
         }
-
     }
 }

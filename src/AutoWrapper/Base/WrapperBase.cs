@@ -44,13 +44,13 @@ namespace AutoWrapper.Base
                     context.Response.Body = memoryStream;
                     await _next.Invoke(context);
 
-                    if (context.Response.HasStarted) { LogResponseHasStartedError(); return;  }
+                    if (context.Response.HasStarted) { LogResponseHasStartedError(); return; }
 
                     var bodyAsText = await awm.ReadResponseBodyStreamAsync(memoryStream);
                     context.Response.Body = originalResponseBodyStream;
 
                     var actionIgnore = context.Request.Headers[TypeIdentifier.AutoWrapIgnoreFilterHeader];
-                    if (actionIgnore.Count > 0){ await awm.WrapIgnoreAsync(context, bodyAsText); return; }
+                    if (actionIgnore.Count > 0) { await awm.WrapIgnoreAsync(context, bodyAsText); return; }
 
                     if (context.Response.StatusCode != Status304NotModified && context.Response.StatusCode != Status204NoContent)
                     {
@@ -73,17 +73,19 @@ namespace AutoWrapper.Base
                         isRequestOk = awm.IsRequestSuccessful(context.Response.StatusCode);
                         if (isRequestOk)
                         {
-                            if (_options.IgnoreWrapForOkRequests) {
+                            if (_options.IgnoreWrapForOkRequests)
+                            {
                                 await awm.WrapIgnoreAsync(context, bodyAsText);
                             }
-                            else {
+                            else
+                            {
                                 await awm.HandleSuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
                             }
                         }
                         else
                         {
                             if (_options.UseApiProblemDetailsException) { await awm.HandleProblemDetailsExceptionAsync(context, _executor, bodyAsText); return; }
-                            
+
                             await awm.HandleUnsuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
                         }
                     }
@@ -119,7 +121,7 @@ namespace AutoWrapper.Base
                 bool shouldLogRequestData = ShouldLogRequestData(context);
 
                 var request = shouldLogRequestData
-                            ? isRequestOk 
+                            ? isRequestOk
                                 ? $"{context.Request.Method} {context.Request.Scheme} {context.Request.Host}{context.Request.Path} {context.Request.QueryString} {requestBody}"
                                 : (!isRequestOk && _options.LogRequestDataOnException)
                                    ? $"{context.Request.Method} {context.Request.Scheme} {context.Request.Host}{context.Request.Path} {context.Request.QueryString} {requestBody}"

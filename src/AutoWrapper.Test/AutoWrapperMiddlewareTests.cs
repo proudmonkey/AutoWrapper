@@ -35,7 +35,7 @@ namespace AutoWrapper.Test
             var req = new HttpRequestMessage(HttpMethod.Get, "");
             var rep = await server.CreateClient().SendAsync(req);
             var content = await rep.Content.ReadAsStringAsync();
-            var json = JsonHelper.ToJson(new ApiResponse("GET Request successful.", "", 0, null),null);
+            var json = JsonHelper.ToJson(new ApiResponse("GET Request successful.", "", 0, null), null);
             Convert.ToInt32(rep.StatusCode).ShouldBe(200);
             content.ShouldBe(json);
         }
@@ -108,7 +108,7 @@ namespace AutoWrapper.Test
             var content = await rep.Content.ReadAsStringAsync();
             Convert.ToInt32(rep.StatusCode).ShouldBe(400);
             var ex1 = ex as ApiException;
-            var json=JsonHelper.ToJson(new ApiResponse(0, ex1.CustomError), null);
+            var json = JsonHelper.ToJson(new ApiResponse(0, ex1.CustomError), null);
             content.ShouldBe(json);
         }
         [Fact(DisplayName = "CapturingModelStateApiProblemDetailsException")]
@@ -219,14 +219,29 @@ namespace AutoWrapper.Test
                         new Error("An error blah.", "InvalidRange",
                             new InnerError("12345678", "2020-03-20")
                         )));
-                });
+                }); 
             var server = new TestServer(builder);
             var req = new HttpRequestMessage(HttpMethod.Get, "");
             var rep = await server.CreateClient().SendAsync(req);
             var content = await rep.Content.ReadAsStringAsync();
             Convert.ToInt32(rep.StatusCode).ShouldBe(400);
-            var str = "{\"isError\":true,\"error\":{\"message\":\"An error blah.\",\"code\":\"InvalidRange\",\"innerError\":{\"requestId\":\"12345678\",\"date\":\"2020-03-20\"}}}";
-            str.ShouldBe(content);
+            Exception ex;
+            try
+            {
+                throw new ApiException(
+                    new Error("An error blah.", "InvalidRange",
+                        new InnerError("12345678", "2020-03-20")
+                    ));
+            }
+            catch (Exception e)
+            {
+                ex = e;
+            }
+            var ex1 = ex as ApiException;
+            var options = new AutoWrapperOptions();
+            var jsonSettings = JSONHelper.GetJSONSettings<MapResponseCustomErrorObject>(options.IgnoreNullValue, options.ReferenceLoopHandling, options.UseCamelCaseNamingStrategy);
+            var json = JsonHelper.ToJson(new ApiResponse(0, ex1.CustomError), jsonSettings.Settings);
+            json.ToJson().ShouldBe(content.ToJson());
         }
 
 
