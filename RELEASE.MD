@@ -1,6 +1,7 @@
 
 # Release Log
 
+* 06/01/2020: AutoWrapper version `4.2.0` - see [release notes](https://vmsdurano.com/autowrapper-4-2-0-released/).
 * 04/19/2020: AutoWrapper version `4.1.0` - see [release notes](https://vmsdurano.com/autowrapper-4-1-0-released/).
 * 03/15/2020: AutoWrapper version `4.1.0-rc` - added `[ResponseLogIgnore]` attribute and `ShouldLogResponse` property in `[AutoWrapIgnore]` attribute.
 * 03/15/2020: AutoWrapper version `4.0.1` - expose `StatusCode` property in `ApiProblemDetailsException` object.
