@@ -10,6 +10,8 @@ namespace AutoWrapper.Wrappers
         public int StatusCode { get; set; }
 
         public string Message { get; set; }
+
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public bool IsError { get; set; }
 
         public object ResponseException { get; set; }
@@ -23,13 +25,11 @@ namespace AutoWrapper.Wrappers
             Message = message;
             Result = result;
             Version = apiVersion;
-            IsError = false;
         }
         public ApiResponse(object result, int statusCode = 200)
         {
             StatusCode = statusCode;
             Result = result;
-            IsError = false;
         }
 
         public ApiResponse(int statusCode, object apiError)
