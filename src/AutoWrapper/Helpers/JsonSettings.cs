@@ -11,6 +11,7 @@ namespace AutoWrapper.Helpers
         {
             return new JsonSerializerSettings
             {
+                Formatting = Formatting.Indented,
                 ContractResolver = useCamelCaseNaming ? new CamelCasePropertyNamesContractResolver() :  new DefaultContractResolver(),
                 Converters = new List<JsonConverter> { new StringEnumConverter() },
                 NullValueHandling = ignoreNull ? NullValueHandling.Ignore : NullValueHandling.Include,
@@ -28,6 +29,7 @@ namespace AutoWrapper.Helpers
 
             var settings = new JsonSerializerSettings
             {
+                Formatting = Formatting.Indented,
                 ContractResolver = resolver,
                 NullValueHandling = ignoreNull ? NullValueHandling.Ignore : NullValueHandling.Include,
                 ReferenceLoopHandling = referenceLoopHandling

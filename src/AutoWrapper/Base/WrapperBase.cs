@@ -44,15 +44,13 @@ namespace AutoWrapper.Base
                     context.Response.Body = memoryStream;
                     await _next.Invoke(context);
 
-                    var actionIgnore = context.Request.Headers[TypeIdentifier.AutoWrapIgnoreFilterHeader];
-                    if (actionIgnore.Count > 0) { return; }
-
                     if (context.Response.HasStarted) { LogResponseHasStartedError(); return;  }
 
                     var bodyAsText = await awm.ReadResponseBodyStreamAsync(memoryStream);
                     context.Response.Body = originalResponseBodyStream;
 
-                    //if (actionIgnore.Count > 0){ await awm.WrapIgnoreAsync(context, bodyAsText); return; }
+                    var actionIgnore = context.Request.Headers[TypeIdentifier.AutoWrapIgnoreFilterHeader];
+                    if (actionIgnore.Count > 0){ await awm.WrapIgnoreAsync(context, bodyAsText); return; }
 
                     if (context.Response.StatusCode != Status304NotModified && context.Response.StatusCode != Status204NoContent)
                     {
@@ -75,7 +73,12 @@ namespace AutoWrapper.Base
                         isRequestOk = awm.IsRequestSuccessful(context.Response.StatusCode);
                         if (isRequestOk)
                         {
-                            await awm.HandleSuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
+                            if (_options.IgnoreWrapForOkRequests) {
+                                await awm.WrapIgnoreAsync(context, bodyAsText);
+                            }
+                            else {
+                                await awm.HandleSuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
+                            }
                         }
                         else
                         {
@@ -123,9 +126,9 @@ namespace AutoWrapper.Base
                                    : $"{context.Request.Method} {context.Request.Scheme} {context.Request.Host}{context.Request.Path}"
                             : $"{context.Request.Method} {context.Request.Scheme} {context.Request.Host}{context.Request.Path}";
 
-                _logger.Log(LogLevel.Information, $@"Source:[{context.Connection.RemoteIpAddress }] 
-                                                     Request: {request} 
-                                                     Responded with [{context.Response.StatusCode}] in {stopWatch.ElapsedMilliseconds}ms");
+                _logger.Log(LogLevel.Information, $"Source:[{context.Connection.RemoteIpAddress }] " +
+                                                  $"Request: {request} " +
+                                                  $"Responded with [{context.Response.StatusCode}] in {stopWatch.ElapsedMilliseconds}ms");
             }
         }
 
