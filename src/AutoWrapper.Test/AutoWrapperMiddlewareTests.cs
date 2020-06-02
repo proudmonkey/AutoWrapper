@@ -237,7 +237,6 @@ namespace AutoWrapper.Test
             {
                 ex = e;
             }
-            
             var ex1 = ex as ApiException;
             var options = new AutoWrapperOptions();
             var jsonSettings = JSONHelper.GetJSONSettings<MapResponseCustomErrorObject>(options.IgnoreNullValue, options.ReferenceLoopHandling, options.UseCamelCaseNamingStrategy);
