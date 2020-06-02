@@ -41,11 +41,14 @@ namespace AutoWrapper.Base
                 bool shouldLogRequestData = ShouldLogRequestData(context);
                 try
                 {
+                    var actionIgnore = context.Request.Headers[TypeIdentifier.AutoWrapIgnoreFilterHeader];
+                    if (actionIgnore.Count > 0) { return; }
+
                     context.Response.Body = memoryStream;
                     await _next.Invoke(context);
 
-                    var actionIgnore = context.Request.Headers[TypeIdentifier.AutoWrapIgnoreFilterHeader];
-                    if (actionIgnore.Count > 0) { return; }
+                    var actionEndIgnore = context.Request.Headers[TypeIdentifier.AutoWrapIgnoreFilterHeader];
+                    if (actionEndIgnore.Count > 0) { return; }
 
                     if (context.Response.HasStarted) { LogResponseHasStartedError(); return;  }
 
