@@ -46,7 +46,6 @@ That's simple! Here’s how the response is going to look like for the default A
 ```json
 {
     "message": "GET Request successful.",
-    "isError": false,
     "result": [
         {
             "date": "2019-09-16T23:37:51.5544349-05:00",
@@ -514,6 +513,9 @@ That’s it. One thing to note here is that once you use your own schema for you
 # Options
 The following properties are the available options that you can set:
 
+### Version 4.2.0 Additions
+* `IgnoreWrapForOkRequests`
+
 ### Version 4.1.0 Additions
 * `LogRequestDataOnException`
 
@@ -593,6 +595,14 @@ This will activate the `AutoWrapper` to intercept HTTP responses when a request 
 
 > Note that I would still recommend you to implement your `API Controllers` in a separate project to value the separation of concerns and to avoid mixing route configurations for your `SPAs` and `APIs`.
 
+#### IgnoreWrapForOkRequests
+If you want to completely ignore wrapping the response for successful requests to just output directly the data, you simply set the IgnoreWrapForOkRequests to true like in the following:
+
+```csharp
+app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions {  
+    IgnoreWrapForOkRequests = true,
+});
+```
 
 # AutoWrapIgnore Attribute
 You can use the `[AutoWrapIgnore]` filter attribute for endpoints that you don't need to be wrapped.
@@ -641,7 +651,6 @@ public async Task<IEnumerable<PersonResponse>> Get()
      //Rest of the code here
 }
 ```
-
 # Support for Logging
 
 Another good thing about `AutoWrapper` is that logging is already pre-configured. .NET Core apps has built-in logging mechanism by default, and any requests and responses that has been intercepted by the wrapper will be automatically logged (thanks to Dependency Injection!). .NET Core supports a logging `API` that works with a variety of built-in and third-party logging providers. Depending on what supported .NET Core logging provider you use and how you configure the location to log the data (e.g text file, Cloud , etc. ), AutoWrapper will automatically write the logs there for you.
