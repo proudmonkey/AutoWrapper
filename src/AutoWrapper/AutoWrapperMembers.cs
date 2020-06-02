@@ -224,8 +224,7 @@ namespace AutoWrapper
 
         public async Task WrapIgnoreAsync(HttpContext context, object body)
         {
-            var bodyText = !body.ToString().IsValidJson() ? ConvertToJSONString(body) : body.ToString();
-            context.Response.ContentType = TypeIdentifier.JSONHttpContentMediaType;
+            var bodyText = body.ToString();
             context.Response.ContentLength = bodyText != null ? Encoding.UTF8.GetByteCount(bodyText) : 0;
             await context.Response.WriteAsync(bodyText);
         }

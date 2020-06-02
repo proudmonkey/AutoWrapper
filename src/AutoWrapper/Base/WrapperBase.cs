@@ -44,15 +44,13 @@ namespace AutoWrapper.Base
                     context.Response.Body = memoryStream;
                     await _next.Invoke(context);
 
-                    var actionIgnore = context.Request.Headers[TypeIdentifier.AutoWrapIgnoreFilterHeader];
-                    if (actionIgnore.Count > 0) { return; }
-
                     if (context.Response.HasStarted) { LogResponseHasStartedError(); return;  }
 
                     var bodyAsText = await awm.ReadResponseBodyStreamAsync(memoryStream);
                     context.Response.Body = originalResponseBodyStream;
 
-                    //if (actionIgnore.Count > 0){ await awm.WrapIgnoreAsync(context, bodyAsText); return; }
+                    var actionIgnore = context.Request.Headers[TypeIdentifier.AutoWrapIgnoreFilterHeader];
+                    if (actionIgnore.Count > 0){ await awm.WrapIgnoreAsync(context, bodyAsText); return; }
 
                     if (context.Response.StatusCode != Status304NotModified && context.Response.StatusCode != Status204NoContent)
                     {
