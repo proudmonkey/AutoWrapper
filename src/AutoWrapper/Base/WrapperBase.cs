@@ -18,7 +18,10 @@ namespace AutoWrapper.Base
         private readonly AutoWrapperOptions _options;
         private readonly ILogger<AutoWrapperMiddleware> _logger;
         private IActionResultExecutor<ObjectResult> _executor { get; }
-        public WrapperBase(RequestDelegate next, AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger, IActionResultExecutor<ObjectResult> executor)
+        public WrapperBase(RequestDelegate next, 
+                          AutoWrapperOptions options, 
+                          ILogger<AutoWrapperMiddleware> logger, 
+                          IActionResultExecutor<ObjectResult> executor)
         {
             _next = next;
             _options = options;
@@ -38,7 +41,7 @@ namespace AutoWrapper.Base
                 bool isRequestOk = false;
 
                 using var memoryStream = new MemoryStream();
-                bool shouldLogRequestData = ShouldLogRequestData(context);
+
                 try
                 {
                     context.Response.Body = memoryStream;
@@ -84,7 +87,11 @@ namespace AutoWrapper.Base
                         }
                         else
                         {
-                            if (_options.UseApiProblemDetailsException) { await awm.HandleProblemDetailsExceptionAsync(context, _executor, bodyAsText); return; }
+                            if (_options.UseApiProblemDetailsException) 
+                            { 
+                                await awm.HandleProblemDetailsExceptionAsync(context, _executor, bodyAsText); 
+                                return; 
+                            }
 
                             await awm.HandleUnsuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
                         }
@@ -95,8 +102,15 @@ namespace AutoWrapper.Base
                 {
                     if (context.Response.HasStarted) { LogResponseHasStartedError(); return; }
 
-                    if (_options.UseApiProblemDetailsException) { await awm.HandleProblemDetailsExceptionAsync(context, _executor, null, exception); }
-                    else { await awm.HandleExceptionAsync(context, exception); }
+                    if (_options.UseApiProblemDetailsException) 
+                    { 
+                        await awm.HandleProblemDetailsExceptionAsync(context, _executor, null, exception); 
+                    }
+                    else 
+                    { 
+                        await awm.HandleExceptionAsync(context, exception); 
+                    }
+
                     await awm.RevertResponseBodyStreamAsync(memoryStream, originalResponseBodyStream);
                 }
                 finally
