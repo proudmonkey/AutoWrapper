@@ -1,6 +1,7 @@
 
 # Release Log
 
+* 06/01/2020: AutoWrapper version `4.2.2` - Fix bug issued [here](https://github.com/proudmonkey/AutoWrapper/issues/55) 
 * 06/01/2020: AutoWrapper version `4.2.1` - Added Model Responses for ProblemDetails
 * 06/01/2020: AutoWrapper version `4.2.0` - see [release notes](https://vmsdurano.com/autowrapper-4-2-0-released/).
 * 04/19/2020: AutoWrapper version `4.1.0` - see [release notes](https://vmsdurano.com/autowrapper-4-1-0-released/).
