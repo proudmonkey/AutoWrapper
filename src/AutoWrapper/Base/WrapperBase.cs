@@ -49,11 +49,15 @@ namespace AutoWrapper.Base
 
                     if (context.Response.HasStarted) { LogResponseHasStartedError(); return; }
 
+                    var actionIgnore = context.Request.Headers[TypeIdentifier.AutoWrapIgnoreFilterHeader];
+                    if (actionIgnore.Count > 0) 
+                    { 
+                        await awm.RevertResponseBodyStreamAsync(memoryStream, originalResponseBodyStream);
+                        return;
+                    }
+
                     var bodyAsText = await awm.ReadResponseBodyStreamAsync(memoryStream);
                     context.Response.Body = originalResponseBodyStream;
-
-                    var actionIgnore = context.Request.Headers[TypeIdentifier.AutoWrapIgnoreFilterHeader];
-                    if (actionIgnore.Count > 0) { await awm.WrapIgnoreAsync(context, bodyAsText); return; }
 
                     if (context.Response.StatusCode != Status304NotModified && context.Response.StatusCode != Status204NoContent)
                     {
