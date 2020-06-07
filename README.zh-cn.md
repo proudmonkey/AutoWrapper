@@ -27,7 +27,7 @@
   1. AutoWrapper.Core从NuGet或通过CLI下载并安装：
 
      ```
-     PM> Install-Package AutoWrapper.Core -Version 4.0.0
+     PM> Install-Package AutoWrapper.Core -Version 4.2.2
      ```
 
   2. 在`Startup.cs`下声明命名空间
@@ -534,6 +534,9 @@
   # 选项
 
   以下属性是可以设置的可用选项：
+  
+  ### Version 4.2.0 添加
+  * `IgnoreWrapForOkRequests`
 
   ### 版本4.1.0添加
   * `LogRequestDataOnException`
