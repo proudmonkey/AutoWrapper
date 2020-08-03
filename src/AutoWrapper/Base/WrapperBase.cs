@@ -126,9 +126,14 @@ namespace AutoWrapper.Base
 
         private bool ShouldLogRequestData(HttpContext context)
         {
-            return context.Request.Headers[TypeIdentifier.ShouldLogRequestDataFilterHeader].Count > 0
+            if (_options.ShouldLogRequestData)
+            {
+                return context.Request.Headers[TypeIdentifier.ShouldLogRequestDataFilterHeader].Count > 0
                             ? context.Response.Headers[TypeIdentifier.ShouldLogRequestDataFilterHeader].ToString().ToBoolean()
                             : true;
+            }
+
+            return false;
         }
 
         private void LogHttpRequest(HttpContext context, string requestBody, Stopwatch stopWatch, bool isRequestOk)
