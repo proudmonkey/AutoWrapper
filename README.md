@@ -28,7 +28,7 @@ Language: English | [中文](README.zh-cn.md)
 1. Download and Install the latest `AutoWrapper.Core` from NuGet or via CLI:
 
 ```
-PM> Install-Package AutoWrapper.Core -Version 4.2.0
+PM> Install-Package AutoWrapper.Core -Version 4.2.2
 ```
 
 2. Declare the following namespace within `Startup.cs`
@@ -512,7 +512,10 @@ That’s it. One thing to note here is that once you use your own schema for you
 # Options
 The following properties are the available options that you can set:
 
-### Version 4.2.0 Additions
+### Version 4.3.x Additions
+* `ShouldLogRequestData`
+
+### Version 4.2.x Additions
 * `IgnoreWrapForOkRequests`
 
 ### Version 4.1.0 Additions

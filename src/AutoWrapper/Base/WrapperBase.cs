@@ -18,7 +18,10 @@ namespace AutoWrapper.Base
         private readonly AutoWrapperOptions _options;
         private readonly ILogger<AutoWrapperMiddleware> _logger;
         private IActionResultExecutor<ObjectResult> _executor { get; }
-        public WrapperBase(RequestDelegate next, AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger, IActionResultExecutor<ObjectResult> executor)
+        public WrapperBase(RequestDelegate next, 
+                          AutoWrapperOptions options, 
+                          ILogger<AutoWrapperMiddleware> logger, 
+                          IActionResultExecutor<ObjectResult> executor)
         {
             _next = next;
             _options = options;
@@ -38,7 +41,7 @@ namespace AutoWrapper.Base
                 bool isRequestOk = false;
 
                 using var memoryStream = new MemoryStream();
-                bool shouldLogRequestData = ShouldLogRequestData(context);
+
                 try
                 {
                     context.Response.Body = memoryStream;
@@ -46,11 +49,15 @@ namespace AutoWrapper.Base
 
                     if (context.Response.HasStarted) { LogResponseHasStartedError(); return; }
 
+                    var actionIgnore = context.Request.Headers[TypeIdentifier.AutoWrapIgnoreFilterHeader];
+                    if (actionIgnore.Count > 0) 
+                    { 
+                        await awm.RevertResponseBodyStreamAsync(memoryStream, originalResponseBodyStream);
+                        return;
+                    }
+
                     var bodyAsText = await awm.ReadResponseBodyStreamAsync(memoryStream);
                     context.Response.Body = originalResponseBodyStream;
-
-                    var actionIgnore = context.Request.Headers[TypeIdentifier.AutoWrapIgnoreFilterHeader];
-                    if (actionIgnore.Count > 0) { await awm.WrapIgnoreAsync(context, bodyAsText); return; }
 
                     if (context.Response.StatusCode != Status304NotModified && context.Response.StatusCode != Status204NoContent)
                     {
@@ -84,7 +91,11 @@ namespace AutoWrapper.Base
                         }
                         else
                         {
-                            if (_options.UseApiProblemDetailsException) { await awm.HandleProblemDetailsExceptionAsync(context, _executor, bodyAsText); return; }
+                            if (_options.UseApiProblemDetailsException) 
+                            { 
+                                await awm.HandleProblemDetailsExceptionAsync(context, _executor, bodyAsText); 
+                                return; 
+                            }
 
                             await awm.HandleUnsuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
                         }
@@ -95,8 +106,15 @@ namespace AutoWrapper.Base
                 {
                     if (context.Response.HasStarted) { LogResponseHasStartedError(); return; }
 
-                    if (_options.UseApiProblemDetailsException) { await awm.HandleProblemDetailsExceptionAsync(context, _executor, null, exception); }
-                    else { await awm.HandleExceptionAsync(context, exception); }
+                    if (_options.UseApiProblemDetailsException) 
+                    { 
+                        await awm.HandleProblemDetailsExceptionAsync(context, _executor, null, exception); 
+                    }
+                    else 
+                    { 
+                        await awm.HandleExceptionAsync(context, exception); 
+                    }
+
                     await awm.RevertResponseBodyStreamAsync(memoryStream, originalResponseBodyStream);
                 }
                 finally
@@ -108,9 +126,14 @@ namespace AutoWrapper.Base
 
         private bool ShouldLogRequestData(HttpContext context)
         {
-            return context.Request.Headers[TypeIdentifier.ShouldLogRequestDataFilterHeader].Count > 0
+            if (_options.ShouldLogRequestData)
+            {
+                return context.Request.Headers[TypeIdentifier.ShouldLogRequestDataFilterHeader].Count > 0
                             ? context.Response.Headers[TypeIdentifier.ShouldLogRequestDataFilterHeader].ToString().ToBoolean()
                             : true;
+            }
+
+            return false;
         }
 
         private void LogHttpRequest(HttpContext context, string requestBody, Stopwatch stopWatch, bool isRequestOk)

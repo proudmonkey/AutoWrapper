@@ -11,5 +11,6 @@ namespace AutoWrapper
         public bool UseApiProblemDetailsException { get; set; } = false;
         public bool LogRequestDataOnException { get; set; } = true;
         public bool IgnoreWrapForOkRequests { get; set; } = false;
+        public bool ShouldLogRequestData { get; set; } = true;
     }
 }
