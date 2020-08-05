@@ -535,9 +535,6 @@
 
   以下属性是可以设置的可用选项：
   
-  ### Version 4.2.0 添加
-  * `IgnoreWrapForOkRequests`
-
   ### 版本4.3.x添加
   * `ShouldLogRequestData`
   
