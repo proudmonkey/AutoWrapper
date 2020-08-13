@@ -27,7 +27,7 @@
   1. AutoWrapper.Core从NuGet或通过CLI下载并安装：
 
      ```
-     PM> Install-Package AutoWrapper.Core -Version 4.2.2
+     PM> Install-Package AutoWrapper.Core -Version 4.3.0
      ```
 
   2. 在`Startup.cs`下声明命名空间
