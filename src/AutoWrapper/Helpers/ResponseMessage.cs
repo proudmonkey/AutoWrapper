@@ -9,7 +9,7 @@
         internal const string NotContent = "Request no content. The specified uri does not contain any content.";
         internal const string Exception = "Request responded with exceptions.";
         internal const string UnAuthorized = "Request denied. Unauthorized access.";
-        internal const string ValidationError = "Request responded with one or more validation errors occurred.";
+        internal const string ValidationError = "Request responded with one or more validation errors.";
         internal const string Unknown = "Request cannot be processed. Please contact support.";
         internal const string Unhandled = "Unhandled Exception occurred. Unable to process the request.";
         internal const string MediaTypeNotSupported = "Unsupported Media Type.";
