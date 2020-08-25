@@ -1,6 +1,6 @@
 <img align="right" src="/src/AutoWrapper/logo.png" />
 
-# AutoWrapper  [![Nuget](https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue)](https://www.nuget.org/packages/AutoWrapper.Core) [![Nuget downloads](https://img.shields.io/nuget/dt/AutoWrapper.Core?color=green)](https://www.nuget.org/packages/AutoWrapper.Core)
+# AutoWrapper  [![Nuget](https://img.shields.io/nuget/v/AutoWrapper.Core?color=blue)](https://www.nuget.org/packages/AutoWrapper.Core) [![Nuget downloads](https://img.shields.io/nuget/dt/AutoWrapper.Core?color=green)](https://www.nuget.org/packages/AutoWrapper.Core) ![.NET Core](https://github.com/proudmonkey/AutoWrapper/workflows/.NET%20Core/badge.svg)
 
 Language: English | [中文](README.zh-cn.md)  
 
