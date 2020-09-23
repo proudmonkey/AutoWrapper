@@ -21,6 +21,11 @@
         public bool ShowStatusCode { get; set; } = false;
 
         /// <summary>
+        /// Shows the IsError attribute in the response.
+        /// </summary>
+        public bool ShowIsErrorFlagForSuccessfulResponse { get; set; } = false;
+
+        /// <summary>
         /// Use to indicate if the wrapper is used for API project only. 
         /// Set this to false when you want to use the wrapper within an Angular, MVC, React or Blazor projects.
         /// </summary>

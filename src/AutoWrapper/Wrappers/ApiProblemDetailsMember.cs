@@ -16,7 +16,7 @@ namespace AutoWrapper.Wrappers
     {
         private static readonly RouteData _emptyRouteData = new RouteData();
         private static readonly ActionDescriptor _emptyActionDescriptor = new ActionDescriptor();
-        public Task WriteProblemDetails(HttpContext context, IActionResultExecutor<ObjectResult> executor, object body, Exception exception, bool isDebug = false)
+        public Task WriteProblemDetailsAsync(HttpContext context, IActionResultExecutor<ObjectResult> executor, object body, Exception exception, bool isDebug = false)
         {
             var statusCode = context.Response.StatusCode;
             object details = exception == null ? DelegateResponse(body, statusCode) : GetProblemDetails(exception, isDebug);
