@@ -231,7 +231,7 @@ namespace AutoWrapper
 
         public async Task HandleProblemDetailsExceptionAsync(HttpContext context, IActionResultExecutor<ObjectResult> executor, object body, Exception exception = null)
         {
-            await new ApiProblemDetailsMember().WriteProblemDetails(context, executor, body, exception, _options.IsDebug);
+            await new ApiProblemDetailsMember().WriteProblemDetailsAsync(context, executor, body, exception, _options.IsDebug);
 
             if (_options.EnableExceptionLogging && exception != null)
             {
@@ -255,12 +255,22 @@ namespace AutoWrapper
         }
 
         private string ConvertToJSONString(int httpStatusCode, object content, string httpMethod)
-            => JsonConvert.SerializeObject(new ApiResponse($"{httpMethod} {ResponseMessage.Success}", content, !_options.ShowStatusCode ? 0 : httpStatusCode , GetApiVersion()), _jsonSettings);
+        {
+            var apiResponse = new ApiResponse($"{httpMethod} {ResponseMessage.Success}", content, !_options.ShowStatusCode ? 0 : httpStatusCode, GetApiVersion());
+            apiResponse.IsError = SetIsErrorValue(apiResponse.IsError);
+            return JsonConvert.SerializeObject(apiResponse, _jsonSettings);
+        }
 
         private string ConvertToJSONString(ApiResponse apiResponse)
         {
             apiResponse.StatusCode = !_options.ShowStatusCode ? 0 : apiResponse.StatusCode;
+            apiResponse.IsError = SetIsErrorValue(apiResponse.IsError);
             return JsonConvert.SerializeObject(apiResponse, _jsonSettings);
+        }
+
+        private bool? SetIsErrorValue(bool? isError)
+        {
+            return isError.HasValue ? true : _options.ShowIsErrorFlagForSuccessfulResponse ? false : (bool?)null;
         }
 
         private string ConvertToJSONString(ApiError apiError) => JsonConvert.SerializeObject(apiError, _jsonSettings);
