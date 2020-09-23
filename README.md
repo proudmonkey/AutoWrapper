@@ -514,6 +514,7 @@ The following properties are the available options that you can set:
 
 ### Version 4.3.x Additions
 * `ShouldLogRequestData`
+* `ShowIsErrorFlagForSuccessfulResponse`
 
 ### Version 4.2.x Additions
 * `IgnoreWrapForOkRequests`
