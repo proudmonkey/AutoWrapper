@@ -255,7 +255,14 @@ namespace AutoWrapper
         }
 
         private string ConvertToJSONString(int httpStatusCode, object content, string httpMethod)
-            => JsonConvert.SerializeObject(new ApiResponse($"{httpMethod} {ResponseMessage.Success}", content, !_options.ShowStatusCode ? 0 : httpStatusCode , GetApiVersion()), _jsonSettings);
+        {
+            ApiResponse apiResponse = new ApiResponse($"{httpMethod} {ResponseMessage.Success}", content, !_options.ShowStatusCode ? 0 : httpStatusCode, GetApiVersion());
+            if (_options.AlwaysShowIsError)
+            {
+                apiResponse.IsError = false;
+            }
+            return JsonConvert.SerializeObject(apiResponse, _jsonSettings);
+        }
 
         private string ConvertToJSONString(ApiResponse apiResponse)
         {
@@ -286,6 +293,10 @@ namespace AutoWrapper
 
         private ApiResponse GetSucessResponse(ApiResponse apiResponse, string httpMethod)
         {
+            if (_options.AlwaysShowIsError)
+            {
+                apiResponse.IsError = false;
+            }
             apiResponse.Message ??= $"{httpMethod} {ResponseMessage.Success}";
             apiResponse.Version = GetApiVersion();
             return apiResponse;

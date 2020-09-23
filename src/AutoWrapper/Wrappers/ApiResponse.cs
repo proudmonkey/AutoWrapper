@@ -12,7 +12,7 @@ namespace AutoWrapper.Wrappers
         public string Message { get; set; }
 
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool IsError { get; set; }
+        public bool? IsError { get; set; }
 
         public object ResponseException { get; set; }
 

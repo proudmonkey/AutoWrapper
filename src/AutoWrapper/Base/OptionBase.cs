@@ -55,5 +55,9 @@
         /// Tells the wrapper whether to enable exception logging. Default is true.
         /// </summary>
         public bool EnableExceptionLogging { get; set; } = true;
+        /// <summary>
+        /// Tells the wrapper whether to always show isError. Default is false.
+        /// </summary>
+        public bool AlwaysShowIsError { get; set; } = false;
     }
 }
