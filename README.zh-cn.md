@@ -537,6 +537,7 @@
   
   ### 版本4.3.x添加
   * `ShouldLogRequestData`
+  * `ShowIsErrorFlagForSuccessfulResponse`
   
   ### 版本4.2.x添加
   * `IgnoreWrapForOkRequests`
