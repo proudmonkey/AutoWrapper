@@ -1,6 +1,7 @@
 
 # Release Log
 
+* 09/23/2020: AutoWrapper version `4.3.1` - added `ShowIsErrorFlagForSuccessfulResponse` option.
 * 08/03/2020: AutoWrapper version `4.3.0` - see [release notes](https://vmsdurano.com/autowrapper-4-3-0-released/). 
 * 06/01/2020: AutoWrapper version `4.2.2` - dix bug issued [here](https://github.com/proudmonkey/AutoWrapper/issues/55). 
 * 06/01/2020: AutoWrapper version `4.2.1` - added Model Responses for ProblemDetails.
