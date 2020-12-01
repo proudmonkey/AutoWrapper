@@ -130,7 +130,7 @@ namespace AutoWrapper.Base
             if (_options.ShouldLogRequestData)
             {
                 var endpoint = context.GetEndpoint();
-                return (endpoint?.Metadata?.GetMetadata<RequestDataLogIgnore>() is object);
+                return (endpoint?.Metadata?.GetMetadata<RequestDataLogIgnoreAttribute>() is object);
             }
 
             return false;

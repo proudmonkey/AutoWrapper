@@ -2,7 +2,7 @@
 
 namespace AutoWrapper.Filters
 {
-    public class RequestDataLogIgnore: Attribute
+    public class RequestDataLogIgnoreAttribute: Attribute
     {
     }
 }
