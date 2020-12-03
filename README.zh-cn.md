@@ -732,6 +732,7 @@
   * **Huei Feng** - [Github Profile](https://github.com/hueifeng)
   * **ITninja04** - [Github Profile](https://github.com/ITninja04)
   * **Rahmat Slamet** - [Github Profile](https://github.com/arhen)
+  * **abelfiore** - [Github Profile](https://github.com/abelfiore)
 
   想要贡献？请阅读贡献文档 [here](https://github.com/proudmonkey/AutoWrapper/blob/master/CONTRIBUTING.md).
 
