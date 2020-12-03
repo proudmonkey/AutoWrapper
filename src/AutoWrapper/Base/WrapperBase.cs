@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using AutoWrapper.Filters;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace AutoWrapper.Base
@@ -49,9 +50,9 @@ namespace AutoWrapper.Base
 
                     if (context.Response.HasStarted) { LogResponseHasStartedError(); return; }
 
-                    var actionIgnore = context.Request.Headers[TypeIdentifier.AutoWrapIgnoreFilterHeader];
-                    if (actionIgnore.Count > 0) 
-                    { 
+                    var endpoint = context.GetEndpoint();
+                    if (endpoint?.Metadata?.GetMetadata<AutoWrapIgnoreAttribute>() is object)
+                    {
                         await awm.RevertResponseBodyStreamAsync(memoryStream, originalResponseBodyStream);
                         return;
                     }
@@ -128,9 +129,8 @@ namespace AutoWrapper.Base
         {
             if (_options.ShouldLogRequestData)
             {
-                return context.Request.Headers[TypeIdentifier.ShouldLogRequestDataFilterHeader].Count > 0
-                            ? context.Response.Headers[TypeIdentifier.ShouldLogRequestDataFilterHeader].ToString().ToBoolean()
-                            : true;
+                var endpoint = context.GetEndpoint();
+                return (endpoint?.Metadata?.GetMetadata<RequestDataLogIgnoreAttribute>() is object);
             }
 
             return false;
