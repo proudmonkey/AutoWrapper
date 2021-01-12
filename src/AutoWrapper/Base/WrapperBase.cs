@@ -32,7 +32,7 @@ namespace AutoWrapper.Base
 
         public virtual async Task InvokeAsyncBase(HttpContext context, AutoWrapperMembers awm)
         {
-            if (awm.IsSwagger(context) || !awm.IsApi(context))
+            if (awm.IsSwagger(context, _options.SwaggerPath) || !awm.IsApi(context))
                 await _next(context);
             else
             {

@@ -12,5 +12,7 @@ namespace AutoWrapper
         public bool LogRequestDataOnException { get; set; } = true;
         public bool IgnoreWrapForOkRequests { get; set; } = false;
         public bool ShouldLogRequestData { get; set; } = true;
+
+        public string SwaggerPath { get; set; } = "/swagger";
     }
 }

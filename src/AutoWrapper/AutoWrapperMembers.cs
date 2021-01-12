@@ -209,9 +209,9 @@ namespace AutoWrapper
             await context.Response.WriteAsync(configErrorText);
         }
 
-        public bool IsSwagger(HttpContext context)
+        public bool IsSwagger(HttpContext context, string swaggerPath)
         {
-            return context.Request.Path.StartsWithSegments(new PathString("/swagger"));
+            return context.Request.Path.StartsWithSegments(new PathString(swaggerPath));
         }
 
         public bool IsApi(HttpContext context)
