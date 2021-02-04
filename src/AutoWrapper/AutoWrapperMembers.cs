@@ -216,7 +216,10 @@ namespace AutoWrapper
 
         public bool IsApi(HttpContext context)
         {
-            if (_options.IsApiOnly && !context.Request.Path.Value.Contains(".js") && !context.Request.Path.Value.Contains(".css"))
+            if (_options.IsApiOnly 
+                && !context.Request.Path.Value.Contains(".js") 
+                && !context.Request.Path.Value.Contains(".css")
+                && !context.Request.Path.Value.Contains(".html"))
                 return true;
 
             return context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith));
