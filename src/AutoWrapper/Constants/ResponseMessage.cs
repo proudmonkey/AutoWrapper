@@ -1,4 +1,4 @@
-﻿namespace AutoWrapper.Helpers
+﻿namespace AutoWrapper.Configurations
 {
     internal class ResponseMessage
     {
@@ -6,7 +6,7 @@
         internal const string NotFound = "Request not found. The specified uri does not exist.";
         internal const string BadRequest = "Request invalid.";
         internal const string MethodNotAllowed = "Request responded with 'Method Not Allowed'.";
-        internal const string NotContent = "Request no content. The specified uri does not contain any content.";
+        internal const string NoContent = "Request no content. The specified uri does not contain any content.";
         internal const string Exception = "Request responded with exceptions.";
         internal const string UnAuthorized = "Request denied. Unauthorized access.";
         internal const string ValidationError = "Request responded with one or more validation errors.";

@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System.Collections.Generic;
-using System.Linq;
-using AutoWrapper.Wrappers;
-using System.Collections;
-
-namespace AutoWrapper.Extensions
+﻿namespace AutoWrapper.Extensions
 {
+    using AutoWrapper.Models;
+    using Microsoft.AspNetCore.Mvc.ModelBinding;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public static class ModelStateExtension
     {
         public static IEnumerable<ValidationError> AllErrors(this ModelStateDictionary modelState)

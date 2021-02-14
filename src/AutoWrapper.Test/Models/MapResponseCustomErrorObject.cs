@@ -2,7 +2,6 @@
 {
     public class MapResponseCustomErrorObject
     {
-        [AutoWrapperPropertyMap(Prop.ResponseException)]
         public object Error { get; set; }
     }
     public class Error

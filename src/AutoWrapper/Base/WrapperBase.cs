@@ -1,5 +1,6 @@
-﻿using AutoWrapper.Extensions;
-using AutoWrapper.Helpers;
+﻿using AutoWrapper.Attributes;
+using AutoWrapper.Handlers;
+using HelpMate.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -8,7 +9,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using AutoWrapper.Filters;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace AutoWrapper.Base
@@ -18,7 +18,10 @@ namespace AutoWrapper.Base
         private readonly RequestDelegate _next;
         private readonly AutoWrapperOptions _options;
         private readonly ILogger<AutoWrapperMiddleware> _logger;
-        private IActionResultExecutor<ObjectResult> _executor { get; }
+        private bool _isRequestOk = false;
+
+        private IActionResultExecutor<ObjectResult> Executor { get; }
+
         public WrapperBase(RequestDelegate next, 
                           AutoWrapperOptions options, 
                           ILogger<AutoWrapperMiddleware> logger, 
@@ -27,102 +30,115 @@ namespace AutoWrapper.Base
             _next = next;
             _options = options;
             _logger = logger;
-            _executor = executor;
+            Executor = executor;
         }
 
-        public virtual async Task InvokeAsyncBase(HttpContext context, AutoWrapperMembers awm)
+        public virtual async Task InvokeAsyncBase(HttpContext context, ApiRequestHandler requestHandler)
         {
-            if (awm.IsSwagger(context, _options.SwaggerPath) || !awm.IsApi(context))
+            if (ApiRequestHandler.IsSwagger(context) || !requestHandler.IsApi(context))
+            {
                 await _next(context);
+            }
             else
             {
-                var stopWatch = Stopwatch.StartNew();
-                var requestBody = await awm.GetRequestBodyAsync(context.Request);
-                var originalResponseBodyStream = context.Response.Body;
-                bool isRequestOk = false;
+                await InvokeNextAsync(context, requestHandler);
+            }
+        }
 
-                using var memoryStream = new MemoryStream();
+        private async Task InvokeNextAsync(HttpContext context, ApiRequestHandler requestHandler)
+        {
+            var stopWatch = Stopwatch.StartNew();
+            var requestBody = await ApiRequestHandler.GetRequestBodyAsync(context.Request);
+            var originalResponseBodyStream = context.Response.Body;
 
-                try
+            using var memoryStream = new MemoryStream();
+
+            try
+            {
+                context.Response.Body = memoryStream;
+                await _next.Invoke(context);
+
+                if (context.Response.HasStarted) { LogResponseHasStartedError(); return; }
+
+                var endpoint = context.GetEndpoint();
+
+                if (endpoint?.Metadata?.GetMetadata<AutoWrapIgnoreAttribute>() is object)
                 {
-                    context.Response.Body = memoryStream;
-                    await _next.Invoke(context);
-
-                    if (context.Response.HasStarted) { LogResponseHasStartedError(); return; }
-
-                    var endpoint = context.GetEndpoint();
-                    if (endpoint?.Metadata?.GetMetadata<AutoWrapIgnoreAttribute>() is object)
-                    {
-                        await awm.RevertResponseBodyStreamAsync(memoryStream, originalResponseBodyStream);
-                        return;
-                    }
-
-                    var bodyAsText = await awm.ReadResponseBodyStreamAsync(memoryStream);
-                    context.Response.Body = originalResponseBodyStream;
-
-                    if (context.Response.StatusCode != Status304NotModified && context.Response.StatusCode != Status204NoContent)
-                    {
-
-                        if (!_options.IsApiOnly
-                            && (bodyAsText.IsHtml()
-                            && !_options.BypassHTMLValidation)
-                            && context.Response.StatusCode == Status200OK)
-                        { context.Response.StatusCode = Status404NotFound; }
-
-                        if (!context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith))
-                            && (bodyAsText.IsHtml()
-                            && !_options.BypassHTMLValidation)
-                            && context.Response.StatusCode == Status200OK)
-                        {
-                            if (memoryStream.Length > 0) { await awm.HandleNotApiRequestAsync(context); }
-                            return;
-                        }
-
-                        isRequestOk = awm.IsRequestSuccessful(context.Response.StatusCode);
-                        if (isRequestOk)
-                        {
-                            if (_options.IgnoreWrapForOkRequests)
-                            {
-                                await awm.WrapIgnoreAsync(context, bodyAsText);
-                            }
-                            else
-                            {
-                                await awm.HandleSuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
-                            }
-                        }
-                        else
-                        {
-                            if (_options.UseApiProblemDetailsException) 
-                            { 
-                                await awm.HandleProblemDetailsExceptionAsync(context, _executor, bodyAsText); 
-                                return; 
-                            }
-
-                            await awm.HandleUnsuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
-                        }
-                    }
-
+                    await requestHandler.RevertResponseBodyStreamAsync(memoryStream, originalResponseBodyStream);
+                    return;
                 }
-                catch (Exception exception)
-                {
-                    if (context.Response.HasStarted) { LogResponseHasStartedError(); return; }
 
-                    if (_options.UseApiProblemDetailsException) 
-                    { 
-                        await awm.HandleProblemDetailsExceptionAsync(context, _executor, null, exception); 
-                    }
-                    else 
-                    { 
-                        await awm.HandleExceptionAsync(context, exception); 
-                    }
-
-                    await awm.RevertResponseBodyStreamAsync(memoryStream, originalResponseBodyStream);
-                }
-                finally
+                if (context.Response.StatusCode != Status304NotModified && context.Response.StatusCode != Status204NoContent)
                 {
-                    LogHttpRequest(context, requestBody, stopWatch, isRequestOk);
+                    await HandleRequestAsync(context, requestHandler, memoryStream, originalResponseBodyStream);
                 }
             }
+            catch (Exception exception)
+            {
+                if (context.Response.HasStarted) 
+                { 
+                    LogResponseHasStartedError(); 
+                    return; 
+                }
+
+                if (_options.UseApiProblemDetailsException)
+                {
+                    await requestHandler.HandleProblemDetailsExceptionAsync(context, Executor, null, exception);
+                    return;
+                }
+
+                await requestHandler.HandleExceptionAsync(context, exception);
+                await requestHandler.RevertResponseBodyStreamAsync(memoryStream, originalResponseBodyStream);
+            }
+            finally
+            {
+                LogHttpRequest(context, requestBody, stopWatch, _isRequestOk);
+            }
+        }
+
+        private async Task HandleRequestAsync(HttpContext context, ApiRequestHandler requestHandler, MemoryStream memoryStream, Stream bodyStream)
+        {
+            var bodyAsText = await requestHandler.ReadResponseBodyStreamAsync(memoryStream);
+            context.Response.Body = bodyStream;
+
+            if (!_options.IsApiOnly
+                    && (bodyAsText.IsHtml()
+                    && !_options.BypassHTMLValidation)
+                    && context.Response.StatusCode == Status200OK)
+            { 
+                context.Response.StatusCode = Status404NotFound; 
+            }
+
+            if (!context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith))
+                && (bodyAsText.IsHtml()
+                && !_options.BypassHTMLValidation)
+                && context.Response.StatusCode == Status200OK)
+            {
+                if (memoryStream.Length > 0) { await requestHandler.HandleNotApiRequestAsync(context); }
+                return;
+            }
+
+            _isRequestOk = ApiRequestHandler.IsRequestSuccessful(context.Response.StatusCode);
+
+            if (_isRequestOk)
+            {
+                if (_options.IgnoreWrapForOkRequests)
+                {
+                    await ApiRequestHandler.WrapIgnoreAsync(context, bodyAsText);
+                    return;
+                }
+
+                await requestHandler.HandleSuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
+                return;
+            }
+
+            if (_options.UseApiProblemDetailsException)
+            {
+                await requestHandler.HandleProblemDetailsExceptionAsync(context, Executor, bodyAsText);
+                return;
+            }
+
+            await requestHandler.HandleUnsuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
         }
 
         private bool ShouldLogRequestData(HttpContext context)
@@ -136,7 +152,7 @@ namespace AutoWrapper.Base
             return false;
         }
 
-        private void LogHttpRequest(HttpContext context, string requestBody, Stopwatch stopWatch, bool isRequestOk)
+        private void LogHttpRequest(HttpContext context, string? requestBody, Stopwatch stopWatch, bool isRequestOk)
         {
             stopWatch.Stop();
             if (_options.EnableResponseLogging)

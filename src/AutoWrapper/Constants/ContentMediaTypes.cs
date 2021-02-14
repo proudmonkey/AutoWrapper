@@ -1,6 +1,6 @@
-﻿namespace AutoWrapper.Helpers
+﻿namespace AutoWrapper.Constants
 {
-    internal class TypeIdentifier
+    internal class ContentMediaTypes
     {
         internal const string JSONHttpContentMediaType = "application/json";
         internal const string ProblemJSONHttpContentMediaType = "application/problem+json";

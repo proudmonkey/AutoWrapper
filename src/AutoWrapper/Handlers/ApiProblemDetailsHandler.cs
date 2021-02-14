@@ -1,27 +1,30 @@
-﻿using AutoWrapper.Extensions;
-using AutoWrapper.Helpers;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Routing;
-using Newtonsoft.Json;
-using System;
-using System.Threading.Tasks;
-using static Microsoft.AspNetCore.Http.StatusCodes;
-
-namespace AutoWrapper.Wrappers
+﻿namespace AutoWrapper.Handlers
 {
-    internal class ApiProblemDetailsMember
+    using AutoWrapper.Constants;
+    using AutoWrapper.Exceptions;
+    using AutoWrapper.Extensions;
+    using AutoWrapper.Models;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Abstractions;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
+    using Microsoft.AspNetCore.Routing;
+    using System;
+    using System.Text.Json;
+    using System.Threading.Tasks;
+    using static Microsoft.AspNetCore.Http.StatusCodes;
+
+    internal static class ApiProblemDetailsHandler
     {
         private static readonly RouteData _emptyRouteData = new RouteData();
         private static readonly ActionDescriptor _emptyActionDescriptor = new ActionDescriptor();
-        public Task WriteProblemDetailsAsync(HttpContext context, IActionResultExecutor<ObjectResult> executor, object body, Exception exception, bool isDebug = false)
+
+        public static Task HandleProblemDetailsAsync(HttpContext context, IActionResultExecutor<ObjectResult> executor, object body, Exception exception, bool isDebug = false)
         {
             var statusCode = context.Response.StatusCode;
             object details = exception == null ? DelegateResponse(body, statusCode) : GetProblemDetails(exception, isDebug);
 
-            if (details is ProblemDetails) { (details as ProblemDetails).Instance = context.Request.Path; }
+            if (details is ProblemDetails) { (details! as ProblemDetails).Instance = context.Request.Path; }
 
             var routeData = context.GetRouteData() ?? _emptyRouteData;
 
@@ -33,21 +36,21 @@ namespace AutoWrapper.Wrappers
                 DeclaredType = details.GetType()
             };
 
-            result.ContentTypes.Add(TypeIdentifier.ProblemJSONHttpContentMediaType);
-            result.ContentTypes.Add(TypeIdentifier.ProblemXMLHttpContentMediaType);
+            result.ContentTypes.Add(ContentMediaTypes.ProblemJSONHttpContentMediaType);
+            result.ContentTypes.Add(ContentMediaTypes.ProblemXMLHttpContentMediaType);
 
             return executor.ExecuteAsync(actionContext, result);
         }
 
-        private object DelegateResponse(object body, int statusCode)
+        private static object DelegateResponse(object body, int statusCode)
         {
             var content = body ?? string.Empty;
-            var (IsEncoded, ParsedText) = content.ToString().VerifyBodyContent();
-            var result = IsEncoded ? JsonConvert.DeserializeObject<dynamic>(ParsedText) : new ApiProblemDetails(statusCode) {  Detail = content.ToString() } ;
+            var (IsEncoded, ParsedText) = content.ToString()!.VerifyBodyContent();
+            var result = IsEncoded ? JsonSerializer.Deserialize<dynamic>(ParsedText) : new ApiProblemDetails(statusCode) {  Detail = content.ToString() } ;
 
-            return result;
+            return result!;
         }
-        private ProblemDetails GetProblemDetails(Exception exception, bool isDebug)
+        private static ProblemDetails GetProblemDetails(Exception exception, bool isDebug)
         {
             if (exception is ApiProblemDetailsException problem){ return problem.Problem.Details; }
 
@@ -55,7 +58,7 @@ namespace AutoWrapper.Wrappers
 
             if (isDebug) { return new DebugExceptionetails(defaultException); }
 
-            return new ApiProblemDetails((int)defaultException.Status) { Detail = defaultException.Exception.Message };
+            return new ApiProblemDetails((int)defaultException.Status!) { Detail = defaultException.Exception.Message };
         }
 
         internal class ErrorDetails
@@ -67,8 +70,8 @@ namespace AutoWrapper.Wrappers
 
             public ErrorDetails(ExceptionFallback detail)
             {
-                Source = detail.Exception.Source;
-                Raw = detail.Exception.StackTrace;
+                Source = detail.Exception.Source ?? string.Empty;
+                Raw = detail.Exception.StackTrace ?? string.Empty;
                 Message = detail.Exception.Message;
                 Type = detail.Exception.GetType().Name;
             }
@@ -106,7 +109,7 @@ namespace AutoWrapper.Wrappers
                 Errors = new ErrorDetails(problem);
             }
 
-            private static string GetHelpLink(Exception exception)
+            private static string? GetHelpLink(Exception exception)
             {
                 var link = exception.HelpLink;
 

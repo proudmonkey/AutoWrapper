@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System;
-using System.Text;
-using AutoWrapper.Extensions;
-using static Microsoft.AspNetCore.Http.StatusCodes;
-
-namespace AutoWrapper.Wrappers
+﻿namespace AutoWrapper.Exceptions
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.ModelBinding;
+    using System;
+    using System.Text;
+    using AutoWrapper.Extensions;
+    using static Microsoft.AspNetCore.Http.StatusCodes;
+    using AutoWrapper.Models;
+
     public class ApiProblemDetailsException : Exception
     {
         public ApiProblemDetailsException(int statusCode)
@@ -26,7 +27,7 @@ namespace AutoWrapper.Wrappers
         }
 
         public ApiProblemDetailsException(ModelStateDictionary modelState, int statusCode = Status422UnprocessableEntity)
-             : this(new ApiProblemDetails(statusCode) { Detail = "Your request parameters didn't validate.", ValidationErrors = modelState.AllErrors() })
+             : this(new ApiProblemDetails(statusCode) { Detail = "Your request parameters did not validate.", ValidationErrors = modelState.AllErrors() })
         {
         }
 

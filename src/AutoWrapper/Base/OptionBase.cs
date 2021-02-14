@@ -47,11 +47,6 @@
         public bool IgnoreNullValue { get; set; } = true;
 
         /// <summary>
-        /// Tells the wrapper to use camel case as the response format. Default is true.
-        /// </summary>
-        public bool UseCamelCaseNamingStrategy { get; set; } = true;
-
-        /// <summary>
         /// Tells the wrapper whether to enable request and response logging. Default is true.
         /// </summary>
         public bool EnableResponseLogging { get; set; } = true;
