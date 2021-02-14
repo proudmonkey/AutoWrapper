@@ -1,5 +1,4 @@
-﻿using AutoWrapper.Helpers;
-using Newtonsoft.Json.Converters;
+﻿using AutoWrapper.Configurations;
 using System.Text.Json;
 
 namespace AutoWrapper.Test.Helper
@@ -23,7 +22,7 @@ namespace AutoWrapper.Test.Helper
         public static string ToJson(object obj, JsonSerializerOptions jsonOptions)
         {
             var options = new AutoWrapperOptions();
-            var newJsonOptions = JSONHelper.GetJSONSettings(options.JsonNamingPolicy, options.IgnoreNullValue);
+            var newJsonOptions = JsonSettings.GetJsonSerializerOptions(options.JsonNamingPolicy, options.IgnoreNullValue);
             return JsonSerializer.Serialize(obj, jsonOptions ?? newJsonOptions);
         }
     }

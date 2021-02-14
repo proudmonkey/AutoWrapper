@@ -1,7 +1,8 @@
 ﻿using AutoFixture;
+using AutoWrapper.Exceptions;
 using AutoWrapper.Models;
+using AutoWrapper.Models.ResponseTypes;
 using AutoWrapper.Test.Helper;
-using AutoWrapper.Wrappers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,7 +33,7 @@ namespace AutoWrapper.Test
                  .ConfigureServices(services => { services.AddMvcCore(); })
                  .Configure(app =>
                 {
-                    app.UseApiResponseAndExceptionWrapper();
+                    app.UseAutoWrapper();
                     app.Run(context => Task.FromResult(0));
                 });
             var server = new TestServer(builder);
@@ -51,7 +52,7 @@ namespace AutoWrapper.Test
                 .ConfigureServices(services => { services.AddMvcCore(); })
                 .Configure(app =>
                 {
-                    app.UseApiResponseAndExceptionWrapper();
+                    app.UseAutoWrapper();
                     app.Run(context => context.Response.WriteAsync("HueiFeng"));
                 });
             var server = new TestServer(builder);
@@ -69,7 +70,7 @@ namespace AutoWrapper.Test
             .ConfigureServices(services => { services.AddMvcCore(); })
             .Configure(app =>
             {
-                app.UseApiResponseAndExceptionWrapper();
+                app.UseAutoWrapper();
                 app.Run(context => context.Response.WriteAsync(
                     new ApiResponse("My Custom Message", "Test", 200).ToJson()));
             });
@@ -97,7 +98,7 @@ namespace AutoWrapper.Test
                 .ConfigureServices(services => { services.AddMvcCore(); })
                 .Configure(app =>
                 {
-                    app.UseApiResponseAndExceptionWrapper();
+                    app.UseAutoWrapper();
 
                     app.Run(context => throw new ApiException(dictionary["name"]));
                 });
@@ -126,7 +127,7 @@ namespace AutoWrapper.Test
                 .ConfigureServices(services => { services.AddMvcCore(); })
                 .Configure(app =>
                 {
-                    app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { UseApiProblemDetailsException = true });
+                    app.UseAutoWrapper(new AutoWrapperOptions { UseApiProblemDetailsException = true });
                     app.Run(context => throw new ApiProblemDetailsException(dictionary));
                 });
 
@@ -152,7 +153,7 @@ namespace AutoWrapper.Test
                 .ConfigureServices(services => { services.AddMvcCore(); })
                 .Configure(app =>
                 {
-                    app.UseApiResponseAndExceptionWrapper();
+                    app.UseAutoWrapper();
                     app.Run(context => throw new ApiException("does not exist.", 404));
                 });
             var server = new TestServer(builder);
@@ -175,7 +176,7 @@ namespace AutoWrapper.Test
                 .ConfigureServices(services => { services.AddMvcCore(); })
                 .Configure(app =>
                 {
-                    app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { UseApiProblemDetailsException = true });
+                    app.UseAutoWrapper(new AutoWrapperOptions { UseApiProblemDetailsException = true });
                     app.Run(context => throw new ApiProblemDetailsException("does not exist.", 404));
                 });
             var server = new TestServer(builder);
