@@ -1,11 +1,9 @@
 ﻿using System;
 
-namespace AutoWrapper.Filters
+namespace AutoWrapper.Attributes
 {
     public class AutoWrapIgnoreAttribute : Attribute
     {
-        public bool ShouldLogRequestData{ get; set; } = true;
-
         public AutoWrapIgnoreAttribute(){}
     }
 }

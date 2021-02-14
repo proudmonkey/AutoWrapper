@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AutoWrapper
+namespace AutoWrapper.Attributes
 {
 
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Parameter, AllowMultiple = false)]

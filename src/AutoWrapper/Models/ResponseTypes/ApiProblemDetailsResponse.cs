@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace AutoWrapper.Models
+namespace AutoWrapper.Models.ResponseTypes
 {
     public class ApiProblemDetailsResponse: ProblemDetails
     {

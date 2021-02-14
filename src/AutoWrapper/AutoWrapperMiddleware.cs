@@ -1,40 +1,29 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
-using AutoWrapper.Base;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc;
-
-namespace AutoWrapper
+﻿namespace AutoWrapper
 {
+    using AutoWrapper.Base;
+    using AutoWrapper.Handlers;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
+    using Microsoft.Extensions.Logging;
+    using System.Threading.Tasks;
+
     internal class AutoWrapperMiddleware : WrapperBase
     {
-        private readonly AutoWrapperMembers _awm;
-        public AutoWrapperMiddleware(RequestDelegate next, AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger, IActionResultExecutor<ObjectResult> executor) : base(next, options, logger, executor)
+        private readonly ApiRequestHandler _handler;
+        public AutoWrapperMiddleware(RequestDelegate next, 
+                                     AutoWrapperOptions options, 
+                                     ILogger<AutoWrapperMiddleware> logger, 
+                                     IActionResultExecutor<ObjectResult> executor) 
+        : base(next, options, logger, executor)
         {
-            var jsonSettings = Helpers.JSONHelper.GetJSONSettings(options.IgnoreNullValue, options.ReferenceLoopHandling, options.UseCamelCaseNamingStrategy);
-            _awm = new AutoWrapperMembers(options, logger, jsonSettings);
+            var jsonOptions = Configurations.JsonSettings.GetJsonSerializerOptions(options.JsonNamingPolicy, options.IgnoreNullValue);
+            _handler = new ApiRequestHandler(options, logger, jsonOptions);
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
-            await InvokeAsyncBase(context, _awm);
+            await InvokeAsyncBase(context, _handler);
         }
-    }
-
-    internal class AutoWrapperMiddleware<T> : WrapperBase
-    {
-        private readonly AutoWrapperMembers _awm;
-        public AutoWrapperMiddleware(RequestDelegate next, AutoWrapperOptions options, ILogger<AutoWrapperMiddleware> logger, IActionResultExecutor<ObjectResult> executor) : base(next, options, logger, executor)
-        {
-            var (Settings, Mappings) = Helpers.JSONHelper.GetJSONSettings<T>(options.IgnoreNullValue, options.ReferenceLoopHandling, options.UseCamelCaseNamingStrategy);
-            _awm = new AutoWrapperMembers(options, logger, Settings, Mappings, true);
-        }
-
-        public async Task InvokeAsync(HttpContext context)
-        {
-            await InvokeAsyncBase(context, _awm);
-        }
-
     }
 }

@@ -1,6 +1,6 @@
 ﻿using AutoWrapper.Helpers;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System.Text.Json;
 
 namespace AutoWrapper.Test.Helper
 {
@@ -13,19 +13,18 @@ namespace AutoWrapper.Test.Helper
         /// <returns></returns>
         public static string ToJson(this object obj)
         {
-            var timeConverter = new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" };
-            return JsonConvert.SerializeObject(obj, timeConverter);
+            return JsonSerializer.Serialize(obj);
         }
         /// <summary>
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public static string ToJson(object obj, JsonSerializerSettings settings)
+        public static string ToJson(object obj, JsonSerializerOptions jsonOptions)
         {
             var options = new AutoWrapperOptions();
-            var jsonSettings = JSONHelper.GetJSONSettings(options.IgnoreNullValue, options.ReferenceLoopHandling, options.UseCamelCaseNamingStrategy);
-            return JsonConvert.SerializeObject(obj, settings ?? jsonSettings);
+            var newJsonOptions = JSONHelper.GetJSONSettings(options.JsonNamingPolicy, options.IgnoreNullValue);
+            return JsonSerializer.Serialize(obj, jsonOptions ?? newJsonOptions);
         }
     }
 }
