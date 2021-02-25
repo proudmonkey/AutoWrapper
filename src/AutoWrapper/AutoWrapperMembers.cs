@@ -25,10 +25,10 @@ namespace AutoWrapper
         private readonly JsonSerializerSettings _jsonSettings;
         public readonly Dictionary<string, string> _propertyMappings;
         private readonly bool _hasSchemaForMappping;
-        public AutoWrapperMembers(AutoWrapperOptions options, 
-                                    ILogger<AutoWrapperMiddleware> logger, 
+        public AutoWrapperMembers(AutoWrapperOptions options,
+                                    ILogger<AutoWrapperMiddleware> logger,
                                     JsonSerializerSettings jsonSettings,
-                                    Dictionary<string, string> propertyMappings = null, 
+                                    Dictionary<string, string> propertyMappings = null,
                                     bool hasSchemaForMappping = false)
         {
             _options = options;
@@ -127,7 +127,8 @@ namespace AutoWrapper
             }
 
 
-            if (_options.EnableExceptionLogging) {
+            if (_options.EnableExceptionLogging)
+            {
                 var errorMessage = apiError is ApiError ? ((ApiError)apiError).ExceptionMessage : ResponseMessage.Exception;
                 _logger.Log(LogLevel.Error, exception, $"[{httpStatusCode}]: { errorMessage }");
             }
@@ -214,10 +215,23 @@ namespace AutoWrapper
             return context.Request.Path.StartsWithSegments(new PathString(swaggerPath));
         }
 
+        public bool IsExclude(HttpContext context, string[] excludePaths)
+        {
+            if (excludePaths == null)
+            {
+                return false;
+            }
+
+            return excludePaths.Any(x =>
+            {
+                return context.Request.Path.StartsWithSegments(new PathString(x));
+            });
+        }
+
         public bool IsApi(HttpContext context)
         {
-            if (_options.IsApiOnly 
-                && !context.Request.Path.Value.Contains(".js") 
+            if (_options.IsApiOnly
+                && !context.Request.Path.Value.Contains(".js")
                 && !context.Request.Path.Value.Contains(".css")
                 && !context.Request.Path.Value.Contains(".html"))
                 return true;
@@ -286,7 +300,7 @@ namespace AutoWrapper
                 Status204NoContent => new ApiError(ResponseMessage.NotContent),
                 Status400BadRequest => new ApiError(ResponseMessage.BadRequest),
                 Status401Unauthorized => new ApiError(ResponseMessage.UnAuthorized),
-                Status404NotFound =>  new ApiError(ResponseMessage.NotFound),
+                Status404NotFound => new ApiError(ResponseMessage.NotFound),
                 Status405MethodNotAllowed => new ApiError(ResponseMessage.MethodNotAllowed),
                 Status415UnsupportedMediaType => new ApiError(ResponseMessage.MediaTypeNotSupported),
                 _ => new ApiError(ResponseMessage.Unknown)
@@ -294,7 +308,7 @@ namespace AutoWrapper
             };
 
 
-        private ApiResponse GetErrorResponse(int httpStatusCode, object apiError) 
+        private ApiResponse GetErrorResponse(int httpStatusCode, object apiError)
             => new ApiResponse(!_options.ShowStatusCode ? 0 : httpStatusCode, apiError) { Version = GetApiVersion() };
 
         private ApiResponse GetSucessResponse(ApiResponse apiResponse, string httpMethod)

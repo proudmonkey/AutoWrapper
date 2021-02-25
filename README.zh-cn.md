@@ -21,6 +21,7 @@
   * 添加对问题详细信息的异常格式的支持
   * 添加对忽略不需要使用`[AutoWrapIgnore]`过滤器属性包装的操作方法的支持。
   * V3.x启用了对`netcoreapp2.1`和`netcoreapp2.2` .NET Core框架的向后兼容性支持
+  * 增加排除的路径，依赖于此，增加了对SignalR的支持。
 
   # 安装
 
@@ -684,6 +685,23 @@
 
   `AutoWrapper` 
   省略网址中带有`/swagger`的任何请求，因此您仍然可以导航到Swagger UI以获得API文档。
+
+  # Support for SignalR
+  如果你有一个SigalR终结的，例如：
+  ```csharp
+  app.UseEndpoints(endpoints =>
+  {
+      endpoints.MapControllers();
+      endpoints.MapHub<NoticeHub>("/notice");
+  });
+  ```
+  那么可以使用ExcludePaths排除它，以便让SignalR终结点生效
+  ```csharp
+  app.UseCustomAutoWrapper(new AutoWrapper.AutoWrapperOptions
+  {      
+      ExcludePaths = new string[] { "/notice" }
+  });
+  ```
 
   # Support for NetCoreApp2.1 and NetCoreApp2.2
   `AutoWrapper` 

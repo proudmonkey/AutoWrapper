@@ -682,6 +682,24 @@ app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions {
 
 `AutoWrapper` omit any request with “`/swagger`” in the `URL` so you can still be able to navigate to the Swagger UI for your API documentation.
 
+# Support for SignalR
+if you have a SigalR EndPoint，like：
+```csharp
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapHub<NoticeHub>("/notice");
+});
+```
+
+then you can use ExcludePaths exclude it to make the SignalR endpoint take effect.
+```csharp
+app.UseCustomAutoWrapper(new AutoWrapper.AutoWrapperOptions
+{      
+    ExcludePaths = new string[] { "/notice" }
+});
+```
+
 # Support for NetCoreApp2.1 and NetCoreApp2.2
 `AutoWrapper` version 2.x - 3.0 also supports both .NET Core 2.1 and 2.2. You just need to install the Nuget package `Newtonsoft.json` first before `AutoWrapper.Core`.
 

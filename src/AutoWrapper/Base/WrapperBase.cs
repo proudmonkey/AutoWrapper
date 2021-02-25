@@ -18,7 +18,9 @@ namespace AutoWrapper.Base
         private readonly RequestDelegate _next;
         private readonly AutoWrapperOptions _options;
         private readonly ILogger<AutoWrapperMiddleware> _logger;
+#pragma warning disable IDE1006 // 命名样式
         private IActionResultExecutor<ObjectResult> _executor { get; }
+#pragma warning restore IDE1006 // 命名样式
         public WrapperBase(RequestDelegate next, 
                           AutoWrapperOptions options, 
                           ILogger<AutoWrapperMiddleware> logger, 
@@ -32,7 +34,7 @@ namespace AutoWrapper.Base
 
         public virtual async Task InvokeAsyncBase(HttpContext context, AutoWrapperMembers awm)
         {
-            if (awm.IsSwagger(context, _options.SwaggerPath) || !awm.IsApi(context))
+            if (awm.IsSwagger(context, _options.SwaggerPath) || !awm.IsApi(context) || awm.IsExclude(context, _options.ExcludePaths))
                 await _next(context);
             else
             {
@@ -49,6 +51,9 @@ namespace AutoWrapper.Base
                     await _next.Invoke(context);
 
                     if (context.Response.HasStarted) { LogResponseHasStartedError(); return; }
+
+                    var url = Microsoft.AspNetCore.Http.Extensions.UriHelper.BuildRelative(context.Request.Path);
+                    
 
                     var endpoint = context.GetEndpoint();
                     if (endpoint?.Metadata?.GetMetadata<AutoWrapIgnoreAttribute>() is object)

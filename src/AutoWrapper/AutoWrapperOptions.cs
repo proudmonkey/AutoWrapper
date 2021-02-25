@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace AutoWrapper
 {
-    public class AutoWrapperOptions :OptionBase
+    public class AutoWrapperOptions : OptionBase
     {
         public bool UseCustomSchema { get; set; } = false;
         public ReferenceLoopHandling ReferenceLoopHandling { get; set; } = ReferenceLoopHandling.Ignore;
@@ -14,5 +14,7 @@ namespace AutoWrapper
         public bool ShouldLogRequestData { get; set; } = true;
 
         public string SwaggerPath { get; set; } = "/swagger";
+
+        public string[] ExcludePaths { get; set; } = null;
     }
 }
