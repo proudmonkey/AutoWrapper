@@ -701,7 +701,7 @@
           // 严格匹配
           new AutoWrapperExcludePaths("/Strict", ExcludeMode.Strict),
           // 匹配起始于路径
-          new AutoWrapperExcludePaths("/dapr/", ExcludeMode.StartWith),
+          new AutoWrapperExcludePaths("/dapr", ExcludeMode.StartWith),
           // 正则匹配
           new AutoWrapperExcludePaths("/notice/.*|/notice", ExcludeMode.Regex)          
       }
@@ -736,7 +736,7 @@
     {
         ShowIsErrorFlagForSuccessfulResponse = true,
         ExcludePaths = new AutoWrapperExcludePaths[] {
-            new AutoWrapperExcludePaths("/dapr/", ExcludeMode.StartWith)          
+            new AutoWrapperExcludePaths("/dapr", ExcludeMode.StartWith)          
         }
     });
   ```

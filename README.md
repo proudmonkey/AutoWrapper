@@ -698,7 +698,7 @@ app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions
         // Strict Match
         new AutoWrapperExcludePaths("/Strict", ExcludeMode.Strict),
         // StartWith
-        new AutoWrapperExcludePaths("/dapr/", ExcludeMode.StartWith),
+        new AutoWrapperExcludePaths("/dapr", ExcludeMode.StartWith),
         // Regex
         new AutoWrapperExcludePaths("/notice/.*|/notice", ExcludeMode.Regex)          
     }
@@ -733,7 +733,7 @@ app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions
 {
     ShowIsErrorFlagForSuccessfulResponse = true,
     ExcludePaths = new AutoWrapperExcludePaths[] {
-        new AutoWrapperExcludePaths("/dapr/", ExcludeMode.StartWith)          
+        new AutoWrapperExcludePaths("/dapr", ExcludeMode.StartWith)          
     }
 });
 ```
