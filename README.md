@@ -23,6 +23,7 @@ Language: English | [中文](README.zh-cn.md)
 * Add support for Problem Details exception format.
 * Add support for ignoring action methods that don't need to be wrapped using `[AutoWrapIgnore]` filter attribute.
 * V3.x enable backwards compatibility support for `netcoreapp2.1` and `netcoreapp2.2` .NET Core frameworks.
+* Add Exclude Paths Options, then support for `SignalR` and `dapr`。
 
 # Installation
 1. Download and Install the latest `AutoWrapper.Core` from NuGet or via CLI:
@@ -682,6 +683,28 @@ app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions {
 
 `AutoWrapper` omit any request with “`/swagger`” in the `URL` so you can still be able to navigate to the Swagger UI for your API documentation.
 
+# Exclude Paths
+Exclude Api paths that do not need to be wrap, and support three mode:
+
+- Strict: The request path must be exactly the same as the configured path.
+- Start at: The request path starts at the configuration path.
+- Regular: If the requested path match the configured path regular expression, it will be excluded.
+
+```csharp
+app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions
+{
+    ShowIsErrorFlagForSuccessfulResponse = true,
+    ExcludePaths = new AutoWrapperExcludePaths[] {
+        // Strict Match
+        new AutoWrapperExcludePaths("/Strict", ExcludeMode.Strict),
+        // StartWith
+        new AutoWrapperExcludePaths("/dapr/", ExcludeMode.StartWith),
+        // Regex
+        new AutoWrapperExcludePaths("/notice/.*|/notice", ExcludeMode.Regex)          
+    }
+});
+```
+
 # Support for SignalR
 if you have a SigalR EndPoint，like：
 ```csharp
@@ -694,9 +717,24 @@ app.UseEndpoints(endpoints =>
 
 then you can use ExcludePaths exclude it to make the SignalR endpoint take effect.
 ```csharp
-app.UseCustomAutoWrapper(new AutoWrapper.AutoWrapperOptions
-{      
-    ExcludePaths = new string[] { "/notice" }
+app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions
+{
+    ShowIsErrorFlagForSuccessfulResponse = true,
+    ExcludePaths = new AutoWrapperExcludePaths[] {
+        new AutoWrapperExcludePaths("/notice/.*|/notice", ExcludeMode.Regex)            
+    }
+});
+```
+
+# Support for Dapr
+The Dapr Pubsub request cannot reach the configured Controller Action after being wrapped by AutoWrapper. The series path starting with `/dapr/` needs to be excluded to make the dapr request take effect:
+```csharp
+app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions
+{
+    ShowIsErrorFlagForSuccessfulResponse = true,
+    ExcludePaths = new AutoWrapperExcludePaths[] {
+        new AutoWrapperExcludePaths("/dapr/", ExcludeMode.StartWith)          
+    }
 });
 ```
 

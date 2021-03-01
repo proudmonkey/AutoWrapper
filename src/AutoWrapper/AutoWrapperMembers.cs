@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
@@ -215,16 +216,26 @@ namespace AutoWrapper
             return context.Request.Path.StartsWithSegments(new PathString(swaggerPath));
         }
 
-        public bool IsExclude(HttpContext context, string[] excludePaths)
+        public bool IsExclude(HttpContext context, IEnumerable<AutoWrapperExcludePaths> excludePaths)
         {
-            if (excludePaths == null)
+            if (excludePaths == null || excludePaths.Count() == 0)
             {
                 return false;
             }
 
             return excludePaths.Any(x =>
             {
-                return context.Request.Path.StartsWithSegments(new PathString(x));
+                switch (x.ExcludeMode)
+                {
+                    default:
+                    case ExcludeMode.Strict:
+                        return context.Request.Path.Value == x.Path;
+                    case ExcludeMode.StartWith:
+                        return context.Request.Path.StartsWithSegments(new PathString(x.Path));
+                    case ExcludeMode.Regex:
+                        Regex regExclue = new Regex(x.Path);
+                        return regExclue.IsMatch(context.Request.Path.Value);
+                }
             });
         }
 

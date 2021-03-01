@@ -21,7 +21,7 @@
   * 添加对问题详细信息的异常格式的支持
   * 添加对忽略不需要使用`[AutoWrapIgnore]`过滤器属性包装的操作方法的支持。
   * V3.x启用了对`netcoreapp2.1`和`netcoreapp2.2` .NET Core框架的向后兼容性支持
-  * 增加排除的路径，依赖于此，增加了对SignalR的支持。
+  * 增加排除的路径，依赖于此，增加了对`SignalR`的支持,同时也能支持`Dapr`方法。
 
   # 安装
 
@@ -686,6 +686,29 @@
   `AutoWrapper` 
   省略网址中带有`/swagger`的任何请求，因此您仍然可以导航到Swagger UI以获得API文档。
 
+  # Exclude Paths
+  排除不需要包装的Api路径，支持三种排除方式：
+
+    - 严格：请求路径与配置的路径必须完全一致才排除。
+    - 起始于：请求路径开始于配置路径，便会被排除。
+    - 正则：请求路径满足配置路径正则表达式的话，便会被排除。
+
+  ```csharp
+  app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions
+  {
+      ShowIsErrorFlagForSuccessfulResponse = true,
+      ExcludePaths = new AutoWrapperExcludePaths[] {
+          // 严格匹配
+          new AutoWrapperExcludePaths("/Strict", ExcludeMode.Strict),
+          // 匹配起始于路径
+          new AutoWrapperExcludePaths("/dapr/", ExcludeMode.StartWith),
+          // 正则匹配
+          new AutoWrapperExcludePaths("/notice/.*|/notice", ExcludeMode.Regex)          
+      }
+  });
+  ```
+
+
   # Support for SignalR
   如果你有一个SigalR终结的，例如：
   ```csharp
@@ -697,11 +720,28 @@
   ```
   那么可以使用ExcludePaths排除它，以便让SignalR终结点生效
   ```csharp
-  app.UseCustomAutoWrapper(new AutoWrapper.AutoWrapperOptions
-  {      
-      ExcludePaths = new string[] { "/notice" }
-  });
+    app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions
+    {
+        ShowIsErrorFlagForSuccessfulResponse = true,
+        ExcludePaths = new AutoWrapperExcludePaths[] {
+            new AutoWrapperExcludePaths("/notice/.*|/notice", ExcludeMode.Regex)            
+        }
+    });
   ```
+
+  # Support for Dapr
+  Dapr Pubsub请求被AutoWrapper包装后无法到达配置的Controller Action，需要排除`/dapr/`起始的系列路径，使dapr请求生效：
+  ```csharp
+    app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions
+    {
+        ShowIsErrorFlagForSuccessfulResponse = true,
+        ExcludePaths = new AutoWrapperExcludePaths[] {
+            new AutoWrapperExcludePaths("/dapr/", ExcludeMode.StartWith)          
+        }
+    });
+  ```
+  
+
 
   # Support for NetCoreApp2.1 and NetCoreApp2.2
   `AutoWrapper` 

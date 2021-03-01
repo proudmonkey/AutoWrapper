@@ -1,5 +1,6 @@
 ﻿using AutoWrapper.Base;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace AutoWrapper
 {
@@ -15,6 +16,6 @@ namespace AutoWrapper
 
         public string SwaggerPath { get; set; } = "/swagger";
 
-        public string[] ExcludePaths { get; set; } = null;
+        public IEnumerable<AutoWrapperExcludePaths>  ExcludePaths { get; set; } = null;
     }
 }
