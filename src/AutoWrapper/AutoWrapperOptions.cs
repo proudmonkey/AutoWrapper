@@ -1,9 +1,10 @@
 ﻿using AutoWrapper.Base;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace AutoWrapper
 {
-    public class AutoWrapperOptions :OptionBase
+    public class AutoWrapperOptions : OptionBase
     {
         public bool UseCustomSchema { get; set; } = false;
         public ReferenceLoopHandling ReferenceLoopHandling { get; set; } = ReferenceLoopHandling.Ignore;
@@ -14,5 +15,7 @@ namespace AutoWrapper
         public bool ShouldLogRequestData { get; set; } = true;
 
         public string SwaggerPath { get; set; } = "/swagger";
+
+        public IEnumerable<AutoWrapperExcludePath>  ExcludePaths { get; set; } = null;
     }
 }
