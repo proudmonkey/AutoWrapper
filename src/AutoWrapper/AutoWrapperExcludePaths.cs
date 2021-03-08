@@ -11,9 +11,9 @@ namespace AutoWrapper
         Regex = 3
     }
 
-    public class AutoWrapperExcludePaths
+    public class AutoWrapperExcludePath
     {
-        public AutoWrapperExcludePaths(string path, ExcludeMode excludeMode = ExcludeMode.Strict)
+        public AutoWrapperExcludePath(string path, ExcludeMode excludeMode = ExcludeMode.Strict)
         {
             Path = path;
             ExcludeMode = excludeMode;

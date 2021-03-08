@@ -16,6 +16,6 @@ namespace AutoWrapper
 
         public string SwaggerPath { get; set; } = "/swagger";
 
-        public IEnumerable<AutoWrapperExcludePaths>  ExcludePaths { get; set; } = null;
+        public IEnumerable<AutoWrapperExcludePath>  ExcludePaths { get; set; } = null;
     }
 }

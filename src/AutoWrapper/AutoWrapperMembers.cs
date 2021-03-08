@@ -216,7 +216,7 @@ namespace AutoWrapper
             return context.Request.Path.StartsWithSegments(new PathString(swaggerPath));
         }
 
-        public bool IsExclude(HttpContext context, IEnumerable<AutoWrapperExcludePaths> excludePaths)
+        public bool IsExclude(HttpContext context, IEnumerable<AutoWrapperExcludePath> excludePaths)
         {
             if (excludePaths == null || excludePaths.Count() == 0)
             {
@@ -233,8 +233,8 @@ namespace AutoWrapper
                     case ExcludeMode.StartWith:
                         return context.Request.Path.StartsWithSegments(new PathString(x.Path));
                     case ExcludeMode.Regex:
-                        Regex regExclue = new Regex(x.Path);
-                        return regExclue.IsMatch(context.Request.Path.Value);
+                        Regex regExclude = new Regex(x.Path);
+                        return regExclude.IsMatch(context.Request.Path.Value);
                 }
             });
         }
