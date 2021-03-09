@@ -23,7 +23,7 @@ Language: English | [中文](README.zh-cn.md)
 * Add support for Problem Details exception format.
 * Add support for ignoring action methods that don't need to be wrapped using `[AutoWrapIgnore]` filter attribute.
 * V3.x enable backwards compatibility support for `netcoreapp2.1` and `netcoreapp2.2` .NET Core frameworks.
-* Add Exclude Paths Options, then support for `SignalR` and `dapr`。
+* Add `ExcludePaths` option to enable support for `SignalR` and `dapr` routes。
 
 # Installation
 1. Download and Install the latest `AutoWrapper.Core` from NuGet or via CLI:
@@ -513,6 +513,9 @@ That’s it. One thing to note here is that once you use your own schema for you
 # Options
 The following properties are the available options that you can set:
 
+### Version 4.5.x Additions
+* `ExcludePaths`
+
 ### Version 4.3.x Additions
 * `ShouldLogRequestData`
 * `ShowIsErrorFlagForSuccessfulResponse`
@@ -684,29 +687,18 @@ app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions {
 `AutoWrapper` omit any request with “`/swagger`” in the `URL` so you can still be able to navigate to the Swagger UI for your API documentation.
 
 # Exclude Paths
-Exclude Api paths that do not need to be wrap, and support three mode:
+The ExcludePaths option enables you to set a collection of API paths to be ignored. This feature was added by chen1tian. Thank you so much for this great contribution! Here's how it works:
 
-- Strict: The request path must be exactly the same as the configured path.
-- Start at: The request path starts at the configuration path.
-- Regular: If the requested path match the configured path regular expression, it will be excluded.
+Excluding Api paths/routes that do not need to be wrapped support three ExcludeMode:
 
-```csharp
-app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions
-{
-    ShowIsErrorFlagForSuccessfulResponse = true,
-    ExcludePaths = new AutoWrapperExcludePaths[] {
-        // Strict Match
-        new AutoWrapperExcludePaths("/Strict", ExcludeMode.Strict),
-        // StartWith
-        new AutoWrapperExcludePaths("/dapr", ExcludeMode.StartWith),
-        // Regex
-        new AutoWrapperExcludePaths("/notice/.*|/notice", ExcludeMode.Regex)          
-    }
-});
-```
+`Strict`: The request path must be exactly the same as the configured path.
+`StartWith`: The request path starts at the configuration path.
+`Regex`: If the requested path match the configured path regular expression, it will be excluded.
+The following is a quick example:
 
 # Support for SignalR
-if you have a SigalR EndPoint，like：
+If you have the following SignalR endpoint：
+
 ```csharp
 app.UseEndpoints(endpoints =>
 {
@@ -715,11 +707,11 @@ app.UseEndpoints(endpoints =>
 });
 ```
 
-then you can use ExcludePaths exclude it to make the SignalR endpoint take effect.
+then you can use the ExcludePaths and set the the "/notice" path as AutoWrapperExcludePaths for the SignalR endpoint to work. For example:
+
 ```csharp
 app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions
 {
-    ShowIsErrorFlagForSuccessfulResponse = true,
     ExcludePaths = new AutoWrapperExcludePaths[] {
         new AutoWrapperExcludePaths("/notice/.*|/notice", ExcludeMode.Regex)            
     }
@@ -727,11 +719,11 @@ app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions
 ```
 
 # Support for Dapr
-The Dapr Pubsub request cannot reach the configured Controller Action after being wrapped by AutoWrapper. The series path starting with `/dapr/` needs to be excluded to make the dapr request take effect:
+Prior to `4.5.x` version, the Dapr Pubsub request cannot reach the configured Controller Action after being wrapped by AutoWrapper. The series path starting with "/dapr/" needs to be excluded to make the dapr request take effect:
+
 ```csharp
 app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions
 {
-    ShowIsErrorFlagForSuccessfulResponse = true,
     ExcludePaths = new AutoWrapperExcludePaths[] {
         new AutoWrapperExcludePaths("/dapr", ExcludeMode.StartWith)          
     }
