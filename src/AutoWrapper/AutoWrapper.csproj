@@ -8,7 +8,7 @@
     <PackageProjectUrl>https://github.com/proudmonkey/AutoWrapper</PackageProjectUrl>
     <RepositoryUrl>https://github.com/proudmonkey/AutoWrapper</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <Version>4.4.0</Version>
+    <Version>4.5.0</Version>
     <PackageTags>AutoWrapper, REST, API, WebAPI, ASP.NETCore, Middleware, HttpResponseWrapper, NETCore, C#, ApiResponseAndExceptionWrapper, APIWrapper, ResponseWrapper, ExceptionWrapper, ProblemDetails</PackageTags>
     <PackageReleaseNotes>See project repo for release notes.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
