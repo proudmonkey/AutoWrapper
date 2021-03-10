@@ -8,7 +8,7 @@
     using Microsoft.Extensions.Logging;
     using System.Threading.Tasks;
 
-    internal class AutoWrapperMiddleware : WrapperBase
+    internal class AutoWrapperMiddleware : AutoWrapperBase
     {
         private readonly ApiRequestHandler _handler;
         public AutoWrapperMiddleware(RequestDelegate next, 
@@ -17,7 +17,10 @@
                                      IActionResultExecutor<ObjectResult> executor) 
         : base(next, options, logger, executor)
         {
-            var jsonOptions = Configurations.JsonSettings.GetJsonSerializerOptions(options.JsonNamingPolicy, options.IgnoreNullValue);
+            var jsonOptions = Configurations
+                .JsonSettingsConfiguration
+                .GetJsonSerializerOptions(options.JsonNamingPolicy, options.IgnoreNullValue);
+
             _handler = new ApiRequestHandler(options, logger, jsonOptions);
         }
 

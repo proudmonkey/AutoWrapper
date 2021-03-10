@@ -31,8 +31,6 @@
             CustomErrorModel = customErrorModel;
         }
 
-        
-        
         public ApiException(IEnumerable<ValidationError> errors, int statusCode = Status400BadRequest)
         {
             ValidationErrors = errors;

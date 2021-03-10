@@ -1,4 +1,4 @@
-﻿namespace AutoWrapper.Configurations
+﻿namespace AutoWrapper.Constants
 {
     internal class ResponseMessage
     {

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace AutoWrapper.Configurations
 {
-    public static class JsonSettings
+    public static class JsonSettingsConfiguration
     {
         public static JsonSerializerOptions GetJsonSerializerOptions(JsonNamingPolicy jsonNamingPolicy, bool ignoreNullValues = true)
             =>  new JsonSerializerOptions

@@ -50,6 +50,7 @@
 
             return result!;
         }
+
         private static ProblemDetails GetProblemDetails(Exception exception, bool isDebug)
         {
             if (exception is ApiProblemDetailsException problem){ return problem.Problem.Details; }
