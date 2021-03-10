@@ -13,7 +13,7 @@ using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace AutoWrapper.Base
 {
-    internal abstract class WrapperBase
+    internal abstract class AutoWrapperBase
     {
         private readonly RequestDelegate _next;
         private readonly AutoWrapperOptions _options;
@@ -22,7 +22,7 @@ namespace AutoWrapper.Base
 
         private IActionResultExecutor<ObjectResult> Executor { get; }
 
-        public WrapperBase(RequestDelegate next, 
+        public AutoWrapperBase(RequestDelegate next, 
                           AutoWrapperOptions options, 
                           ILogger<AutoWrapperMiddleware> logger, 
                           IActionResultExecutor<ObjectResult> executor)
@@ -35,7 +35,7 @@ namespace AutoWrapper.Base
 
         public virtual async Task InvokeAsyncBase(HttpContext context, ApiRequestHandler requestHandler)
         {
-            if (ApiRequestHandler.IsSwagger(context) || !requestHandler.IsApi(context))
+            if (requestHandler.ShouldIgnoreRequest(context, _options.ExcludePaths))
             {
                 await _next(context);
             }
@@ -47,9 +47,16 @@ namespace AutoWrapper.Base
 
         private async Task InvokeNextAsync(HttpContext context, ApiRequestHandler requestHandler)
         {
+            if (context.Response.HasStarted)
+            {
+                LogResponseHasStartedError();
+                return;
+            }
+
             var stopWatch = Stopwatch.StartNew();
-            var requestBody = await ApiRequestHandler.GetRequestBodyAsync(context.Request);
+            var requestBody = await requestHandler.GetRequestBodyAsync(context.Request);
             var originalResponseBodyStream = context.Response.Body;
+
 
             using var memoryStream = new MemoryStream();
 
@@ -57,8 +64,6 @@ namespace AutoWrapper.Base
             {
                 context.Response.Body = memoryStream;
                 await _next.Invoke(context);
-
-                if (context.Response.HasStarted) { LogResponseHasStartedError(); return; }
 
                 var endpoint = context.GetEndpoint();
 
@@ -75,11 +80,6 @@ namespace AutoWrapper.Base
             }
             catch (Exception exception)
             {
-                if (context.Response.HasStarted) 
-                { 
-                    LogResponseHasStartedError(); 
-                    return; 
-                }
 
                 if (_options.UseApiProblemDetailsException)
                 {
@@ -98,24 +98,28 @@ namespace AutoWrapper.Base
 
         private async Task HandleRequestAsync(HttpContext context, ApiRequestHandler requestHandler, MemoryStream memoryStream, Stream bodyStream)
         {
-            var bodyAsText = await requestHandler.ReadResponseBodyStreamAsync(memoryStream);
+            var reader = await requestHandler.ReadResponseBodyStreamAsync(memoryStream);
+            var bodyAsText = reader.ParsedText;
+
             context.Response.Body = bodyStream;
 
-            if (!_options.IsApiOnly
+            var isPageRequest = !_options.IsApiOnly
                     && (bodyAsText.IsHtml()
                     && !_options.BypassHTMLValidation)
-                    && context.Response.StatusCode == Status200OK)
+                    && context.Response.StatusCode == Status200OK;
+
+            if (isPageRequest)
             { 
                 context.Response.StatusCode = Status404NotFound; 
             }
 
-            if (!context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith))
-                && (bodyAsText.IsHtml()
-                && !_options.BypassHTMLValidation)
-                && context.Response.StatusCode == Status200OK)
+            if (isPageRequest && !context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith)))
             {
-                if (memoryStream.Length > 0) { await requestHandler.HandleNotApiRequestAsync(context); }
-                return;
+                if (memoryStream.Length > 0) 
+                { 
+                    await requestHandler.HandleNotApiRequestAsync(context);
+                    return;
+                }
             }
 
             _isRequestOk = ApiRequestHandler.IsRequestSuccessful(context.Response.StatusCode);
@@ -124,11 +128,11 @@ namespace AutoWrapper.Base
             {
                 if (_options.IgnoreWrapForOkRequests)
                 {
-                    await ApiRequestHandler.WrapIgnoreAsync(context, bodyAsText);
+                    await requestHandler.WrapIgnoreAsync(context, bodyAsText);
                     return;
                 }
 
-                await requestHandler.HandleSuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
+                await requestHandler.HandleSuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode, reader.JsonDoc);
                 return;
             }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text.Json;
 
 namespace AutoWrapper.Extensions
@@ -9,13 +10,34 @@ namespace AutoWrapper.Extensions
         {
             try
             {
-                var obj = JsonDocument.Parse(text);
+                using var obj = JsonDocument.Parse(text);
                 return (true, text);
             }
             catch (Exception)
             {
                 return (false, text);
             }
+        }
+
+        public static (bool IsEncoded, string ParsedText, JsonDocument? JsonDoc) VerifyAndParseBodyContentToJson(this string text)
+        {
+            try
+            {
+                using var jsonDocument = JsonDocument.Parse(text);
+                return (true, text, jsonDocument);
+            }
+            catch (Exception)
+            {
+                return (false, text, null);
+            }
+        }
+
+        public static bool HasMatchingApiResponseProperty(this JsonElement root, string propertyName)
+        {
+            var result = root.EnumerateObject()
+                .Any(p => p.Name.Equals(propertyName, StringComparison.OrdinalIgnoreCase));
+
+            return result;
         }
     }
 }

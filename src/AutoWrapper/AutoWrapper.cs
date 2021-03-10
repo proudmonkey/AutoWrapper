@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Builder;
-
-namespace AutoWrapper
+﻿namespace AutoWrapper
 {
+    using Microsoft.AspNetCore.Builder;
+
     public static class AutoWrapperExtension
     {
         public static IApplicationBuilder UseAutoWrapper(this IApplicationBuilder builder, AutoWrapperOptions? options = null)

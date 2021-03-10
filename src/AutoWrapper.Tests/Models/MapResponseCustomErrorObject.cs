@@ -1,4 +1,4 @@
-﻿namespace AutoWrapper.Test.Models
+﻿namespace AutoWrapper.Tests.Models
 {
     public class MapResponseCustomErrorObject
     {
