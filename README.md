@@ -712,8 +712,8 @@ then you can use the ExcludePaths and set the the "/notice" path as AutoWrapperE
 ```csharp
 app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions
 {
-    ExcludePaths = new AutoWrapperExcludePaths[] {
-        new AutoWrapperExcludePaths("/notice/.*|/notice", ExcludeMode.Regex)            
+    ExcludePaths = new AutoWrapperExcludePath[] {
+        new AutoWrapperExcludePath("/notice/.*|/notice", ExcludeMode.Regex)            
     }
 });
 ```
@@ -724,8 +724,8 @@ Prior to `4.5.x` version, the Dapr Pubsub request cannot reach the configured Co
 ```csharp
 app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions
 {
-    ExcludePaths = new AutoWrapperExcludePaths[] {
-        new AutoWrapperExcludePaths("/dapr", ExcludeMode.StartWith)          
+    ExcludePaths = new AutoWrapperExcludePath[] {
+        new AutoWrapperExcludePath("/dapr", ExcludeMode.StartWith)          
     }
 });
 ```
