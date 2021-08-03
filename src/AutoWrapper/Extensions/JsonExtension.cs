@@ -23,7 +23,7 @@ namespace AutoWrapper.Extensions
         {
             try
             {
-                using var jsonDocument = JsonDocument.Parse(text);
+                var jsonDocument = JsonDocument.Parse(text);
                 return (true, text, jsonDocument);
             }
             catch (Exception)

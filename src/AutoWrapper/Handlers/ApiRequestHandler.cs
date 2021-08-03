@@ -1,14 +1,19 @@
 ﻿namespace AutoWrapper.Handlers
 {
+    using AutoWrapper.Attributes;
     using AutoWrapper.Configurations;
     using AutoWrapper.Constants;
     using AutoWrapper.Exceptions;
     using AutoWrapper.Extensions;
+    using AutoWrapper.Interface;
     using AutoWrapper.Models;
     using HelpMate.Core;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.ActionConstraints;
+    using Microsoft.AspNetCore.Mvc.Controllers;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
@@ -122,36 +127,33 @@
                 await WriteFormattedResponseToHttpContextAsync(context!, httpStatusCode!, wrappedJsonString!);
                 return;
             }
-            //var jsonString = !body.ToString().IsValidJson() ? ConvertToJSONString(body!) : body.ToString();
 
-            //using var jsonDocument = JsonDocument.Parse(bodyAsText);
             var root = jsonDocument.RootElement;
 
             if (root.ValueKind == JsonValueKind.Object)
             {
+                var endpoint = context.GetEndpoint();
+                var actionDescriptor = endpoint?.Metadata?.GetMetadata<ControllerActionDescriptor>();
 
-                if (IsApiResponseJsonShape(root))
+                if (actionDescriptor != null)
                 {
-                    //var apiResponse = JsonSerializer.Deserialize<ApiResponse>(jsonString!, _jsonOptions);
-                    var apiResponse = JsonSerializer.Deserialize<ApiResponse>(root.GetRawText(),_jsonOptions);
+                    Type returnType = actionDescriptor.MethodInfo.ReturnType;
 
-                    httpStatusCode = apiResponse?.StatusCode ?? context.Response.StatusCode;
+                    if(returnType == typeof(IApiResponse))
+                    {
+                        var apiResponse = JsonSerializer.Deserialize<ApiResponse>(root.GetRawText(), _jsonOptions);
+                        httpStatusCode = apiResponse?.StatusCode ?? context.Response.StatusCode;
 
-                    wrappedJsonString = ConvertToJSONString(WrapSucessfulResponse(apiResponse!, context.Request.Method));
-                    await WriteFormattedResponseToHttpContextAsync(context!, httpStatusCode!, wrappedJsonString!);
-                    return;
+                        wrappedJsonString = ConvertToJSONString(WrapSucessfulResponse(apiResponse!, context.Request.Method));
+                        await WriteFormattedResponseToHttpContextAsync(context!, httpStatusCode!, wrappedJsonString!, jsonDocument);
+                        return;
+                    }
                 }
 
                 wrappedJsonString = ConvertToJSONString(httpStatusCode!, root, context.Request.Method);
-                await WriteFormattedResponseToHttpContextAsync(context!, httpStatusCode!, wrappedJsonString!);
+                await WriteFormattedResponseToHttpContextAsync(context!, httpStatusCode!, wrappedJsonString!, jsonDocument);
                 return;
             }
-
-            //var (IsValidated, ValidatedValue) = ValidateSingleValueType(root);
-            //var result = IsValidated ? ValidatedValue : root;
-            //wrappedJsonString = ConvertToJSONString(httpStatusCode!, result!, context.Request.Method);
-
-            //await WriteFormattedResponseToHttpContextAsync(context!, httpStatusCode!, wrappedJsonString!);
         }
 
         public async Task HandleNotApiRequestAsync(HttpContext context)

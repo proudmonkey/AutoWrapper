@@ -98,8 +98,8 @@ namespace AutoWrapper.Base
 
         private async Task HandleRequestAsync(HttpContext context, ApiRequestHandler requestHandler, MemoryStream memoryStream, Stream bodyStream)
         {
-            var reader = await requestHandler.ReadResponseBodyStreamAsync(memoryStream);
-            var bodyAsText = reader.ParsedText;
+            var (_, ParsedText, JsonDoc) = await requestHandler.ReadResponseBodyStreamAsync(memoryStream);
+            var bodyAsText = ParsedText;
 
             context.Response.Body = bodyStream;
 
@@ -132,7 +132,7 @@ namespace AutoWrapper.Base
                     return;
                 }
 
-                await requestHandler.HandleSuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode, reader.JsonDoc);
+                await requestHandler.HandleSuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode, JsonDoc);
                 return;
             }
 

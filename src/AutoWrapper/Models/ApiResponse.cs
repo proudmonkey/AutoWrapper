@@ -3,11 +3,11 @@
     using AutoWrapper.Interface;
     public class ApiResponse : IApiResponse
     {
-        public bool? IsError { get; set; } = false;
+        public bool? IsError { get; set; }
 
         public int? StatusCode { get; set; }
 
-        public string Message { get; set; } = null!;
+        public string? Message { get; set; } 
 
         public object? Result { get; set; }
 
