@@ -52,11 +52,17 @@
             return context.Request.Path.StartsWithSegments(new PathString(_options.WrapWhenApiPathStartsWith));
         }
 
-        protected static async Task WriteFormattedResponseToHttpContextAsync(HttpContext context, int httpStatusCode, string jsonString)
+        protected static async Task WriteFormattedResponseToHttpContextAsync(HttpContext context, int httpStatusCode, string jsonString, JsonDocument? jsonDocument = null)
         {
             context.Response.StatusCode = httpStatusCode;
             context.Response.ContentType = ContentMediaTypes.JSONHttpContentMediaType;
             context.Response.ContentLength = jsonString != null ? Encoding.UTF8.GetByteCount(jsonString!) : 0;
+
+            if (jsonDocument is not null)
+            {
+                jsonDocument.Dispose();
+            }
+
             await context.Response.WriteAsync(jsonString!);
         }
 
@@ -162,9 +168,14 @@
 
         protected static bool IsApiResponseJsonShape(JsonElement root)
             => root.HasMatchingApiResponseProperty("Message");
-            //&& root.HasMatchingApiResponseProperty("Result");
+        //&& root.HasMatchingApiResponseProperty("Result");
 
-            
+        protected static bool AreAllPropertiesNullOrEmpty(ApiResponse apiResponse)
+          => apiResponse.GetType().GetProperties()
+              .Where(pi => pi.PropertyType == typeof(string))
+              .Select(pi => (string)pi.GetValue(apiResponse)!)
+              .Any(value => string.IsNullOrEmpty(value));
+
         private async Task HandleValidationErrorAsync(HttpContext context, ApiException ex)
         {
             var response = new ApiErrorResponse(ex.ValidationErrors!);
