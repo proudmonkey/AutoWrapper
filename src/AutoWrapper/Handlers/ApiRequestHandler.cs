@@ -141,11 +141,7 @@
 
                     if(returnType == typeof(IApiResponse))
                     {
-                        var apiResponse = JsonSerializer.Deserialize<ApiResponse>(root.GetRawText(), _jsonOptions);
-                        httpStatusCode = apiResponse?.StatusCode ?? context.Response.StatusCode;
-
-                        wrappedJsonString = ConvertToJSONString(WrapSucessfulResponse(apiResponse!, context.Request.Method));
-                        await WriteFormattedResponseToHttpContextAsync(context!, httpStatusCode!, wrappedJsonString!, jsonDocument);
+                        await WriteFormattedResponseToHttpContextAsync(context!, httpStatusCode!, root.GetRawText(), jsonDocument);
                         return;
                     }
                 }
