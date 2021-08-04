@@ -166,16 +166,6 @@
             return (false, value!);
         }
 
-        protected static bool IsApiResponseJsonShape(JsonElement root)
-            => root.HasMatchingApiResponseProperty("Message");
-        //&& root.HasMatchingApiResponseProperty("Result");
-
-        protected static bool AreAllPropertiesNullOrEmpty(ApiResponse apiResponse)
-          => apiResponse.GetType().GetProperties()
-              .Where(pi => pi.PropertyType == typeof(string))
-              .Select(pi => (string)pi.GetValue(apiResponse)!)
-              .Any(value => string.IsNullOrEmpty(value));
-
         private async Task HandleValidationErrorAsync(HttpContext context, ApiException ex)
         {
             var response = new ApiErrorResponse(ex.ValidationErrors!);
