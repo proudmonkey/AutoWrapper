@@ -1,6 +1,6 @@
 ﻿using AutoWrapper.Attributes;
 using AutoWrapper.Handlers;
-using HelpMate.Core;
+using HelpMate.Core.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
