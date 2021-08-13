@@ -130,7 +130,8 @@
 
             var root = jsonDocument.RootElement;
 
-            if (root.ValueKind == JsonValueKind.Object)
+            if (root.ValueKind == JsonValueKind.Object
+                || root.ValueKind == JsonValueKind.Array)
             {
                 var endpoint = context.GetEndpoint();
                 var actionDescriptor = endpoint?.Metadata?.GetMetadata<ControllerActionDescriptor>();
