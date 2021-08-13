@@ -1,10 +1,9 @@
 ﻿namespace AutoWrapper.Handlers
 {
-    using AutoWrapper.Extensions;
     using AutoWrapper.Constants;
     using AutoWrapper.Exceptions;
     using AutoWrapper.Models;
-    using HelpMate.Core;
+    using HelpMate.Core.Extensions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using System;
@@ -140,15 +139,19 @@
 
         protected string ConvertToJSONString(int httpStatusCode, object content, string httpMethod)
         {
-            var apiResponse = new ApiResponse($"{httpMethod} {ResponseMessage.Success}", content!, !_options.ShowStatusCode ? null : httpStatusCode);
-            return JsonSerializer.Serialize(apiResponse!, _jsonOptions!);
+            var result = content.ToString() ?? string.Empty;
+            var statusCode = (!_options.ShowStatusCode) ? null : (int?)httpStatusCode;
+            var apiResponse = new ApiResponse($"{httpMethod} {ResponseMessage.Success}", content, statusCode);
+
+            var serialized =  JsonSerializer.Serialize(apiResponse, _jsonOptions!);
+
+            return result.IsHtml() ? Regex.Unescape(serialized) : serialized;  
         }
 
         protected string ConvertToJSONString(ApiResponse apiResponse)
             => JsonSerializer.Serialize(apiResponse!, _jsonOptions!);
 
         protected string ConvertToJSONString(object rawJSON) => JsonSerializer.Serialize(rawJSON!, _jsonOptions!);
-
 
         protected static ApiResponse WrapSucessfulResponse(ApiResponse apiResponse, string httpMethod)
         {
@@ -158,10 +161,11 @@
 
         protected static (bool IsValidated, object ValidatedValue) ValidateSingleValueType(object value)
         {
-            var result = value.ToString();
+            var result = value.ToString() ?? string.Empty;
             if (result.IsWholeNumber()) { return (true, result.ToInt64()); }
             if (result.IsDecimalNumber()) { return (true, result.ToDecimal()); }
             if (result.IsBoolean()) { return (true, result.ToBoolean()); }
+            if (result.Contains("\"")) { return (true, result.Replace("\"", "")); }
 
             return (false, value!);
         }

@@ -1,19 +1,15 @@
 ﻿namespace AutoWrapper.Handlers
 {
-    using AutoWrapper.Attributes;
-    using AutoWrapper.Configurations;
     using AutoWrapper.Constants;
     using AutoWrapper.Exceptions;
     using AutoWrapper.Extensions;
     using AutoWrapper.Interface;
     using AutoWrapper.Models;
-    using HelpMate.Core;
+    using HelpMate.Core.Extensions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.ActionConstraints;
     using Microsoft.AspNetCore.Mvc.Controllers;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
-    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
@@ -21,16 +17,13 @@
     using System.Linq;
     using System.Text;
     using System.Text.Json;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
-    using static Microsoft.AspNetCore.Http.StatusCodes;
 
     internal class ApiRequestHandler : ApiRequestHandlerMember
     {
         private readonly AutoWrapperOptions _options;
         private readonly ILogger<AutoWrapperMiddleware> _logger;
         private readonly JsonSerializerOptions _jsonOptions;
-        //private readonly ApiRequestHandlerMember _handlerMember;
 
         public ApiRequestHandler(AutoWrapperOptions options,
                                     ILogger<AutoWrapperMiddleware> logger,
@@ -60,17 +53,6 @@
 
             return requestBody;
         }
-
-        //public async Task<string> ReadResponseBodyStreamAsync(Stream bodyStream)
-        //{
-        //    bodyStream.Seek(0, SeekOrigin.Begin);
-        //    var responseBody = await new StreamReader(bodyStream!).ReadToEndAsync();
-        //    bodyStream.Seek(0, SeekOrigin.Begin);
-
-        //    var (IsEncoded, ParsedText) = responseBody.VerifyBodyContent();
-
-        //    return IsEncoded ? ParsedText : responseBody;
-        //}
 
         public async Task<(bool IsEncoded, string ParsedText, JsonDocument? JsonDoc)> ReadResponseBodyStreamAsync(Stream bodyStream)
         {
@@ -110,28 +92,27 @@
             var message = isJsonShape && !string.IsNullOrEmpty(bodyText) ?  null : bodyText;
             
             var response = WrapErrorResponse(httpStatusCode!, message);
-            var jsonString = JsonSerializer.Serialize(response, _jsonOptions!);
-            await WriteFormattedResponseToHttpContextAsync(context!, httpStatusCode!, jsonString!);
+            var jsonString = JsonSerializer.Serialize(response, _jsonOptions);
+            await WriteFormattedResponseToHttpContextAsync(context, httpStatusCode, jsonString);
         }
 
         public async Task HandleSuccessfulRequestAsync(HttpContext context, string bodyAsText, int httpStatusCode, JsonDocument? jsonDocument)
         {
             string wrappedJsonString;
 
-            if (jsonDocument is null)
+            if (jsonDocument is null || !bodyAsText.IsValidJson())
             {
                 var (IsValidated, ValidatedValue) = ValidateSingleValueType(bodyAsText);
-                var result = IsValidated ? ValidatedValue : bodyAsText;
-                wrappedJsonString = ConvertToJSONString(httpStatusCode!, result!, context.Request.Method);
+                var result = IsValidated ? ValidatedValue :bodyAsText;
+                wrappedJsonString = ConvertToJSONString(httpStatusCode, result, context.Request.Method);
 
-                await WriteFormattedResponseToHttpContextAsync(context!, httpStatusCode!, wrappedJsonString!);
+                await WriteFormattedResponseToHttpContextAsync(context, httpStatusCode, wrappedJsonString, jsonDocument);
                 return;
             }
 
             var root = jsonDocument.RootElement;
-
-            if (root.ValueKind == JsonValueKind.Object
-                || root.ValueKind == JsonValueKind.Array)
+            
+            if (root.ValueKind == JsonValueKind.Object || root.ValueKind == JsonValueKind.Array)
             {
                 var endpoint = context.GetEndpoint();
                 var actionDescriptor = endpoint?.Metadata?.GetMetadata<ControllerActionDescriptor>();
@@ -142,13 +123,13 @@
 
                     if(returnType == typeof(IApiResponse))
                     {
-                        await WriteFormattedResponseToHttpContextAsync(context!, httpStatusCode!, root.GetRawText(), jsonDocument);
+                        await WriteFormattedResponseToHttpContextAsync(context, httpStatusCode, root.GetRawText(), jsonDocument);
                         return;
                     }
                 }
 
-                wrappedJsonString = ConvertToJSONString(httpStatusCode!, root, context.Request.Method);
-                await WriteFormattedResponseToHttpContextAsync(context!, httpStatusCode!, wrappedJsonString!, jsonDocument);
+                wrappedJsonString = ConvertToJSONString(httpStatusCode, root, context.Request.Method);
+                await WriteFormattedResponseToHttpContextAsync(context, httpStatusCode, wrappedJsonString, jsonDocument);
                 return;
             }
         }

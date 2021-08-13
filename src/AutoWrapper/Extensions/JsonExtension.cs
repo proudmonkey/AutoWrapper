@@ -31,13 +31,5 @@ namespace AutoWrapper.Extensions
                 return (false, text, null);
             }
         }
-
-        public static bool HasMatchingApiResponseProperty(this JsonElement root, string propertyName)
-        {
-            var result = root.EnumerateObject()
-                .Any(p => p.Name.Equals(propertyName, StringComparison.OrdinalIgnoreCase));
-
-            return result;
-        }
     }
 }
