@@ -24,6 +24,7 @@ Language: English | [中文](README.zh-cn.md)
 * This release only supports .NET 5
 * Middleware has been renamed from `UseApiResponseAndExceptionWrapper` to `UseAutoWrapper`. Make sure to update your `Startup.cs` to use the new name.
 * `ProblemDetails` is now the default exception format
+* `UseApiProblemDetailsException` has been renamed to `DisableProblemDetailsException`
 * Removed `Newtonsoft.Json` dependency and replaced it with `System.Text.Json`
 * Use the interface `IApiResponse` model instead of the concrete `ApiResponse` model for returning responses using the default format. This allows you to add your own properties that will wrapped within the `Result` property. 
 * `AutoWrapIgnore` and `RequestDataLogIgnore` attributes now leaves under `AutoWrapper.Attributes` namespace. The implementation was changed from using `IActionFilter` to use `Attribute`, eliminating all the request header logic.
@@ -39,7 +40,7 @@ Language: English | [中文](README.zh-cn.md)
 1. Download and Install the latest `AutoWrapper.Core` from NuGet or via CLI:
 
 ```
-PM> Install-Package AutoWrapper.Core -Version 5.0.0-rc-02
+PM> Install-Package AutoWrapper.Core -Version 5.0.0-rc-03
 ```
 
 2. Declare the following namespace within `Startup.cs`
