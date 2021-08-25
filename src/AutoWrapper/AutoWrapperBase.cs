@@ -81,13 +81,15 @@ namespace AutoWrapper.Base
             catch (Exception exception)
             {
 
-                if (_options.UseApiProblemDetailsException)
+                if (_options.DisableProblemDetailsException)
+                {
+                    await requestHandler.HandleExceptionAsync(context, exception);
+                }
+                else
                 {
                     await requestHandler.HandleProblemDetailsExceptionAsync(context, Executor, null, exception);
-                    return;
                 }
 
-                await requestHandler.HandleExceptionAsync(context, exception);
                 await requestHandler.RevertResponseBodyStreamAsync(memoryStream, originalResponseBodyStream);
             }
             finally
@@ -136,13 +138,13 @@ namespace AutoWrapper.Base
                 return;
             }
 
-            if (_options.UseApiProblemDetailsException)
+            if (_options.DisableProblemDetailsException)
             {
-                await requestHandler.HandleProblemDetailsExceptionAsync(context, Executor, bodyAsText);
+                await requestHandler.HandleUnsuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
                 return;
             }
 
-            await requestHandler.HandleUnsuccessfulRequestAsync(context, bodyAsText, context.Response.StatusCode);
+            await requestHandler.HandleProblemDetailsExceptionAsync(context, Executor, bodyAsText);
         }
 
         private bool ShouldLogRequestData(HttpContext context)

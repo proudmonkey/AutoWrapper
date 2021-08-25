@@ -24,4 +24,4 @@
 		<ProjectReference Include="..\..\src\AutoWrapper\AutoWrapper.csproj" />
 	</ItemGroup>
 
-</Project>
+  </Project>

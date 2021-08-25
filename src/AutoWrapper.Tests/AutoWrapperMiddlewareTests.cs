@@ -68,7 +68,7 @@ namespace AutoWrapper.Tests
             if (showStatusCode)
             {
                 return _fixture.Build<ApiResponse>()
-                    .With(p => p.IsError, false)
+                    .Without(p => p.IsError)
                     .With(p => p.StatusCode, statusCode)
                     .With(p => p.Message, message)
                     .With(p => p.Result, result)
@@ -76,7 +76,7 @@ namespace AutoWrapper.Tests
             }
 
             return _fixture.Build<ApiResponse>()
-                .With(p => p.IsError, false)
+                .Without(p => p.IsError)
                 .Without(p => p.StatusCode)
                 .With(p => p.Message, message)
                 .With(p => p.Result, result)
@@ -125,25 +125,6 @@ namespace AutoWrapper.Tests
             response.StatusCode.Should().Be(StatusCodes.Status200OK);
             content.Should().Be(expectedJson);
         }
-
-        [Fact]
-        public async Task WhenMessage_MatchesCustomValue_Returns200()
-        {
-            var expectedJson = new ApiResponse("My Custom Message").ToJson(_jsonSerializerOptionsDefault);
-
-            var webhostBuilder = new WebHostBuilder()
-               .ConfigureAutoWrapper(context => context.Response.WriteAsync(expectedJson));
- 
-            var server = new TestServer(webhostBuilder);
-
-            var request = new HttpRequestMessage(HttpMethod.Get, "");
-            var response = await server.CreateClient().SendAsync(request);
-            var content = await response.Content.ReadAsStringAsync();
-
-            response.StatusCode.Should().Be(StatusCodes.Status200OK);
-            content.Should().Be(expectedJson);
-        }
-
 
         [Fact]
         public async Task WhenCustomModel_MatchesTheResponse_Returns200()

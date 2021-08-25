@@ -74,7 +74,7 @@
             switch (exception)
             {
                 case ApiException:
-                    await HandleExceptionAsync(context, exception);
+                    await HandleApiExceptionAsync(context, exception);
                     break;
                 case UnauthorizedAccessException:
                     await HandleUnAuthorizedErrorAsync(context, exception);
@@ -182,9 +182,9 @@
             await context.Response.WriteAsync(bodyText!);
         }
 
-        public async Task HandleProblemDetailsExceptionAsync(HttpContext context, IActionResultExecutor<ObjectResult> executor, object? body, Exception? exception = null)
+        public async Task HandleProblemDetailsExceptionAsync(HttpContext context, IActionResultExecutor<ObjectResult> executor, object body, Exception? exception = null)
         {
-            await ApiProblemDetailsHandler.HandleProblemDetailsAsync(context!, executor!, body!, exception!, _options.IsDebug);
+            await ApiProblemDetailsHandler.HandleProblemDetailsAsync(context, executor, body, exception, _options.IsDebug);
 
             if (_options.EnableExceptionLogging && exception != null)
             {

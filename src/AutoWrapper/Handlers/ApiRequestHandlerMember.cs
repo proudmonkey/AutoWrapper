@@ -85,18 +85,20 @@
             }
         }
 
-        protected async Task HandleApiException(HttpContext context, Exception exception)
+        protected async Task HandleApiExceptionAsync(HttpContext context, Exception exception)
         {
             var ex = exception as ApiException;
 
             if (ex?.ValidationErrors is not null)
             {
                 await HandleValidationErrorAsync(context, ex);
+                return;
             }
 
             if (ex?.CustomErrorModel is not null)
             {
                 await HandleCustomErrorAsync(context, ex);
+                return;
             }
 
             await HandleApiErrorAsync(context, ex!);
