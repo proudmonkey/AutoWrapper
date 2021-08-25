@@ -16,15 +16,18 @@
 
     internal static class ApiProblemDetailsHandler
     {
-        private static readonly RouteData _emptyRouteData = new RouteData();
-        private static readonly ActionDescriptor _emptyActionDescriptor = new ActionDescriptor();
+        private static readonly RouteData _emptyRouteData = new();
+        private static readonly ActionDescriptor _emptyActionDescriptor = new();
 
-        public static Task HandleProblemDetailsAsync(HttpContext context, IActionResultExecutor<ObjectResult> executor, object body, Exception exception, bool isDebug = false)
+        public static Task HandleProblemDetailsAsync(HttpContext context, IActionResultExecutor<ObjectResult> executor, object body, Exception? exception, bool isDebug = false)
         {
             var statusCode = context.Response.StatusCode;
             object details = exception == null ? DelegateResponse(body, statusCode) : GetProblemDetails(exception, isDebug);
 
-            if (details is ProblemDetails) { (details! as ProblemDetails).Instance = context.Request.Path; }
+            if (details is ProblemDetails) 
+            { 
+                (details as ProblemDetails)!.Instance = context.Request.Path; 
+            }
 
             var routeData = context.GetRouteData() ?? _emptyRouteData;
 
@@ -42,13 +45,13 @@
             return executor.ExecuteAsync(actionContext, result);
         }
 
-        private static object DelegateResponse(object body, int statusCode)
+        private static object DelegateResponse(object? body, int statusCode)
         {
             var content = body ?? string.Empty;
             var (IsEncoded, ParsedText) = content.ToString()!.VerifyBodyContent();
             var result = IsEncoded ? JsonSerializer.Deserialize<dynamic>(ParsedText) : new ApiProblemDetails(statusCode) {  Detail = content.ToString() } ;
 
-            return result!;
+            return result ?? string.Empty;
         }
 
         private static ProblemDetails GetProblemDetails(Exception exception, bool isDebug)
@@ -57,7 +60,10 @@
 
             var defaultException = new ExceptionFallback(exception);
 
-            if (isDebug) { return new DebugExceptionetails(defaultException); }
+            if (isDebug) 
+            { 
+                return new DebugExceptionetails(defaultException); 
+            }
 
             return new ApiProblemDetails((int)defaultException.Status!) { Detail = defaultException.Exception.Message };
         }
