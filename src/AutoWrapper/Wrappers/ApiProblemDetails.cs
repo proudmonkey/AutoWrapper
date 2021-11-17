@@ -7,7 +7,7 @@ using static AutoWrapper.Wrappers.ApiProblemDetailsMember;
 namespace AutoWrapper.Wrappers
 {
 
-    internal class ApiProblemDetails: ProblemDetails
+    public class ApiProblemDetails: ProblemDetails
     {
         public ApiProblemDetails(int statusCode)
         {
