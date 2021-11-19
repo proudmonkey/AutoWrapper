@@ -155,7 +155,10 @@
         {
             var result = content.ToString() ?? string.Empty;
             var statusCode = (!_options.ShowStatusCode) ? null : (int?)httpStatusCode;
-            var apiResponse = new ApiResponse($"{httpMethod} {ResponseMessage.Success}", content, statusCode);
+            var apiResponse = new ApiResponse($"{httpMethod} {ResponseMessage.Success}", content, statusCode)
+            {
+                IsError = _options.ShowIsErrorFlagForSuccessfulResponse ? false : null
+            };
 
             var serialized = JsonSerializer.Serialize(apiResponse, _jsonOptions!);
 
