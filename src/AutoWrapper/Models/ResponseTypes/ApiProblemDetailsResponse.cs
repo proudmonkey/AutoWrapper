@@ -2,7 +2,7 @@
 
 namespace AutoWrapper.Models.ResponseTypes
 {
-    public class ApiProblemDetailsResponse: ProblemDetails
+    public class ApiProblemDetailsResponse : ProblemDetails
     {
         public bool IsError { get; set; }
     }
