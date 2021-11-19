@@ -34,7 +34,7 @@
             _logger = logger;
             _jsonOptions = jsonOptions;
         }
-   
+
         public async Task<string?> GetRequestBodyAsync(HttpRequest request)
         {
             var httpMethodsWithRequestBody = new[] { "POST", "PUT", "PATCH" };
@@ -76,6 +76,9 @@
                 case ApiException:
                     await HandleApiExceptionAsync(context, exception);
                     break;
+                case NotImplementedException:
+                    await HandleNotImplementedErrorAsync(context, exception);
+                    break;
                 case UnauthorizedAccessException:
                     await HandleUnAuthorizedErrorAsync(context, exception);
                     break;
@@ -85,12 +88,12 @@
             }
         }
 
-        public async Task HandleUnsuccessfulRequestAsync(HttpContext context, object body, int httpStatusCode)     
+        public async Task HandleUnsuccessfulRequestAsync(HttpContext context, object body, int httpStatusCode)
         {
             var isJsonShape = body.ToString()!.IsValidJson();
             var bodyText = body.ToString()!;
-            var message = isJsonShape && !string.IsNullOrEmpty(bodyText) ?  null : bodyText;
-            
+            var message = isJsonShape && !string.IsNullOrEmpty(bodyText) ? null : bodyText;
+
             var response = WrapErrorResponse(httpStatusCode!, message);
             var jsonString = JsonSerializer.Serialize(response, _jsonOptions);
             await WriteFormattedResponseToHttpContextAsync(context, httpStatusCode, jsonString);
@@ -103,7 +106,7 @@
             if (jsonDocument is null || !bodyAsText.IsValidJson())
             {
                 var (IsValidated, ValidatedValue) = ValidateSingleValueType(bodyAsText);
-                var result = IsValidated ? ValidatedValue :bodyAsText;
+                var result = IsValidated ? ValidatedValue : bodyAsText;
                 wrappedJsonString = ConvertToJSONString(httpStatusCode, result, context.Request.Method);
 
                 await WriteFormattedResponseToHttpContextAsync(context, httpStatusCode, wrappedJsonString, jsonDocument);
@@ -111,7 +114,7 @@
             }
 
             var root = jsonDocument.RootElement;
-            
+
             if (root.ValueKind == JsonValueKind.Object || root.ValueKind == JsonValueKind.Array)
             {
                 var endpoint = context.GetEndpoint();
@@ -121,7 +124,7 @@
                 {
                     Type returnType = actionDescriptor.MethodInfo.ReturnType;
 
-                    if(returnType == typeof(IApiResponse))
+                    if (returnType == typeof(IApiResponse))
                     {
                         await WriteFormattedResponseToHttpContextAsync(context, httpStatusCode, root.GetRawText(), jsonDocument);
                         return;

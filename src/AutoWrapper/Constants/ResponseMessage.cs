@@ -7,6 +7,7 @@
         internal const string BadRequest = "Request invalid.";
         internal const string MethodNotAllowed = "Request responded with 'Method Not Allowed'.";
         internal const string NoContent = "Request no content. The specified uri does not contain any content.";
+        internal const string NotImplemented = "Request endpoint not implemented.  The specified uri exists but is not currently implemented.";
         internal const string Exception = "Request responded with exceptions.";
         internal const string UnAuthorized = "Request denied. Unauthorized access.";
         internal const string ValidationError = "Request responded with one or more validation errors.";

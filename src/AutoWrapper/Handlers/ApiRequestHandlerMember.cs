@@ -74,7 +74,8 @@
                 Status404NotFound => new ApiErrorResponse(message ?? ResponseMessage.NotFound, nameof(ResponseMessage.NotFound)),
                 Status405MethodNotAllowed => new ApiErrorResponse(ResponseMessage.MethodNotAllowed, nameof(ResponseMessage.MethodNotAllowed)),
                 Status415UnsupportedMediaType => new ApiErrorResponse(ResponseMessage.MediaTypeNotSupported, nameof(ResponseMessage.MediaTypeNotSupported)),
-                _ => new ApiErrorResponse(ResponseMessage.Unknown, nameof(ResponseMessage.Unknown))
+                Status501NotImplemented => new ApiErrorResponse(ResponseMessage.NotImplemented, nameof(ResponseMessage.NotImplemented)),
+                _ => new ApiErrorResponse(ResponseMessage.Unknown, nameof(ResponseMessage.Unknown)),
             };
 
         protected void LogExceptionWhenEnabled(Exception exception, string message, int statusCode)
@@ -102,6 +103,17 @@
             }
 
             await HandleApiErrorAsync(context, ex!);
+        }
+
+        protected async Task HandleNotImplementedErrorAsync(HttpContext context, Exception ex)
+        {
+            var response = new ApiErrorResponse(ResponseMessage.NotImplemented);
+
+            LogExceptionWhenEnabled(ex, ex.Message, Status501NotImplemented);
+
+            var jsonString = JsonSerializer.Serialize(response, _jsonOptions!);
+
+            await WriteFormattedResponseToHttpContextAsync(context!, Status501NotImplemented, jsonString!);
         }
 
         protected async Task HandleUnAuthorizedErrorAsync(HttpContext context, Exception ex)
@@ -145,9 +157,9 @@
             var statusCode = (!_options.ShowStatusCode) ? null : (int?)httpStatusCode;
             var apiResponse = new ApiResponse($"{httpMethod} {ResponseMessage.Success}", content, statusCode);
 
-            var serialized =  JsonSerializer.Serialize(apiResponse, _jsonOptions!);
+            var serialized = JsonSerializer.Serialize(apiResponse, _jsonOptions!);
 
-            return result.IsHtml() ? Regex.Unescape(serialized) : serialized;  
+            return result.IsHtml() ? Regex.Unescape(serialized) : serialized;
         }
 
         protected string ConvertToJSONString(ApiResponse apiResponse)

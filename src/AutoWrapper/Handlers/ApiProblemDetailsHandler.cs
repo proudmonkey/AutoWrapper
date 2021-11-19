@@ -21,12 +21,12 @@
 
         public static Task HandleProblemDetailsAsync(HttpContext context, IActionResultExecutor<ObjectResult> executor, object body, Exception? exception, bool isDebug = false)
         {
-            var statusCode = context.Response.StatusCode;
-            object details = exception == null ? DelegateResponse(body, statusCode) : GetProblemDetails(exception, isDebug);
+            var statusCode = TransformStatusCode(context.Response.StatusCode, exception);
+            object details = exception == null ? DelegateResponse(body, statusCode) : GetProblemDetails(exception, statusCode, isDebug);
 
-            if (details is ProblemDetails) 
-            { 
-                (details as ProblemDetails)!.Instance = context.Request.Path; 
+            if (details is ProblemDetails)
+            {
+                (details as ProblemDetails)!.Instance = context.Request.Path;
             }
 
             var routeData = context.GetRouteData() ?? _emptyRouteData;
@@ -43,29 +43,43 @@
             result.ContentTypes.Add(ContentMediaTypes.ProblemXMLHttpContentMediaType);
 
             return executor.ExecuteAsync(actionContext, result);
+
+            static int TransformStatusCode(int DefaultStatusCode, Exception? ex)
+            {
+                return ex switch
+                {
+                    ApiException ae => ae.StatusCode,
+                    UnauthorizedAccessException => Status401Unauthorized,
+                    NotImplementedException => Status501NotImplemented,
+                    _ => DefaultStatusCode
+                };
+            }
         }
 
         private static object DelegateResponse(object? body, int statusCode)
         {
             var content = body ?? string.Empty;
             var (IsEncoded, ParsedText) = content.ToString()!.VerifyBodyContent();
-            var result = IsEncoded ? JsonSerializer.Deserialize<dynamic>(ParsedText) : new ApiProblemDetails(statusCode) {  Detail = content.ToString() } ;
+            var result = IsEncoded ? JsonSerializer.Deserialize<dynamic>(ParsedText) : new ApiProblemDetails(statusCode) { Detail = content.ToString() };
 
             return result ?? string.Empty;
         }
 
-        private static ProblemDetails GetProblemDetails(Exception exception, bool isDebug)
+        private static ProblemDetails GetProblemDetails(Exception exception, int statusCode, bool isDebug)
         {
-            if (exception is ApiProblemDetailsException problem){ return problem.Problem.Details; }
+            if (exception is ApiProblemDetailsException problem) { return problem.Problem.Details; }
 
             var defaultException = new ExceptionFallback(exception);
 
-            if (isDebug) 
-            { 
-                return new DebugExceptionetails(defaultException); 
+            if (isDebug)
+            {
+                return new DebugExceptionetails(defaultException)
+                {
+                    Status = statusCode
+                };
             }
 
-            return new ApiProblemDetails((int)defaultException.Status!) { Detail = defaultException.Exception.Message };
+            return new ApiProblemDetails(statusCode) { Detail = defaultException.Exception.Message };
         }
 
         internal class ErrorDetails
