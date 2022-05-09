@@ -80,6 +80,29 @@ namespace AutoWrapper.Test
             content.ShouldBe(json);
         }
 
+        [Fact(DisplayName = "CustomMessageWithStatusCode")]
+        public async Task AutoWrapperCustomMessageWithStatusCode_Test()
+        {
+            var builder = new WebHostBuilder()
+            .ConfigureServices(services => { services.AddMvcCore(); })
+            .Configure(app =>
+            {
+                app.UseApiResponseAndExceptionWrapper(options: new AutoWrapperOptions()
+                {
+                    ShowStatusCode = true
+                });
+                app.Run(context => context.Response.WriteAsync(
+                    new { firstName = "Test", lastName = "User", statusCode = 202 }.ToJson()));
+            });
+            var server = new TestServer(builder);
+            var req = new HttpRequestMessage(HttpMethod.Get, "");
+            var rep = await server.CreateClient().SendAsync(req);
+            var content = await rep.Content.ReadAsStringAsync();
+            Convert.ToInt32(rep.StatusCode).ShouldBe(200);
+            var json = JsonHelper.ToJson(new ApiResponse("GET Request successful.", new { firstName = "Test", lastName = "User", statusCode = 202 }, 200, null), null);
+            content.ShouldBe(json);
+        }
+
         [Fact(DisplayName = "CapturingModelStateApiException")]
         public async Task AutoWrapperCapturingModelState_ApiException_Test()
         {
