@@ -419,3 +419,5 @@ typings/
 # By default, sensitive information, such as encrypted password
 # should be stored in the .pubxml.user file.
 
+/README.md.bak
+/RELEASE.MD.bak
