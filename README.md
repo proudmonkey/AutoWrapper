@@ -21,7 +21,7 @@ Language: English | [中文](README.zh-cn.md)
 * Add support for ignoring action methods that don't need to be wrapped using `[AutoWrapIgnore]` filter attribute.
 
 # Breaking changes
-* This release only supports .NET 5
+* This release supports .NET 5 and .NET 6
 * Middleware has been renamed from `UseApiResponseAndExceptionWrapper` to `UseAutoWrapper`. Make sure to update your `Startup.cs` to use the new name.
 * `ProblemDetails` is now the default exception format
 * `UseApiProblemDetailsException` has been renamed to `DisableProblemDetailsException`
@@ -34,13 +34,13 @@ Language: English | [中文](README.zh-cn.md)
    * UseCustomSchema
 
 > `ReferenceLoopHandling` and `DefaultContractResolver` aren't still supported in .NET 5 that's why handling reference loop and `ApiResponse` property mappings will not be supported when targetting .NET 5.
-> .NET Core 3.1 will still use Newtonsoft.Json and it's only supported by AutoWrapper <= v4.5.0
+> .NET Core 3.1 will still use Newtonsoft.Json and it's only supported by AutoWrapper <= v4.5.1
 
 # Installation
 1. Download and Install the latest `AutoWrapper.Core` from NuGet or via CLI:
 
 ```
-PM> Install-Package AutoWrapper.Core -Version 5.0.0-rc-03
+PM> Install-Package AutoWrapper.Core -Version 5.0.0-rc-04
 ```
 
 2. Declare the following namespace within `Startup.cs`
