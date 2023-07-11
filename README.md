@@ -29,7 +29,7 @@ Language: English | [中文](README.zh-cn.md)
 1. Download and Install the latest `AutoWrapper.Core` from NuGet or via CLI:
 
 ```
-PM> Install-Package AutoWrapper.Core -Version 4.5.0
+PM> Install-Package AutoWrapper.Core -Version 4.5.1
 ```
 
 2. Declare the following namespace within `Startup.cs`
