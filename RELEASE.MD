@@ -1,6 +1,10 @@
 
 # Release Log
 
+* 07/11/2023: AutoWrapper version `5.0.0-rc-04` - Support for .NET 6.
+* 08/25/2021: AutoWrapper version `5.0.0-rc-03` - Bug fixes.
+* 08/13/2021: AutoWrapper version `5.0.0-rc-02` - various refactoring and fixes.
+* 08/04/2021: AutoWrapper version `5.0.0-rc` - Support for .NET 5 and various refactoring.
 * 02/04/2021: AutoWrapper version `4.4.0` - fix bug on logging request data.
 * 01/12/2021: AutoWrapper version `4.3.2` - added `SwaggerPath` option. Default is `/swagger`.
 * 09/23/2020: AutoWrapper version `4.3.1` - added `ShowIsErrorFlagForSuccessfulResponse` option.

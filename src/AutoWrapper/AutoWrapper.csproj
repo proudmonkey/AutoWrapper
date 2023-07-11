@@ -3,12 +3,12 @@
  <PropertyGroup>
     <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
     <Authors>Vincent Maverick Durano</Authors>
-    <Description>A simple yet customizable HTTP response wrapper and exception handler for ASP.NET Core 5 APIs.</Description>
+    <Description>A simple yet customizable HTTP response wrapper and exception handler for ASP.NET Core APIs.</Description>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/proudmonkey/AutoWrapper</PackageProjectUrl>
     <RepositoryUrl>https://github.com/proudmonkey/AutoWrapper</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <Version>5.0.0-rc-02</Version>
+    <Version>5.0.0-rc-04</Version>
     <PackageTags>AutoWrapper, REST, API, WebAPI, ASP.NETCORE, ASP.NET CORE, ASP.NET CORE 5, NETCORE, Middleware, HttpResponseWrapper, NET5, C#, ApiResponseAndExceptionWrapper, APIWrapper, ResponseWrapper, ExceptionWrapper, ProblemDetails</PackageTags>
     <PackageReleaseNotes>See project repo for release notes.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -17,8 +17,13 @@
     <PackageIcon>icon.png</PackageIcon>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Nullable>enable</Nullable>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+  
   <ItemGroup>
     <None Include="icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
