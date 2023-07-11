@@ -178,8 +178,10 @@ namespace AutoWrapper
                 {
                     if (_hasSchemaForMappping && (_propertyMappings.Count == 0 || _propertyMappings == null))
                         throw new ApiException(ResponseMessage.NoMappingFound);
-                    else
+                    else if (bodyText.Contains(nameof(ApiResponse.Result)))
                         apiResponse = JsonConvert.DeserializeObject<ApiResponse>(bodyText);
+                    else
+                        apiResponse = new ApiResponse();
                 }
 
                 if (apiResponse.StatusCode == 0 && apiResponse.Result == null && apiResponse.ResponseException == null)
