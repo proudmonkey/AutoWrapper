@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
  <PropertyGroup>
-    <TargetFrameworks>net5.0</TargetFrameworks>
+    <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
     <Authors>Vincent Maverick Durano</Authors>
     <Description>A simple yet customizable HTTP response wrapper and exception handler for ASP.NET Core 5 APIs.</Description>
     <PackageLicenseUrl></PackageLicenseUrl>
@@ -24,6 +24,11 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="HelpMate.Core" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="HelpMate.Core" Version="2.1.0" />
   </ItemGroup>
